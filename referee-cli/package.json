@@ -1,0 +1,39 @@
+{
+    "name": "pldr-referee",
+    "version": "0.0.1",
+    "description": "",
+    "main": "src/referee.js",
+    "bin": "src/referee.js",
+    "scripts": {
+        "dev": "nodemon src/referee.js --debug --name=refereedev --port=7000 --daemon",
+        "dev1": "nodemon src/referee.js --debug --name=referee2 --port=7001 --daemon",
+        "dev2": "nodemon src/referee.js --debug --name=referee3 --port=7002 --daemon",
+        "test:identity": "node src/referee.js --debug --name=refereedev --port=7000 getidentity",
+        "test:peers": "node src/referee.js --debug --name=refereedev --port=7000 ipfs swarm peers",
+        "test:pins": "node src/referee.js --debug --name=refereedev --port=7000 ipfs pin ls",
+        "test:cat": "node src/referee.js --debug --name=refereedev --port=7000 ipfs cat /ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/quick-start",
+        "test:filestats": "node src/referee.js --debug --name=refereedev --port=7000 ipfs files stat /ipfs/bafkreiei5zwv6xgdp6rot7ryedbwiefwl4txurswhcvdodrr3rn3jfylyu --with-local",
+        "test:broadcast": "node src/referee.js --debug --name=refereedev --port=7000 sendmessage",
+        "test:deals": "node src/referee.js --debug --name=refereedev --port=7000 deals",
+        "test:withdraw": "node src/referee.js --debug --name=refereedev --port=7000 withdraw",
+        "test:getbalance": "node src/provider.js --debug --name=providerdev --7000=8001 getbalance",
+        "compile": "pkg . --out-path bin",
+        "start": "./bin/pldr-referee-linux --debug --name=referee0 --port=7000 --daemon"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "axios": "^0.24.0",
+        "body-parser": "^1.19.0",
+        "dotenv": "^10.0.0",
+        "ethers": "^5.6.2",
+        "express": "^4.17.1",
+        "minimist": "^1.2.6",
+        "public-ip": "^4.0.4"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.14",
+        "pkg": "^5.6.0"
+    }
+}
