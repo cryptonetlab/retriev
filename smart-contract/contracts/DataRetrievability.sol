@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "./Base64.sol";
 
 // import "hardhat/console.sol";
 
@@ -100,6 +101,9 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     uint32 public round_duration = 300;
     uint32 public min_duration = 3600;
     uint32 public max_duration = 43_200;
+    // NFT variables
+    mapping(uint256 => uint256) public nft_to_deal;
+    Counters.Counter private nftCounter;
     // Event emitted when new deal is created
     event DealProposalCreated(
         uint256 index,
@@ -121,12 +125,86 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     // Event emitted when a slash message is recorded
     event AppealSlashed(uint256 index);
 
-    constructor(address _protocol_address) ERC721 ("Retriev", "RTV") {
+    constructor(address _protocol_address) ERC721("Retriev", "RTV") {
         protocol_address = _protocol_address;
+    }
+
+    function totalSupply() public view returns (uint256) {
+        return nftCounter.current();
     }
 
     function totalDeals() public view returns (uint256) {
         return dealCounter.current();
+    }
+
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override
+        returns (string memory)
+    {
+        string[12] memory parts;
+        Deal storage deal = deals[nft_to_deal[tokenId]];
+        parts[
+            0
+        ] = '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 500 500"><style>.base { fill: #fff; font-family: monospace; font-size: 14px; }</style><rect width="100%" height="100%" fill="#000" />';
+        // TODO: Add logo here
+        parts[1] = '<text x="10" y="410" class="base">CID: ';
+        parts[2] = deal.ipfs_hash;
+        parts[3] = '</text><text x="10" y="430" class="base">VALUE WEI:';
+        parts[4] = Strings.toString(deal.value);
+        parts[5] = '</text><text x="10" y="450" class="base">STARTED AT: ';
+        parts[6] = Strings.toString(deal.timestamp_start);
+        parts[7] = '</text><text x="10" y="470" class="base">DURATION: ';
+        parts[8] = Strings.toString(deal.duration);
+        parts[9] = '</text><text x="10" y="490" class="base">ACTIVE: ';
+        if (deal.active) {
+            parts[10] = "ACTIVE";
+        } else {
+            parts[10] = "NOT ACTIVE";
+        }
+        parts[11] = "</text></svg>";
+
+        string memory output = string(
+            abi.encodePacked(
+                parts[0],
+                parts[1],
+                parts[2],
+                parts[3],
+                parts[4],
+                parts[5],
+                parts[6],
+                parts[7]
+            )
+        );
+        output = string(
+            abi.encodePacked(
+                output,
+                parts[8],
+                parts[9],
+                parts[10],
+                parts[11]
+            )
+        );
+
+        string memory json = Base64.encode(
+            bytes(
+                string(
+                    abi.encodePacked(
+                        '{"name": "DEAL #',
+                        tokenId,
+                        '", "description": "Retriev deal token", "image": "data:image/svg+xml;base64,',
+                        Base64.encode(bytes(output)),
+                        '"}'
+                    )
+                )
+            )
+        );
+        output = string(
+            abi.encodePacked("data:application/json;base64,", json)
+        );
+
+        return output;
     }
 
     /*
@@ -333,6 +411,10 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         }
         // When created the amount of money is owned by sender
         vault[address(this)] += msg.value;
+        // Create the NFT for the client
+        uint256 newTokenId = dealCounter.current();
+        nft_to_deal[newTokenId] = index;
+        _mint(msg.sender, newTokenId);
         // Emit event
         emit DealProposalCreated(index, _providers, _ipfs_hash);
     }
@@ -399,6 +481,10 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         // Deposit collateral to contract
         vault[msg.sender] -= deals[deal_index].collateral;
         vault[address(this)] += deals[deal_index].collateral;
+        // Create the NFT for the client
+        uint256 newTokenId = dealCounter.current();
+        nft_to_deal[newTokenId] = deal_index;
+        _mint(msg.sender, newTokenId);
         emit DealProposalAccepted(deal_index);
     }
 
