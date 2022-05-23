@@ -7,13 +7,14 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 // import "hardhat/console.sol";
 
 /**
  * @title DataRetrievability
  */
-contract DataRetrievability is Ownable, ReentrancyGuard {
+contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
 
@@ -120,7 +121,7 @@ contract DataRetrievability is Ownable, ReentrancyGuard {
     // Event emitted when a slash message is recorded
     event AppealSlashed(uint256 index);
 
-    constructor(address _protocol_address) {
+    constructor(address _protocol_address) ERC721 ("Retriev", "RTV") {
         protocol_address = _protocol_address;
     }
 
