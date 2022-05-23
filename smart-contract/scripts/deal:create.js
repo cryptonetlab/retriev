@@ -17,7 +17,7 @@ async function main() {
     const ipfs_hash = 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG-' + deal_index // Public readme folder
     const min_duration = await contract.min_duration()
     const duration = min_duration; // Duration of the deal (2 minutes for test)
-    const collateral = ethers.utils.parseEther("0.88") // Setting 0 if you need minimum one
+    const collateral = ethers.utils.parseUnits(value, 'gwei') // Setting 0 if you need minimum one
     try {
         console.log("Creating new deal for hash: " + ipfs_hash)
         const tx = await contract.createDealProposal(

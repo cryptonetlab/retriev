@@ -412,7 +412,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         // When created the amount of money is owned by sender
         vault[address(this)] += msg.value;
         // Create the NFT for the client
-        uint256 newTokenId = dealCounter.current();
+        nftCounter.increment();
+        uint256 newTokenId = nftCounter.current();
         nft_to_deal[newTokenId] = index;
         _mint(msg.sender, newTokenId);
         // Emit event
@@ -482,7 +483,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         vault[msg.sender] -= deals[deal_index].collateral;
         vault[address(this)] += deals[deal_index].collateral;
         // Create the NFT for the client
-        uint256 newTokenId = dealCounter.current();
+        nftCounter.increment();
+        uint256 newTokenId = nftCounter.current();
         nft_to_deal[newTokenId] = deal_index;
         _mint(msg.sender, newTokenId);
         emit DealProposalAccepted(deal_index);
