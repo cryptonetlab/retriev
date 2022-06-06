@@ -233,7 +233,24 @@ export default {
           app.loadState();
         }
       } else {
-        alert("Please switch to Rinkeby network (" + app.network + ")!");
+        try {
+          await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [
+              {
+                chainId: "0x4",
+              },
+            ],
+          });
+          app.done();
+          setTimeout(function () {
+            app.connect();
+          }, 100);
+        } catch (e) {
+          app.term.echo(
+            "Can't automatically switch to rinkeby, please do it manually."
+          );
+        }
       }
     },
     log(...what) {
