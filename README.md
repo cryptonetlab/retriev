@@ -9,7 +9,4 @@ There are 5 folders:
 - `provider-cli`: which contains *provider* logic to accept deals published on-chain and serve pinned files.
 - `referee-cli`: which contains *referee* logic to ask `providers` if some clients asks for a retrieval.
 
-
-
-
 For the description of the MVP protocol see here: https://pl-strflt.notion.site/Data-Retrievability-Oracle-252f52f47b3944e8a54e8d0f553c5cd7

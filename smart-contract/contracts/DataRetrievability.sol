@@ -153,11 +153,11 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         parts[2] = deal.ipfs_hash;
         parts[3] = '</text><text x="10" y="430" class="base">VALUE WEI:';
         parts[4] = Strings.toString(deal.value);
-        parts[5] = '</text><text x="10" y="450" class="base">STARTED AT: ';
+        parts[5] = '</text><text x="10" y="450" class="base">STARTED AT:';
         parts[6] = Strings.toString(deal.timestamp_start);
-        parts[7] = '</text><text x="10" y="470" class="base">DURATION: ';
+        parts[7] = '</text><text x="10" y="470" class="base">DURATION:';
         parts[8] = Strings.toString(deal.duration);
-        parts[9] = '</text><text x="10" y="490" class="base">ACTIVE: ';
+        parts[9] = '</text><text x="10" y="490" class="base">STATUS:';
         if (deal.active) {
             parts[10] = "ACTIVE";
         } else {
@@ -192,7 +192,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
                 string(
                     abi.encodePacked(
                         '{"name": "DEAL #',
-                        tokenId,
+                        Strings.toString(tokenId),
                         '", "description": "Retriev deal token", "image": "data:image/svg+xml;base64,',
                         Base64.encode(bytes(output)),
                         '"}'
