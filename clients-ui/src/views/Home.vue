@@ -238,16 +238,16 @@ export default {
             method: "wallet_switchEthereumChain",
             params: [
               {
-                chainId: "0x4",
+                chainId:
+                  "0x" + Number(process.env.VUE_APP_NETWORK).toString(16),
               },
             ],
           });
-          app.done();
           setTimeout(function () {
             app.connect();
           }, 100);
         } catch (e) {
-          app.term.echo(
+          app.log(
             "Can't automatically switch to rinkeby, please do it manually."
           );
         }
