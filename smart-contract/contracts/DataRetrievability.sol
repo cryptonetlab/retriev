@@ -91,7 +91,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     uint256 public deposit_multiplier = 100;
     uint256 public slashing_multiplier = 10;
     // Timeout to accept a deal (1 week)
-    uint32 deal_timeout = 86_400;
+    uint32 public deal_timeout = 86_400;
     // Internal counters for deals and appeals mapping
     Counters.Counter private dealCounter;
     Counters.Counter private appealCounter;
@@ -621,6 +621,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             uint256 collateral = deals[deal_index].collateral;
             vault[address(this)] -= collateral;
             vault[protocol_address] += collateral;
+            // vault[protocol_address] += collateral / 2;
+            // vault[deals[deal_index].owner] += collateral / 2;
             // Emit event of deal invalidated
             emit DealInvalidated(deal_index);
         }
