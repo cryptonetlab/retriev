@@ -10,8 +10,6 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "./Base64.sol";
 
-// import "hardhat/console.sol";
-
 /**
  * @title DataRetrievability
  */
@@ -101,6 +99,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     uint32 public round_duration = 300;
     uint32 public min_duration = 3600;
     uint32 public max_duration = 43_200;
+    uint8 public slashes_threshold = 12;
+    uint8 public rounds_limit = 12;
     // NFT variables
     mapping(uint256 => uint256) public nft_to_deal;
     Counters.Counter private nftCounter;
@@ -178,13 +178,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             )
         );
         output = string(
-            abi.encodePacked(
-                output,
-                parts[8],
-                parts[9],
-                parts[10],
-                parts[11]
-            )
+            abi.encodePacked(output, parts[8], parts[9], parts[10], parts[11])
         );
 
         string memory json = Base64.encode(
@@ -192,7 +186,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
                 string(
                     abi.encodePacked(
                         '{"name": "DEAL #',
-                        Strings.toString(tokenId),
+                        Strings.toString(nft_to_deal[tokenId]),
                         '", "description": "Retriev deal token", "image": "data:image/svg+xml;base64,',
                         Base64.encode(bytes(output)),
                         '"}'
@@ -243,15 +237,15 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     /*
         This method will return the amount of slashes needed to close the appeal
     */
-    function returnSlashesThreshold() public pure returns (uint8) {
-        return 12;
+    function returnSlashesThreshold() public view returns (uint8) {
+        return slashes_threshold;
     }
 
     /*
         This method will return the amount of rounds needed to positive timeout
     */
-    function returnRoundsLimit() public pure returns (uint8) {
-        return 12;
+    function returnRoundsLimit() public view returns (uint8) {
+        return rounds_limit;
     }
 
     /*
@@ -655,4 +649,27 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         require(success, "Withdraw to user failed");
         vault[msg.sender] -= amount;
     }
+
+    // Admin function to fine tune the protocol
+    function tuneProtocol(uint8 kind, uint256 value256, uint8 value8, uint32 value32) external onlyOwner {
+        if (kind == 0) {
+            deposit_multiplier = value256;
+        } else if (kind == 1) {
+            slashing_multiplier = value256;
+        } else if (kind == 2) {
+            deal_timeout = value32;
+        } else if (kind == 3) {
+            round_duration = value32;
+        } else if (kind == 4) {
+            min_duration = value32;
+        } else if (kind == 5) {
+            max_duration = value32;
+        } else if (kind == 6) {
+            slashes_threshold = value8;
+        } else if (kind == 7) {
+            rounds_limit = value8;
+        }
+    }
+
+    // TODO: Remove the possibility to transfer the tokens
 }
