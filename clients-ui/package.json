@@ -15,6 +15,7 @@
     "socket.io-client": "^4.5.0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
+    "vue-toastification": "^1.7.14",
     "web3": "^1.7.3",
     "web3modal": "^1.9.6"
   },

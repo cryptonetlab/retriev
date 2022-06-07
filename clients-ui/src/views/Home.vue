@@ -1,151 +1,230 @@
 <template>
-  <div class="mint-wrapper">
-    <div class="fadeIn" v-if="account">
-      <div class="left-col">
-        <h1 class="title is-3">Data retrievability Oracle</h1>
-        Welcome back {{ account }}<br />
-        Internal balance in contract is {{ balance }} ETH,
-        <a href="#" style="color: #000" @click="withdraw"
-          >💵 withdraw them from contract</a
-        >.
-        <hr />
-        <div v-if="!loading">
-          <div v-if="!showCreate">
-            <a href="#" style="color: #000" @click="showCreate = true"
-              >📄 new deal proposal</a
-            >
-            <br /><br />
-            <div v-if="deals.length > 0">
-              <b class="title is-5">Manage your deals</b><br /><br />
-              <div
-                v-for="deal in deals"
-                v-bind:key="deal.index"
-                style="
-                  font-size: 12px;
-                  border: 1px solid #eee;
-                  border-radius: 5px;
-                  padding: 20px;
-                  width: 48%;
-                  display: inline-block;
-                "
+  <section class="hero">
+    <div class="hero-body">
+      <!-- Nav Button show/hide -->
+      <div
+        @click="
+          showNavbar = !showNavbar;
+          showConsole = false;
+        "
+        class="btn-sidebar position-top-right"
+      >
+        <i v-if="!showNavbar" class="fa-solid fa-bars"></i>
+        <i v-if="showNavbar" class="fa-solid fa-times"></i>
+      </div>
+      <!-- END - Logs button show/hide -->
+
+      <!-- Logs button show/hide -->
+      <div
+        @click="
+          showConsole = !showConsole;
+          showNavbar = false;
+        "
+        class="btn-sidebar position-bottom-right"
+        :class="{ heartbeat: loading }"
+      >
+        <i class="fa-solid fa-terminal"></i>
+      </div>
+      <!-- END - Logs button show/hide -->
+
+      <!-- Navbar -->
+      <Transition
+        enter-active-class="slide-in-right"
+        leave-active-class="slide-out-right"
+      >
+        <div v-if="showNavbar" class="right-col">
+          <div class="nav-container mt-5 pt-5">
+            <button class="button is-rounded is-dark">Signup Protocol</button>
+            <div class="mt-3">
+              <a href="/help"
+                ><i class="fa-solid fa-circle-question mr-2"></i>
+                <span>Help</span></a
               >
-                Index: {{ deal.index }}<br />
-                Hash: {{ deal.ipfs_hash }}<br />
-                Value: {{ deal.value }}<br />
-                Collateral: {{ deal.collateral }}<br />
-                Active: {{ deal.active }}<br />
-                Accepted: {{ deal.accepted }}<br />
-                Timestamp request: {{ deal.timestamp_request }}<br />
-                Timestamp start: {{ deal.timestamp_start }}<br />
-                <a href="#" v-if="deal.active === false"
-                  >This deal is not active anymore</a
-                >
-                <div v-if="!isWorking">
-                  <a
-                    href="#"
-                    v-if="
-                      deal.active === true &&
-                      parseInt(deal.timestamp_start) === 0
-                    "
-                    @click="cancelDealProposal(deal.index)"
-                    >🗑️ cancel deal proposal</a
-                  >
-                  <a
-                    href="#"
-                    v-if="
-                      deal.appeal === undefined &&
-                      parseInt(deal.timestamp_start) > 0 &&
-                      new Date().getTime() < deal.timestamp_end
-                    "
-                    @click="createAppeal(deal.index)"
-                    >❌ create appeal</a
-                  >
-                  <a
-                    href="#"
-                    v-if="
-                      deal.appeal !== undefined &&
-                      parseInt(deal.appeal.deal_index) ===
-                        parseInt(deal.index) &&
-                      parseInt(deal.appeal.round) < 99
-                    "
-                    >⌛Processing round {{ deal.appeal.round }}, slashes are
-                    {{ deal.appeal.slashes }}.</a
-                  >
+            </div>
+          </div>
+        </div>
+      </Transition>
+      <!-- END - Navbar -->
+
+      <div class="container" v-if="account">
+        <div>
+          <h1 class="title is-3">Data retrievability Oracle</h1>
+          Welcome back {{ account }}<br />
+          Internal balance in contract is {{ balance }} ETH,
+          <a href="#" style="color: #000" @click="withdraw"
+            >💵 withdraw them from contract</a
+          >.
+          <hr />
+          <div v-if="!loading">
+            <!-- Show all created deals -->
+            <div v-if="!showCreate">
+              <a
+                href="#"
+                style="color: #000"
+                @click="
+                  showCreate = true;
+                  showToast();
+                "
+                >📄 new deal proposal</a
+              >
+              <div class="mt-5" v-if="deals.length > 0">
+                <b class="title is-5 mb-3">Manage your deals</b><br /><br />
+                <div>
+                  <div class="columns is-multiline">
+                    <div
+                      class="column is-12-mobile is-12-tablet is-6-desktop"
+                      v-for="deal in deals"
+                      v-bind:key="deal.index"
+                    >
+                      <div class="box-deals">
+                        <div>
+                          <p><b>Index:</b> {{ deal.index }}</p>
+                          <p><b>Hash</b>: {{ deal.ipfs_hash }}</p>
+                          <p><b>Value:</b> {{ deal.value }}</p>
+                          <p><b>Collateral:</b> {{ deal.collateral }}</p>
+                          <p><b>Active:</b> {{ deal.active }}</p>
+                          <p><b>Accepted:</b> {{ deal.accepted }}</p>
+                          <p>
+                            <b>Timestamp request:</b>
+                            {{ deal.timestamp_request }}
+                          </p>
+                          <p>
+                            <b>Timestamp start:</b> {{ deal.timestamp_start
+                            }}<br />
+                          </p>
+                          <a href="#" v-if="deal.active === false"
+                            >This deal is not active anymore</a
+                          >
+                        </div>
+                        <div v-if="!isWorking">
+                          <a
+                            href="#"
+                            v-if="
+                              deal.active === true &&
+                              parseInt(deal.timestamp_start) === 0
+                            "
+                            @click="cancelDealProposal(deal.index)"
+                            >🗑️ cancel deal proposal</a
+                          >
+                          <a
+                            href="#"
+                            v-if="
+                              deal.appeal === undefined &&
+                              parseInt(deal.timestamp_start) > 0 &&
+                              new Date().getTime() < deal.timestamp_end
+                            "
+                            @click="createAppeal(deal.index)"
+                            >❌ create appeal</a
+                          >
+                          <a
+                            href="#"
+                            v-if="
+                              deal.appeal !== undefined &&
+                              parseInt(deal.appeal.deal_index) ===
+                                parseInt(deal.index) &&
+                              parseInt(deal.appeal.round) < 99
+                            "
+                            >⌛Processing round {{ deal.appeal.round }}, slashes
+                            are {{ deal.appeal.slashes }}.</a
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <div v-if="deals.length === 0">
+                No deals or proposal, create a new one.
+              </div>
             </div>
-            <div v-if="deals.length === 0">
-              No deals or proposal, create a new one.
-            </div>
-          </div>
-          <div v-if="showCreate">
-            <a href="#" style="color: #000" @click="showCreate = false"
-              >⬅️ back</a
-            >
-            <br /><br />
-            <div v-if="isUploadingIPFS">
-              Uploading file on IPFS, please wait..
-            </div>
-            <b-field v-if="!fileToMint.name">
-              <b-upload v-model="fileToMint" expanded drag-drop>
-                <section class="section">
-                  <div class="content has-text-centered">
-                    <p>Drop your file here or click to upload</p>
-                  </div>
-                </section>
-              </b-upload>
-            </b-field>
-            <b-input v-model="dealHash" placeholder="Deal IPFS CID"></b-input>
-            <b-input
-              v-model="dealValue"
-              placeholder="Value of deal in gwei"
-            ></b-input>
-            <b-input
-              v-model="dealCollateral"
-              placeholder="Value of collateral in gwei"
-            ></b-input>
-            <br />
-            <b-field
-              v-if="parseInt(minDuration) > 0 && parseInt(maxDuration) > 0"
-              label="Duration of deal in seconds"
-            >
-              <b-slider
-                :min="parseInt(minDuration)"
-                :max="parseInt(maxDuration)"
-                :step="1"
-                v-model="dealDuration"
-              ></b-slider>
-            </b-field>
-            <!-- JUST FOR MVP, PROVIDER SHOULD BE A MULTISELECT -->
-            <b-field label="Select a provider">
-              <b-select v-model="dealProviders" placeholder="Select a provider">
-                <option
-                  v-for="provider in providers"
-                  :value="provider"
-                  :key="provider"
+            <!-- END - Show all created deals -->
+
+            <!-- Show creation deals -->
+            <div v-if="showCreate">
+              <a href="#" style="color: #000" @click="showCreate = false"
+                >⬅️ back</a
+              >
+              <br /><br />
+              <div v-if="isUploadingIPFS">
+                Uploading file on IPFS, please wait..
+              </div>
+              <b-field v-if="!fileToMint.name">
+                <b-upload v-model="fileToMint" expanded drag-drop>
+                  <section class="section">
+                    <div class="content has-text-centered">
+                      <p>Drop your file here or click to upload</p>
+                    </div>
+                  </section>
+                </b-upload>
+              </b-field>
+              <b-input v-model="dealHash" placeholder="Deal IPFS CID"></b-input>
+              <b-input
+                v-model="dealValue"
+                placeholder="Value of deal in gwei"
+              ></b-input>
+              <b-input
+                v-model="dealCollateral"
+                placeholder="Value of collateral in gwei"
+              ></b-input>
+              <br />
+              <b-field
+                v-if="parseInt(minDuration) > 0 && parseInt(maxDuration) > 0"
+                label="Duration of deal in seconds"
+              >
+                <b-slider
+                  :min="parseInt(minDuration)"
+                  :max="parseInt(maxDuration)"
+                  :step="1"
+                  v-model="dealDuration"
+                ></b-slider>
+              </b-field>
+              <!-- JUST FOR MVP, PROVIDER SHOULD BE A MULTISELECT -->
+              <b-field label="Select a provider">
+                <b-select
+                  v-model="dealProviders"
+                  placeholder="Select a provider"
                 >
-                  {{ provider }}
-                </option>
-              </b-select>
-            </b-field>
-            <br />
-            <div class="btn" v-if="!isWorking" @click="createDealProposal()">
-              Create deal proposal
+                  <option
+                    v-for="provider in providers"
+                    :value="provider"
+                    :key="provider"
+                  >
+                    {{ provider }}
+                  </option>
+                </b-select>
+              </b-field>
+              <br />
+              <div class="btn" v-if="!isWorking" @click="createDealProposal()">
+                Create deal proposal
+              </div>
+              <div v-if="isWorking">{{ workingMessage }}</div>
             </div>
-            <div v-if="isWorking">{{ workingMessage }}</div>
+            <!-- END - Show creation deals -->
+          </div>
+          <div v-if="loading">
+            Loading informations from blockchain, please wait..
           </div>
         </div>
-        <div v-if="loading">
-          Loading informations from blockchain, please wait..
-        </div>
+
+        <!-- Application Logs -->
+        <Transition
+          enter-active-class="slide-in-right"
+          leave-active-class="slide-out-right"
+        >
+          <div v-if="showConsole" class="right-col" v-html="logs"></div>
+        </Transition>
+        <!-- END - Application Logs -->
       </div>
-      <div class="right-col" v-html="logs"></div>
+      <div
+        class="container has-text-centered"
+        v-if="!account"
+        style="padding: 40vh 0"
+      >
+        <p class="title mb-0">Please connect your wallet first!<br /><br /></p>
+        <div class="btn" @click="connect()">Connect Wallet</div>
+      </div>
     </div>
-    <div v-if="!account" style="padding: 40vh 0">
-      Please connect your wallet first!<br /><br />
-      <div class="btn" @click="connect()">Connect Wallet</div>
-    </div>
-  </div>
+  </section>
 </template>
 <script>
 import Web3 from "web3";
@@ -185,6 +264,9 @@ export default {
       fileToMint: {},
       isUploadingIPFS: false,
       slashingMultiplier: 10,
+      // FOR LAYOUT
+      showConsole: false,
+      showNavbar: false,
     };
   },
   watch: {
@@ -279,6 +361,7 @@ export default {
       app.slashingMultiplier = parseInt(
         await contract.methods.slashing_multiplier().call()
       );
+
       app.log("Found " + totalDeals + " deals.");
       for (let k = 0; k <= totalDeals; k++) {
         const deal = await contract.methods.deals(k).call();
@@ -400,8 +483,36 @@ export default {
                 })
                 .on("transactionHash", (tx) => {
                   app.workingMessage = "Found pending transaction at " + tx;
+                  this.$toast.warning("Found pending transaction at:" + tx, {
+                    position: "top-right",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: true,
+                    hideProgressBar: true,
+                    closeButton: "button",
+                    icon: "fa-solid fa-arrow-right-arrow-left",
+                    rtl: false,
+                  });
                 });
-              alert("Deal proposal created!");
+
+              this.$toast("Deal proposal created!", {
+                position: "top-right",
+                timeout: 5000,
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: true,
+                hideProgressBar: true,
+                closeButton: "button",
+                icon: "fa-solid fa-check",
+                rtl: false,
+              });
               app.loadState();
               app.showCreate = false;
               app.dealHash = "";
@@ -512,11 +623,51 @@ export default {
         query: { identity: app.account },
       });
       socket.on("slash", (message) => {
+        // this.$toast(
+        //   ("Appeal:", message.appeal, "Received:", message.received),
+        //   {
+        //     position: "top-right",
+        //     timeout: 5000,
+        //     closeOnClick: true,
+        //     pauseOnFocusLoss: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        //     draggablePercent: 0.6,
+        //     showCloseButtonOnHover: true,
+        //     hideProgressBar: true,
+        //     closeButton: "button",
+        //     icon: "fa-solid fa-check",
+        //     rtl: false,
+        //   }
+        // );
         app.log(JSON.parse(message));
+        app.log("STASH, I'M HERE");
+        console.log("STASH, I'M HERE");
       });
       socket.on("message", (message) => {
         app.log(JSON.parse(message));
+        app.log("MESSAGE, I'M HERE");
+        console.log("MESSAGE, I'M HERE");
       });
+    },
+    showToast() {
+      this.$toast(
+        '{"message":"{"signature":"0xd1cfa3c6a351c59c07748538ccc3838eac65218c4ef02ab89c0fb8e049b87a2716b2b6e001089235b41b52b4e13c1f7339f78b795f5ae6de72171787a7bf30ce1c","appeal":"10","received":false}","signature":"0xcc793e0713c7846476f865c8e19e5723551b25fb10edd149e5cdb2dfbe3b89a5527fb3abd113717a83420bd5934cd98b10a94799d6540b81d659e205964086721c"}',
+        {
+          position: "top-right",
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: true,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: "fa-solid fa-check",
+          rtl: false,
+        }
+      );
     },
   },
   mounted() {

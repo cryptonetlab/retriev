@@ -7,7 +7,7 @@
 *, .input{
   font-family: "JetBrains Mono", monospace;
 }
-body{
+/* body{
   overflow:hidden;
 }
 .left-col {
@@ -32,5 +32,5 @@ body{
   text-align: justify;
   word-break: break-all;
   font-size:12px;
-}
+} */
 </style>
