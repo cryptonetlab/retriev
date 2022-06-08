@@ -28,7 +28,14 @@ contract TokenRender {
         bool canceled;
     }
 
-    function render(uint256 deal_index, string memory deal_uri, uint256 value, uint256 timestamp_start, uint256 duration, bool active) public pure returns (string memory) {
+    function render(
+        uint256 deal_index,
+        string memory deal_uri,
+        uint256 value,
+        uint256 timestamp_start,
+        uint256 duration,
+        bool canceled
+    ) public pure returns (string memory) {
         string[12] memory parts;
         parts[
             0
@@ -44,10 +51,12 @@ contract TokenRender {
         parts[8] = Strings.toString(duration);
         parts[9] = '</text><text x="10" y="490" class="base">STATUS:';
         // TODO: Check if active is needed or not
-        if (active) {
+        if (timestamp_start > 0) {
             parts[10] = "ACTIVE";
+        } else if (canceled == false) {
+            parts[10] = "CANCELED";
         } else {
-            parts[10] = "NOT ACTIVE";
+            parts[10] = "N/A";
         }
         parts[11] = "</text></svg>";
 

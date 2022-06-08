@@ -22,8 +22,6 @@ interface IRENDER is IERC165 {
         mapping(address => bool) providers;
         // Address of owner
         address owner;
-        // Describe if deal is active or not
-        bool active;
         // Describe if deal is canceled or not
         bool canceled;
     }
@@ -34,6 +32,6 @@ interface IRENDER is IERC165 {
         uint256 value,
         uint256 timestamp_start,
         uint256 duration,
-        bool active
+        bool canceled
     ) external pure returns (string memory);
 }

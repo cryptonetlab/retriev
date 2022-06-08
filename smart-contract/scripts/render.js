@@ -3,12 +3,12 @@ const fs = require('fs');
 
 async function main() {
   const configs = JSON.parse(fs.readFileSync(process.env.CONFIG).toString())
-  console.log('Deploying contract..')
+  console.log('Deploying render contract..')
   const Contract = await hre.ethers.getContractFactory("TokenRender");
   const contract = await Contract.deploy();
   console.log('Deploy transaction is: ' + contract.deployTransaction.hash)
   await contract.deployed();
-  console.log("Contract deployed at:", contract.address);
+  console.log("Render contract deployed at:", contract.address);
   // Fix value in original contract
   const ABI = JSON.parse(fs.readFileSync('./artifacts/contracts/' + configs.contract_name + '.sol/' + configs.contract_name + '.json').toString())
   const provider = new ethers.providers.JsonRpcProvider(configs.provider);

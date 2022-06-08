@@ -47,8 +47,6 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         mapping(address => bool) providers;
         // Address of owner
         address owner;
-        // Describe if deal is active or not
-        bool active;
         // Describe if deal is canceled or not
         bool canceled;
     }
@@ -147,7 +145,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             deal.value,
             deal.timestamp_start,
             deal.duration,
-            deal.active
+            deal.canceled
         );
         return output;
     }
@@ -341,7 +339,6 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         // Creating the deal mapping
         deals[index].timestamp_request = block.timestamp;
         deals[index].owner = msg.sender;
-        deals[index].active = true;
         deals[index].deal_uri = _deal_uri;
         deals[index].duration = duration;
         deals[index].collateral = collateral;
@@ -374,7 +371,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             "Deal was accepted, can't cancel"
         );
         deals[deal_index].canceled = true;
-        deals[deal_index].active = false;
+        deals[deal_index].timestamp_start = 0;
         // Remove funds from internal vault giving back to user
         // user will be able to withdraw funds later
         vault[address(this)] -= deals[deal_index].value;
@@ -399,36 +396,22 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     function acceptDealProposal(uint256 deal_index) external nonReentrant {
         require(
             block.timestamp <
-                (deals[deal_index].timestamp_request + deal_timeout),
-            "Deal expired, can't accept anymore"
+                (deals[deal_index].timestamp_request + deal_timeout) &&
+                !deals[deal_index].canceled && deals[deal_index].providers[msg.sender],
+            "Deal expired, canceled or not allowed to accept"
         );
-        require(
-            deals[deal_index].providers[msg.sender],
-            "Only selected providers can accept deal"
-        );
-        // TODO: find another way to chheck if the deal is accepted or not
-        /*require(
-            ownerOf(deal_index) == address(0),
-            "Deal proposal was accepted yet"
-        );*/
-        uint256 deposit_margin = deals[deal_index].value * deposit_multiplier;
         require(
             vault[msg.sender] >= deals[deal_index].collateral &&
-                vault[msg.sender] >= deposit_margin,
+                vault[msg.sender] >= (deals[deal_index].value * deposit_multiplier),
             "Can't accept because you don't have enough balance in contract"
         );
         // Mint the nft to the provider
         _mint(msg.sender, deal_index);
-        // TODO: check if active can be exchanged with _exists()
-        deals[deal_index].active = true;
-        // deals[deal_index].accepted = msg.sender;
+        // Activate contract
         deals[deal_index].timestamp_start = block.timestamp;
         // Deposit collateral to contract
         vault[msg.sender] -= deals[deal_index].collateral;
         vault[address(this)] += deals[deal_index].collateral;
-        // Create the NFT for the provider
-        // nftCounter.increment();
-        // nft_to_deal[nftCounter.current()] = deal_index;
     }
 
     /*
@@ -436,7 +419,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     */
     function redeemDeal(uint256 deal_index) external nonReentrant {
         require(ownerOf(deal_index) == msg.sender, "Only provider can redeem");
-        require(deals[deal_index].active, "Deal is not active");
+        require(deals[deal_index].timestamp_start > 0, "Deal is not active");
         uint256 timeout = deals[deal_index].timestamp_start +
             deals[deal_index].duration;
         require(block.timestamp > timeout, "Deal didn't ended, can't redeem");
@@ -456,7 +439,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         vault[address(this)] -= deals[deal_index].collateral;
         vault[msg.sender] += deals[deal_index].collateral;
         // Close the deal
-        deals[deal_index].active = false;
+        deals[deal_index].timestamp_start = 0;
         emit DealRedeemed(deal_index);
     }
 
@@ -464,10 +447,13 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         This method will allow referees to create an appeal
     */
     function createAppeal(uint256 deal_index) external payable nonReentrant {
-        require(deals[deal_index].active, "Deal is not active");
-        uint256 timeout = deals[deal_index].timestamp_start +
-            deals[deal_index].duration;
-        require(block.timestamp < timeout, "Deal ended, can't create appeals");
+        require(deals[deal_index].timestamp_start > 0, "Deal is not active");
+        require(
+            block.timestamp <
+                (deals[deal_index].timestamp_start +
+                    deals[deal_index].duration),
+            "Deal ended, can't create appeals"
+        );
         require(
             deals[deal_index].owner == msg.sender,
             "Only owner can create appeal"
@@ -516,7 +502,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     ) external {
         uint256 appeal_index = active_appeals[deals[deal_index].deal_uri];
         uint256 round = getRound(appeal_index);
-        require(deals[deal_index].active, "Deal is not active");
+        require(deals[deal_index].timestamp_start > 0, "Deal is not active");
         require(appeals[appeal_index].active, "Appeal is not active");
         require(
             referees[msg.sender].active,
@@ -556,7 +542,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         );
         emit AppealSlashed(appeal_index);
         if (appeals[appeal_index].slashes >= returnSlashesThreshold()) {
-            deals[deal_index].active = false;
+            deals[deal_index].timestamp_start = 0;
             appeals[appeal_index].active = false;
             // Return value of deal back to owner
             vault[address(this)] -= deals[deal_index].value;
