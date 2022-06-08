@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "./utils/ERC721.sol";
+import "./libs/ERC721.sol";
 import "./functions/render/IRENDER.sol";
 
 /**

@@ -15,6 +15,7 @@ async function main() {
   const wallet = new ethers.Wallet(configs.owner_key).connect(provider)
   const dr_contract = new ethers.Contract(configs.contract_address, ABI.abi, wallet)
   await dr_contract.tuneAddresses(0, contract.address)
+  console.log('Address saved in contract')
 }
 
 main()
