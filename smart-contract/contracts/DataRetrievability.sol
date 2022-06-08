@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "./utils/ERC721.sol";
 import "./functions/render/IRENDER.sol";
 
 /**
@@ -148,6 +148,26 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             deal.canceled
         );
         return output;
+    }
+
+    function balanceOf(address _owner)
+        public
+        view
+        virtual
+        override
+        returns (uint256)
+    {
+        uint256 totalTkns = totalSupply();
+        uint256 resultIndex = 0;
+        uint256 tnkId;
+
+        for (tnkId = 1; tnkId <= totalTkns; tnkId++) {
+            if (ownerOf(tnkId) == _owner) {
+                resultIndex++;
+            }
+        }
+
+        return resultIndex;
     }
 
     /*
@@ -397,12 +417,14 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         require(
             block.timestamp <
                 (deals[deal_index].timestamp_request + deal_timeout) &&
-                !deals[deal_index].canceled && deals[deal_index].providers[msg.sender],
+                !deals[deal_index].canceled &&
+                deals[deal_index].providers[msg.sender],
             "Deal expired, canceled or not allowed to accept"
         );
         require(
             vault[msg.sender] >= deals[deal_index].collateral &&
-                vault[msg.sender] >= (deals[deal_index].value * deposit_multiplier),
+                vault[msg.sender] >=
+                (deals[deal_index].value * deposit_multiplier),
             "Can't accept because you don't have enough balance in contract"
         );
         // Mint the nft to the provider
@@ -613,6 +635,4 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             token_render = IRENDER(addy);
         }
     }
-
-    // TODO: Remove the possibility to transfer the tokens
 }
