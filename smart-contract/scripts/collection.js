@@ -12,7 +12,7 @@ async function main() {
     const totalSupply = await contract.totalSupply()
     console.log('TOTAL SUPPLY IS: ' + totalSupply)
     let ended = false
-    let i = 0
+    let i = 1
     let errors = 0
     while (!ended) {
         try {
@@ -21,7 +21,7 @@ async function main() {
             console.log('TOKENID: ' + i, 'OWNER IS', owner)
             console.log(Buffer.from(uri.split('base64,')[1], 'base64').toString())
             const decodedStr = JSON.parse(Buffer.from(uri.split('base64,')[1], 'base64').toString());
-            console.log(decodedStr)
+            console.log(JSON.parse(decodedStr))
             console.log('--')
             i++
             errors = 0

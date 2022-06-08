@@ -114,7 +114,7 @@ contract TokenRender {
                     string(
                         abi.encodePacked(
                             '{"name": "DEAL #',
-                            deal_index,
+                            Strings.toString(deal_index),
                             '", "description": "Retriev deal token", "image": "data:image/svg+xml;base64,',
                             Base64.encode(bytes(output)),
                             '"}'
