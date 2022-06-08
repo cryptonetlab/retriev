@@ -12,7 +12,7 @@ async function main() {
     const totalSupply = await contract.totalSupply()
     console.log('TOTAL SUPPLY IS: ' + totalSupply)
     let ended = false
-    let i = 1
+    let i = 0
     let errors = 0
     while (!ended) {
         try {

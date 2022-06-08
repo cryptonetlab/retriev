@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "./Base64.sol";
+import "./libs/render/IRENDER.sol";
 
 /**
  * @title DataRetrievability
@@ -31,8 +31,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
 
     // Defining deal struct
     struct Deal {
-        // Hash subject of the deal
-        string ipfs_hash;
+        // subject of the deal
+        string deal_uri;
         // Timestamp request
         uint256 timestamp_request;
         // Starting timestamp
@@ -45,8 +45,6 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         uint256 collateral;
         // Address of provider
         mapping(address => bool) providers;
-        // Store provider who accepted the deal
-        address accepted;
         // Address of owner
         address owner;
         // Describe if deal is active or not
@@ -68,7 +66,9 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         // Adding block timestamp to calculate timeout
         uint256 origin_timestamp;
     }
-
+    // Render contract
+    address render_contract;
+    IRENDER private token_render;
     // Mapping referees addresses
     mapping(address => Referee) public referees;
     // Mapping referees providers
@@ -101,14 +101,11 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     uint32 public max_duration = 43_200;
     uint8 public slashes_threshold = 12;
     uint8 public rounds_limit = 12;
-    // NFT variables
-    mapping(uint256 => uint256) public nft_to_deal;
-    Counters.Counter private nftCounter;
     // Event emitted when new deal is created
     event DealProposalCreated(
         uint256 index,
         address[] providers,
-        string ipfs_hash
+        string deal_uri
     );
     // Event emitted when a deal is accepted
     event DealProposalAccepted(uint256 index);
@@ -121,7 +118,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     // Event emitted when a deal is invalidated
     event DealInvalidated(uint256 index);
     // Event emitted when new appeal is created
-    event AppealCreated(uint256 index, address provider, string ipfs_hash);
+    event AppealCreated(uint256 index, address provider, string deal_uri);
     // Event emitted when a slash message is recorded
     event AppealSlashed(uint256 index);
 
@@ -130,7 +127,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     }
 
     function totalSupply() public view returns (uint256) {
-        return nftCounter.current();
+        return dealCounter.current();
     }
 
     function totalDeals() public view returns (uint256) {
@@ -143,61 +140,15 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         override
         returns (string memory)
     {
-        string[12] memory parts;
-        Deal storage deal = deals[nft_to_deal[tokenId]];
-        parts[
-            0
-        ] = '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 500 500"><style>.base { fill: #fff; font-family: monospace; font-size: 14px; }</style><rect width="100%" height="100%" fill="#000" />';
-        // TODO: Add logo here
-        parts[1] = '<text x="10" y="410" class="base">CID: ';
-        parts[2] = deal.ipfs_hash;
-        parts[3] = '</text><text x="10" y="430" class="base">VALUE WEI:';
-        parts[4] = Strings.toString(deal.value);
-        parts[5] = '</text><text x="10" y="450" class="base">STARTED AT:';
-        parts[6] = Strings.toString(deal.timestamp_start);
-        parts[7] = '</text><text x="10" y="470" class="base">DURATION:';
-        parts[8] = Strings.toString(deal.duration);
-        parts[9] = '</text><text x="10" y="490" class="base">STATUS:';
-        if (deal.active) {
-            parts[10] = "ACTIVE";
-        } else {
-            parts[10] = "NOT ACTIVE";
-        }
-        parts[11] = "</text></svg>";
-
-        string memory output = string(
-            abi.encodePacked(
-                parts[0],
-                parts[1],
-                parts[2],
-                parts[3],
-                parts[4],
-                parts[5],
-                parts[6],
-                parts[7]
-            )
+        Deal storage deal = deals[tokenId];
+        string memory output = token_render.render(
+            tokenId,
+            deal.deal_uri,
+            deal.value,
+            deal.timestamp_start,
+            deal.duration,
+            deal.active
         );
-        output = string(
-            abi.encodePacked(output, parts[8], parts[9], parts[10], parts[11])
-        );
-
-        string memory json = Base64.encode(
-            bytes(
-                string(
-                    abi.encodePacked(
-                        '{"name": "DEAL #',
-                        Strings.toString(nft_to_deal[tokenId]),
-                        '", "description": "Retriev deal token", "image": "data:image/svg+xml;base64,',
-                        Base64.encode(bytes(output)),
-                        '"}'
-                    )
-                )
-            )
-        );
-        output = string(
-            abi.encodePacked("data:application/json;base64,", json)
-        );
-
         return output;
     }
 
@@ -370,7 +321,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         This method will allow client to create a deal
     */
     function createDealProposal(
-        string memory _ipfs_hash,
+        string memory _deal_uri,
         uint256 duration,
         uint256 collateral,
         address[] memory _providers
@@ -391,7 +342,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         deals[index].timestamp_request = block.timestamp;
         deals[index].owner = msg.sender;
         deals[index].active = true;
-        deals[index].ipfs_hash = _ipfs_hash;
+        deals[index].deal_uri = _deal_uri;
         deals[index].duration = duration;
         deals[index].collateral = collateral;
         deals[index].value = msg.value;
@@ -405,13 +356,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         }
         // When created the amount of money is owned by sender
         vault[address(this)] += msg.value;
-        // Create the NFT for the client
-        nftCounter.increment();
-        uint256 newTokenId = nftCounter.current();
-        nft_to_deal[newTokenId] = index;
-        _mint(msg.sender, newTokenId);
         // Emit event
-        emit DealProposalCreated(index, _providers, _ipfs_hash);
+        emit DealProposalCreated(index, _providers, _deal_uri);
     }
 
     /*
@@ -424,7 +370,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         );
         require(!deals[deal_index].canceled, "Deal canceled yet");
         require(
-            deals[deal_index].accepted == address(0),
+            ownerOf(deal_index) == address(0),
             "Deal was accepted, can't cancel"
         );
         deals[deal_index].canceled = true;
@@ -451,53 +397,51 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         This method will allow a provider to accept a deal
     */
     function acceptDealProposal(uint256 deal_index) external nonReentrant {
-        uint256 timeout = deals[deal_index].timestamp_request + deal_timeout;
         require(
-            block.timestamp < timeout,
+            block.timestamp <
+                (deals[deal_index].timestamp_request + deal_timeout),
             "Deal expired, can't accept anymore"
         );
         require(
             deals[deal_index].providers[msg.sender],
             "Only selected providers can accept deal"
         );
-        require(
-            deals[deal_index].accepted == address(0),
+        // TODO: find another way to chheck if the deal is accepted or not
+        /*require(
+            ownerOf(deal_index) == address(0),
             "Deal proposal was accepted yet"
-        );
+        );*/
         uint256 deposit_margin = deals[deal_index].value * deposit_multiplier;
         require(
             vault[msg.sender] >= deals[deal_index].collateral &&
                 vault[msg.sender] >= deposit_margin,
             "Can't accept because you don't have enough balance in contract"
         );
+        // Mint the nft to the provider
+        _mint(msg.sender, deal_index);
+        // TODO: check if active can be exchanged with _exists()
         deals[deal_index].active = true;
-        deals[deal_index].accepted = msg.sender;
+        // deals[deal_index].accepted = msg.sender;
         deals[deal_index].timestamp_start = block.timestamp;
         // Deposit collateral to contract
         vault[msg.sender] -= deals[deal_index].collateral;
         vault[address(this)] += deals[deal_index].collateral;
-        // Create the NFT for the client
-        nftCounter.increment();
-        uint256 newTokenId = nftCounter.current();
-        nft_to_deal[newTokenId] = deal_index;
-        _mint(msg.sender, newTokenId);
-        emit DealProposalAccepted(deal_index);
+        // Create the NFT for the provider
+        // nftCounter.increment();
+        // nft_to_deal[nftCounter.current()] = deal_index;
     }
 
     /*
         This method will allow provider to withdraw funds for deal
     */
     function redeemDeal(uint256 deal_index) external nonReentrant {
-        require(
-            deals[deal_index].accepted == msg.sender,
-            "Only provider can redeem"
-        );
+        require(ownerOf(deal_index) == msg.sender, "Only provider can redeem");
         require(deals[deal_index].active, "Deal is not active");
         uint256 timeout = deals[deal_index].timestamp_start +
             deals[deal_index].duration;
         require(block.timestamp > timeout, "Deal didn't ended, can't redeem");
         require(
-            getRound(active_appeals[deals[deal_index].ipfs_hash]) == 99,
+            getRound(active_appeals[deals[deal_index].deal_uri]) == 99,
             "Found an active appeal, can't redeem"
         );
         // QUESTION: How we detect the amount of value sent to provider
@@ -530,9 +474,9 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         );
         // Check if appeal exists or is expired
         require(
-            active_appeals[deals[deal_index].ipfs_hash] == 0 ||
+            active_appeals[deals[deal_index].deal_uri] == 0 ||
                 // Check if appeal is expired
-                getRound(active_appeals[deals[deal_index].ipfs_hash]) == 99,
+                getRound(active_appeals[deals[deal_index].deal_uri]) == 99,
             "Appeal exists yet for provided hash"
         );
         // Be sure sent amount is exactly the appeal fee
@@ -549,7 +493,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         appealCounter.increment();
         uint256 index = appealCounter.current();
         // Storing appeal status
-        active_appeals[deals[deal_index].ipfs_hash] = index;
+        active_appeals[deals[deal_index].deal_uri] = index;
         // Creating appeal
         appeals[index].deal_index = deal_index;
         appeals[index].active = true;
@@ -557,8 +501,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         // Emit appeal created event
         emit AppealCreated(
             index,
-            deals[deal_index].accepted,
-            deals[deal_index].ipfs_hash
+            ownerOf(deal_index),
+            deals[deal_index].deal_uri
         );
     }
 
@@ -570,7 +514,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         address[] memory _referees,
         bytes[] memory _signatures
     ) external {
-        uint256 appeal_index = active_appeals[deals[deal_index].ipfs_hash];
+        uint256 appeal_index = active_appeals[deals[deal_index].deal_uri];
         uint256 round = getRound(appeal_index);
         require(deals[deal_index].active, "Deal is not active");
         require(appeals[appeal_index].active, "Appeal is not active");
@@ -653,7 +597,12 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     }
 
     // Admin function to fine tune the protocol
-    function tuneProtocol(uint8 kind, uint256 value256, uint8 value8, uint32 value32) external onlyOwner {
+    function tuneProtocol(
+        uint8 kind,
+        uint256 value256,
+        uint8 value8,
+        uint32 value32
+    ) external onlyOwner {
         if (kind == 0) {
             deposit_multiplier = value256;
         } else if (kind == 1) {
@@ -670,6 +619,12 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             slashes_threshold = value8;
         } else if (kind == 7) {
             rounds_limit = value8;
+        }
+    }
+
+    function tuneAddresses(uint8 kind, address addy) external onlyOwner {
+        if (kind == 0) {
+            token_render = IRENDER(addy);
         }
     }
 
