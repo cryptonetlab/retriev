@@ -1,10 +1,12 @@
 <template>
   <div class="home">
     <Navbar />
-    <div class="wrapper-page">
-      <div class="container-fluid">
+    <div class="wrapper-page" :class="{ 'padding-5x': isDesktop }">
+      <div :class="{ container: !isDesktop, 'container-fluid': isDesktop }">
+        <div class="gap"></div>
+        <div v-if="isDesktop" class="gap"></div>
         <div class="row">
-          <div class="col-12 col-md-6 col-lg-6 col-xl-5">
+          <div class="col-12 col-md-6 col-lg-6">
             <h1 class="m-0">
               Lorem ipsum provider digital signature provider peer-to-peer sats
               hashrate hash.

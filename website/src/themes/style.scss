@@ -23,13 +23,11 @@ body {
 
 .wrapper-page {
   position: relative;
-  overflow-y: auto;
-  min-height: 100vh;
-  height: auto;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  @include padding-x-container();
+  padding: 100px 0;
+}
+
+.padding-5x {
+  padding: 0 5vw;
 }
 
 // ================> FONTS <==================

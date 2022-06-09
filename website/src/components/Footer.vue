@@ -1,8 +1,8 @@
 <template>
   <div id="custom-footer">
-    <div class="container-fluid pt-5 pb-5">
-      <div class="row">
-        <div class="col-8 col-lg-6">
+    <div class="container-fluid pt-4">
+      <div class="row justify-content-between">
+        <div class="col-8 col-md-10 col-lg-6">
           <div class="d-flex flex-column flex-lg-row align-items-start">
             <div class="inline">
               <h3>PROJECTNAME</h3>
@@ -15,7 +15,7 @@
             </div>
           </div>
         </div>
-        <div class="col-2 offset-1 col-lg-2 offset-lg-4">
+        <div class="col-2 col-md-2 offset-md-0 offset-1">
           <ul>
             <li v-if="isMobile">
               <h3>LINKS</h3>

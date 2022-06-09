@@ -1,9 +1,9 @@
 <template>
   <div class="about">
+    <Navbar />
     <div class="wrapper-page">
-      <Navbar />
-      <div v-if="!isDesktop" class="gap"></div>
-      <div class="container">
+      <div v-if="!isDesktop && !isTablet" class="gap"></div>
+      <div class="container" :class="{ 'mt-5 mb-5': isDesktop && isTablet }">
         <div class="row" :class="{ 'mb-3': isMobile }">
           <div class="col-12 col-md-9 col-lg-6">
             <h3 class="mb-3">WHAT IS PROJECT NAME?</h3>
@@ -43,8 +43,8 @@
       </div>
       <div v-if="!isDesktop" class="gap"></div>
       <div v-if="!isDesktop" class="gap"></div>
-      <Footer />
     </div>
+    <Footer />
   </div>
 </template>
 
