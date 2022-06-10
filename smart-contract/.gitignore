@@ -6,6 +6,7 @@ typechain
 
 #Hardhat files
 cache
+out
 artifacts
 configs/*
 !configs/example.json
