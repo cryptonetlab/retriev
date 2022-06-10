@@ -1,0 +1,3 @@
+[submodule "smart-contract/foundry_tests/lib/forge-std"]
+	path = smart-contract/foundry_tests/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
