@@ -2,7 +2,6 @@
   <div class="about">
     <Navbar />
     <div class="wrapper-page">
-      <div v-if="!isDesktop && !isTablet" class="gap"></div>
       <div class="container" :class="{ 'mt-5 mb-5': isDesktop && isTablet }">
         <div class="row" :class="{ 'mb-3': isMobile }">
           <div class="col-12 col-md-9 col-lg-6">
@@ -41,7 +40,6 @@
           </div>
         </div>
       </div>
-      <div v-if="!isDesktop" class="gap"></div>
       <div v-if="!isDesktop" class="gap"></div>
     </div>
     <Footer />

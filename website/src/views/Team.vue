@@ -1,0 +1,79 @@
+<template>
+  <div class="team">
+    <Navbar />
+    <div class="wrapper-page">
+      <div class="container" :class="{ 'mt-5 mb-5': isDesktop && isTablet }">
+        <div class="row" :class="{ 'mb-3': isMobile }">
+          <div class="col-12 col-md-9 col-lg-6">
+            <h3 class="mb-3">TEAM</h3>
+            <p>
+              Lorem ipsums block height, stacking sats hard fork UTXO public key
+              Merkle Tree double-spend problem stacking sats transaction.
+            </p>
+          </div>
+        </div>
+        <div v-if="!isMobile" class="gap"></div>
+        <div class="row mb-5">
+          <div
+            class="col-12 col-md-5 col-lg-4 offset-lg-2"
+            :class="{ 'mb-3': isMobile }"
+          >
+            <p class="m-0"><b>Lorem Ipsum</b></p>
+            <p>Lorem ipsums block height</p>
+          </div>
+          <div class="col-12 col-md-5 col-lg-4" :class="{ 'mb-3': isMobile }">
+            <p class="m-0"><b>Lorem Ipsum</b></p>
+            <p>Lorem ipsums block height</p>
+          </div>
+          <div
+            class="col-12 col-md-5 col-lg-4 offset-lg-2"
+            :class="{ 'mb-3': isMobile }"
+          >
+            <p class="m-0"><b>Lorem Ipsum</b></p>
+            <p>Lorem ipsums block height</p>
+          </div>
+          <div class="col-12 col-md-5 col-lg-4" :class="{ 'mb-3': isMobile }">
+            <p class="m-0"><b>Lorem Ipsum</b></p>
+            <p>Lorem ipsums block height</p>
+          </div>
+          <div
+            class="col-12 col-md-5 col-lg-4 offset-lg-2"
+            :class="{ 'mb-3': isMobile }"
+          >
+            <p class="m-0"><b>Lorem Ipsum</b></p>
+            <p>Lorem ipsums block height</p>
+          </div>
+          <div class="col-12 col-md-5 col-lg-4" :class="{ 'mb-3': isMobile }">
+            <p class="m-0"><b>Lorem Ipsum</b></p>
+            <p>Lorem ipsums block height</p>
+          </div>
+          <div
+            class="col-12 col-md-5 col-lg-4 offset-lg-2"
+            :class="{ 'mb-3': isMobile }"
+          >
+            <p class="m-0"><b>Lorem Ipsum</b></p>
+            <p>Lorem ipsums block height</p>
+          </div>
+        </div>
+      </div>
+      <div v-if="!isDesktop" class="gap"></div>
+    </div>
+    <Footer />
+  </div>
+</template>
+
+<script>
+// @ is an alias to /src
+import Navbar from "@/components/Navbar.vue";
+import Footer from "@/components/Footer.vue";
+import checkViewport from "@/mixins/checkViewport";
+
+export default {
+  name: "Team",
+  mixins: [checkViewport],
+  components: {
+    Navbar,
+    Footer,
+  },
+};
+</script>
