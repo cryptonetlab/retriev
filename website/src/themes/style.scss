@@ -87,6 +87,7 @@ h3 {
   margin: 0;
   z-index: 999;
   @include padding-x-container();
+  background: rgba($color: white, $alpha: 0.8);
 
   .navbar-mobile {
     background-color: var(--bg-color-primary);

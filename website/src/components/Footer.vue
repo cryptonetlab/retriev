@@ -21,7 +21,7 @@
               <h3>LINKS</h3>
             </li>
             <li>
-              <a href="/team">TEAM</a>
+              <a href="/#/team">TEAM</a>
             </li>
             <li>
               <a href="">NEWS</a>

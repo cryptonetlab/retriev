@@ -1,9 +1,4 @@
 <template>
-  <!-- =================== NAV ======================-->
-  <!-- BOOTSTRAP È STRETTAMENTE NECESSARIO -->
-  <!-- Questo componente non ha bisogno di css ma comunque è presente un foglio css di base /themes/style.scss e resp.scss se si vuole integrarlo. In ogni caso NON È NECESSARIO per il funzionamento.
-  Lo style in basso serve ad importare le animazioni - NECESSARIO -->
-
   <div class="header" id="navHead">
     <nav class="navbar navbar-expand-lg p-0">
       <div class="container-fluid p-4">
@@ -28,13 +23,13 @@
           >
             <ul class="navbar-nav mb-2 mb-lg-0 me-4" role="tablist">
               <li class="nav-item">
-                <a class="nav-link me-3" href="/explore"> GitHub</a>
+                <a class="nav-link me-3" href="/"> GitHub</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link me-3" href="/collections">Litepaper</a>
+                <a class="nav-link me-3" href="/">Litepaper</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link me-3" href="/about">About</a>
+                <a class="nav-link me-3" href="/#/about">About</a>
               </li>
             </ul>
           </div>
@@ -45,7 +40,9 @@
           leave-active-class="animate__animated animate__fadeOutUp"
         >
           <div v-show="isDesktop" id="btn-group-container">
-            <div class="custom-btn-primary">MVP</div>
+            <a href="https://dapp.pldr.dev">
+              <div class="custom-btn-primary">MVP</div></a
+            >
           </div>
         </Transition>
       </div>
