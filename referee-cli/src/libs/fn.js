@@ -82,6 +82,7 @@ const processappeal = async (node, index) => {
                         // Sending slashed message to peers
                         const message = JSON.stringify({
                             appeal: index.toString(),
+                            action: "SLASHED",
                             received: false,
                             proof: "SOME_KIND_OF_PROOF" // TODO: Add some kind of cryptographical proof to be sure referee received the file
                         })
