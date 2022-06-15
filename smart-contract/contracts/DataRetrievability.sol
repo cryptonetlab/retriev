@@ -75,8 +75,10 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     mapping(uint256 => Deal) public deals;
     // Mapping appeals
     mapping(uint256 => Appeal) public appeals;
-    // Mapping active appeals using IPFS hash as index
+    // Mapping active appeals using deal_uri as index
     mapping(string => uint256) public active_appeals;
+    // Mapping all appeals using deal_index as index
+    mapping(uint256 => uint8) public tot_appeals;
     // Referee, Providers and Clients vault
     mapping(address => uint256) public vault;
     // Array of active referees
@@ -86,10 +88,11 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     // Protocol address
     address protocol_address;
     // Multipliers
-    uint256 public deposit_multiplier = 100;
-    uint256 public slashing_multiplier = 10;
+    uint256 public slashing_multiplier = 1000;
+    uint8 public committee_divider = 4;
     // Timeout to accept a deal (1 week)
     uint32 public deal_timeout = 86_400;
+    uint8 public max_appeals = 5;
     // Internal counters for deals and appeals mapping
     Counters.Counter private dealCounter;
     Counters.Counter private appealCounter;
@@ -222,7 +225,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     */
     function returnAppealFee(uint256 deal_index) public view returns (uint256) {
         // QUESTION: How we calculate the amount needed?
-        uint256 fee = deals[deal_index].value * 2;
+        uint256 fee = deals[deal_index].value / committee_multiplier;
         return fee;
     }
 
@@ -350,8 +353,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         );
         uint256 maximum_collateral = slashing_multiplier * msg.value;
         require(
-            collateral >= msg.value && collateral <= maximum_collateral,
-            "Collateral out of range"
+            msg.value > 0 && collateral >= msg.value && collateral <= maximum_collateral,
+            "Collateral or value out of range"
         );
         // Creating next id
         dealCounter.increment();
@@ -365,10 +368,10 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         deals[index].value = msg.value;
         // Check if provided providers are active and store in struct
         for (uint256 i = 0; i < _providers.length; i++) {
-            require(
+            /*require(
                 isProvider(_providers[i]),
                 "Requested provider is not active"
-            );
+            );*/
             deals[index].providers[_providers[i]] = true;
         }
         // When created the amount of money is owned by sender
@@ -422,9 +425,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             "Deal expired, canceled or not allowed to accept"
         );
         require(
-            vault[msg.sender] >= deals[deal_index].collateral &&
-                vault[msg.sender] >=
-                (deals[deal_index].value * deposit_multiplier),
+            vault[msg.sender] >= deals[deal_index].collateral,
             "Can't accept because you don't have enough balance in contract"
         );
         // Mint the nft to the provider
@@ -469,6 +470,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         This method will allow referees to create an appeal
     */
     function createAppeal(uint256 deal_index) external payable nonReentrant {
+        require(tot_appeals[deal_index] < max_appeals, "Can't create more appeals on deal");
         require(deals[deal_index].timestamp_start > 0, "Deal is not active");
         require(
             block.timestamp <
@@ -492,7 +494,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             msg.value == returnAppealFee(deal_index),
             "Must send exact fee to create an appeal"
         );
-        // Sending fee to referees
+        // Split fee to referees
+        tot_appeals[deal_index]++;
         uint256 fee = msg.value / active_referees.length;
         for (uint256 i = 0; i < active_referees.length; i++) {
             vault[active_referees[i]] += fee;
@@ -572,10 +575,11 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             // Remove funds from provider and charge provider
             uint256 collateral = deals[deal_index].collateral;
             vault[address(this)] -= collateral;
+            // All collateral to protocol's address:
             vault[protocol_address] += collateral;
-            // vault[protocol_address] += collateral / 2;
-            // vault[deals[deal_index].owner] += collateral / 2;
-            // Emit event of deal invalidated
+            // Split collateral between client and protocol:
+            // -> vault[protocol_address] += collateral / 2;
+            // -> vault[deals[deal_index].owner] += collateral / 2;
             emit DealInvalidated(deal_index);
         }
     }
@@ -611,9 +615,9 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         uint8 value8,
         uint32 value32
     ) external onlyOwner {
-        if (kind == 0) {
-            deposit_multiplier = value256;
-        } else if (kind == 1) {
+        if(kind == 0) {
+            committee_divider = value8;
+        }else if (kind == 1) {
             slashing_multiplier = value256;
         } else if (kind == 2) {
             deal_timeout = value32;
@@ -627,6 +631,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             slashes_threshold = value8;
         } else if (kind == 7) {
             rounds_limit = value8;
+        } else if(kind == 8){
+            max_appeals = value8;
         }
     }
 
