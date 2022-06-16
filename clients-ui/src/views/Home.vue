@@ -1,19 +1,7 @@
 <template>
   <section class="hero">
     <div class="hero-body">
-      <!-- Nav Button show/hide -->
-      <div
-        @click="
-          showNavbar = !showNavbar;
-          showConsole = false;
-        "
-        class="btn-sidebar position-top-right"
-      >
-        <i v-if="!showNavbar" class="fa-solid fa-bars"></i>
-        <i v-if="showNavbar" class="fa-solid fa-times"></i>
-      </div>
-      <!-- END - Logs button show/hide -->
-
+      <Navbar />
       <!-- Logs button show/hide -->
       <div
         @click="
@@ -27,25 +15,6 @@
       </div>
       <!-- END - Logs button show/hide -->
 
-      <!-- Navbar -->
-      <Transition
-        enter-active-class="slide-in-right"
-        leave-active-class="slide-out-right"
-      >
-        <div v-if="showNavbar" class="right-col">
-          <div class="nav-container mt-5 pt-5">
-            <button class="button is-rounded is-dark">Signup Protocol</button>
-            <div class="mt-3">
-              <a href="/help"
-                ><i class="fa-solid fa-circle-question mr-2"></i>
-                <span>Help</span></a
-              >
-            </div>
-          </div>
-        </div>
-      </Transition>
-      <!-- END - Navbar -->
-
       <div class="container" v-if="account">
         <div>
           <h1 class="title is-3">Data retrievability Oracle</h1>
@@ -58,13 +27,7 @@
           <div v-if="!loading">
             <!-- Show all created deals -->
             <div v-if="!showCreate">
-              <a
-                href="#"
-                style="color: #000"
-                @click="
-                  showCreate = true;
-                  showToast();
-                "
+              <a href="#" style="color: #000" @click="showCreate = true"
                 >📄 new deal proposal</a
               >
               <div class="mt-5" v-if="deals.length > 0">
@@ -230,6 +193,7 @@
 import Web3 from "web3";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
+import Navbar from "@/components/Navbar.vue";
 import { io } from "socket.io-client";
 const FormData = require("form-data");
 const axios = require("axios");
@@ -247,6 +211,7 @@ export default {
       loading: true,
       showCreate: false,
       isWorking: false,
+      isToasting: false,
       workingMessage: "",
       minDuration: 3600,
       maxDuration: 42000,
@@ -268,6 +233,9 @@ export default {
       showConsole: false,
       showNavbar: false,
     };
+  },
+  components: {
+    Navbar,
   },
   watch: {
     fileToMint() {
@@ -623,29 +591,39 @@ export default {
         query: { identity: app.account },
       });
       socket.on("slash", (message) => {
-        // this.$toast(
-        //   ("Appeal:", message.appeal, "Received:", message.received),
-        //   {
-        //     position: "top-right",
-        //     timeout: 5000,
-        //     closeOnClick: true,
-        //     pauseOnFocusLoss: true,
-        //     pauseOnHover: true,
-        //     draggable: true,
-        //     draggablePercent: 0.6,
-        //     showCloseButtonOnHover: true,
-        //     hideProgressBar: true,
-        //     closeButton: "button",
-        //     icon: "fa-solid fa-check",
-        //     rtl: false,
-        //   }
-        // );
-        app.log(JSON.parse(message));
-        app.log("STASH, I'M HERE");
-        console.log("STASH, I'M HERE");
+        if (message !== undefined) {
+          const msg = JSON.parse(message);
+          if (msg[0] !== undefined && msg[0].message !== undefined) {
+            const realMessage = JSON.parse(msg[0].message);
+            const action = realMessage.action;
+            if (action !== undefined && action === "SLASHED") {
+              app.showToast("A provider was slashed!");
+            }
+          }
+          app.log(message);
+          app.log("SLASH, I'M HERE");
+          console.log("SLASH, I'M HERE");
+        }
       });
       socket.on("message", (message) => {
-        app.$toast(JSON.parse(message), {
+        if (message !== undefined) {
+          const msg = JSON.parse(message);
+          if (msg[0] !== undefined && msg[0].message !== undefined) {
+            const realMessage = JSON.parse(msg[0].message);
+            const action = realMessage.action;
+            if (action !== undefined && action === "ACCEPTED") {
+              app.showToast("Your deal prosal was accepted by provider!");
+            }
+          }
+          app.log(message);
+        }
+      });
+    },
+    showToast(message) {
+      const app = this;
+      if (!app.isToasting) {
+        app.isToasting = true;
+        app.$toast(message, {
           position: "top-right",
           timeout: 5000,
           closeOnClick: true,
@@ -659,28 +637,10 @@ export default {
           icon: "fa-solid fa-check",
           rtl: false,
         });
-        app.log(JSON.parse(message));
-        console.log("MESSAGE, I'M HERE");
-      });
-    },
-    showToast() {
-      this.$toast(
-        '{"message":"{"signature":"0xd1cfa3c6a351c59c07748538ccc3838eac65218c4ef02ab89c0fb8e049b87a2716b2b6e001089235b41b52b4e13c1f7339f78b795f5ae6de72171787a7bf30ce1c","appeal":"10","received":false}","signature":"0xcc793e0713c7846476f865c8e19e5723551b25fb10edd149e5cdb2dfbe3b89a5527fb3abd113717a83420bd5934cd98b10a94799d6540b81d659e205964086721c"}',
-        {
-          position: "top-right",
-          timeout: 5000,
-          closeOnClick: true,
-          pauseOnFocusLoss: true,
-          pauseOnHover: true,
-          draggable: true,
-          draggablePercent: 0.6,
-          showCloseButtonOnHover: true,
-          hideProgressBar: true,
-          closeButton: "button",
-          icon: "fa-solid fa-check",
-          rtl: false,
-        }
-      );
+        setTimeout(function () {
+          app.isToasting = false;
+        }, 6200);
+      }
     },
   },
   mounted() {
