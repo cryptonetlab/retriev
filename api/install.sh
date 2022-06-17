@@ -17,5 +17,6 @@ sudo apt update
 sudo apt install certbot python3-certbot-nginx -y
 
 yarn
+cp .env.rinkeby .env
 
 pm2 start npm -- start
