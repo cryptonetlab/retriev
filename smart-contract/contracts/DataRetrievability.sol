@@ -224,8 +224,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         This method will return the amount in ETH needed to create an appeal
     */
     function returnAppealFee(uint256 deal_index) public view returns (uint256) {
-        // QUESTION: How we calculate the amount needed?
-        uint256 fee = deals[deal_index].value / committee_multiplier;
+        uint256 fee = deals[deal_index].value / committee_divider;
         return fee;
     }
 
@@ -233,7 +232,6 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         This method will return the amount of signatures needed to close a rount
     */
     function refereeConsensusThreshold() public view returns (uint256) {
-        // QUESTION: Provide the exact way to count the number for consensus
         uint256 half = (active_referees.length * 100) / 2;
         return half;
     }
@@ -292,7 +290,6 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     */
     function isProvider(address check) public view returns (bool) {
         // This may change if we use NFT
-        // QUESTION: Should we check here if there's enough balance?
         return providers[check].active == true;
     }
 
@@ -450,9 +447,6 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             getRound(active_appeals[deals[deal_index].deal_uri]) == 99,
             "Found an active appeal, can't redeem"
         );
-        // QUESTION: How we detect the amount of value sent to provider
-        // do it with parameters counting the total appeals and setting
-        // a threshold to do remove the value.
 
         // Move value from contract to address
         vault[address(this)] -= deals[deal_index].value;
