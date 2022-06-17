@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "nodemon --watch \"src/*\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node src/api.ts\"",
-    "start": "echo \"${CA_CERT}\" > ca-certificate.crt && ts-node src/api.ts"
+    "start": "echo ts-node src/api.ts"
   },
   "devDependencies": {
     "@types/node": "^17.0.36",
