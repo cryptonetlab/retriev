@@ -26,7 +26,7 @@
                 <a class="nav-link me-3" href="/"> GitHub</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link me-3" href="/">Litepaper</a>
+                <a class="nav-link me-3" href="https://hackmd.io/@irenegia/BkqNihVY5" target="_blank">Litepaper</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link me-3" href="/#/about">About</a>
