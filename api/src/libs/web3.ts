@@ -39,9 +39,14 @@ export const parseDeals = async () => {
         index: k,
         timestamp_end: 0,
         timestamp_start: onchain_deal.timestamp_start.toString(),
+        timestamp_request: onchain_deal.timestamp_request.toString(),
         duration: onchain_deal.duration.toString(),
         deal_uri: onchain_deal.deal_uri,
         owner: onchain_deal.owner,
+        value: onchain_deal.value,
+        collateral: onchain_deal.collateral,
+        canceled: onchain_deal.canceled,
+        accepted: onchain_deal.accepted, 
         appeal: {}
       }
       deal.index = k;
