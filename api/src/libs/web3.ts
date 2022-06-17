@@ -44,8 +44,8 @@ export const parseDeals = async () => {
         duration: onchain_deal.duration.toString(),
         deal_uri: onchain_deal.deal_uri,
         owner: onchain_deal.owner,
-        value: onchain_deal.value,
-        collateral: onchain_deal.collateral,
+        value: onchain_deal.value.toString(),
+        collateral: onchain_deal.collateral.toString(),
         canceled: onchain_deal.canceled,
         provider: owner,
         appeal: {}
