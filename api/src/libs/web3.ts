@@ -35,6 +35,7 @@ export const parseDeals = async () => {
     for (let k = 1; k <= totalDeals; k++) {
       // console.log('Parsing deal #' + k)
       const onchain_deal = await instance.contract.deals(k);
+      const owner = await instance.contract.ownerOf(k);
       let deal = {
         index: k,
         timestamp_end: 0,
@@ -46,7 +47,7 @@ export const parseDeals = async () => {
         value: onchain_deal.value,
         collateral: onchain_deal.collateral,
         canceled: onchain_deal.canceled,
-        accepted: onchain_deal.accepted,
+        provider: owner,
         appeal: {}
       }
       deal.index = k;
@@ -55,7 +56,7 @@ export const parseDeals = async () => {
       if (checkDB === null) {
         await db.insert('deals', deal)
       } else {
-        await db.update('deals', { index: k }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end } })
+        await db.update('deals', { index: k }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: deal.provider } })
       }
     }
     isParsingDeals = false
