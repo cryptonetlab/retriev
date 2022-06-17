@@ -16,6 +16,11 @@ sudo ufw allow 'Nginx Full'
 sudo apt update
 sudo apt install certbot python3-certbot-nginx -y
 
+#SETTING UP FIREWALL
+ufw allow 22
+ufw allow 3000
+ufw --force enable
+
 yarn
 cp .env.rinkeby .env
 
