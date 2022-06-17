@@ -1,13 +1,10 @@
 <template>
   <section class="hero">
     <div class="hero-body">
-      <Navbar />
+      <Navbar @hide="logState = false" />
       <!-- Logs button show/hide -->
       <div
-        @click="
-          showConsole = !showConsole;
-          showNavbar = false;
-        "
+        @click="logState = !logState"
         class="btn-sidebar position-bottom-right"
         :class="{ heartbeat: loading }"
       >
@@ -189,7 +186,7 @@
           enter-active-class="slide-in-right"
           leave-active-class="slide-out-right"
         >
-          <div v-if="showConsole" class="right-col" v-html="logs"></div>
+          <div v-if="logState" class="right-col" v-html="logs"></div>
         </Transition>
         <!-- END - Application Logs -->
       </div>
@@ -249,8 +246,7 @@ export default {
       isUploadingIPFS: false,
       slashingMultiplier: 10,
       // FOR LAYOUT
-      // showConsole: false,
-      // showNavbar: false,
+      logState: false,
     };
   },
   components: {
