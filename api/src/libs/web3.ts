@@ -46,7 +46,7 @@ export const parseDeals = async () => {
         value: onchain_deal.value,
         collateral: onchain_deal.collateral,
         canceled: onchain_deal.canceled,
-        accepted: onchain_deal.accepted, 
+        accepted: onchain_deal.accepted,
         appeal: {}
       }
       deal.index = k;
@@ -54,6 +54,8 @@ export const parseDeals = async () => {
       const checkDB = await db.find('deals', { index: k })
       if (checkDB === null) {
         await db.insert('deals', deal)
+      } else {
+        await db.update('deals', { index: k }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end } })
       }
     }
     isParsingDeals = false
