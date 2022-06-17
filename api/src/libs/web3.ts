@@ -67,13 +67,21 @@ export const parseAppeals = async () => {
       const db = new Database.Mongo();
       if (active_appeal > 0) {
         console.log("Found appeal for deal, asking details..");
-        const appeal = await instance.contract.appeals(active_appeal);
-        const round = await instance.contract.getRound(active_appeal);
-        appeal.round = round;
-        console.log(appeal);
-        const checkDB = await db.find('deals', { index: k })
-        if (checkDB !== null) {
-          await db.update('deals', { index: k }, { $set: { appeal: active_appeal } })
+        const onchain_appeal = await instance.contract.appeals(active_appeal);
+        if (onchain_appeal.deal_index.toString() === k.toString()) {
+          let appeal = {
+            round: 0,
+            active: onchain_appeal.active,
+            slashes: onchain_appeal.slashes.toString(),
+            origin_timestamp: onchain_appeal.origin_timestamp.toString()
+          }
+          const round = await instance.contract.getRound(active_appeal);
+          appeal.round = round.toString();
+          const checkDB = await db.find('deals', { index: k })
+          if (checkDB !== null) {
+            console.log('Saving appeal details to db..')
+            await db.update('deals', { index: k }, { $set: { appeal: appeal } })
+          }
         }
       }
     }
