@@ -42,11 +42,11 @@
                       <div class="box-deals">
                         <div>
                           <p><b>Index:</b> {{ deal.index }}</p>
-                          <p><b>Hash</b>: {{ deal.ipfs_hash }}</p>
+                          <p><b>Hash</b>: {{ deal.deal_uri }}</p>
                           <p><b>Value:</b> {{ deal.value }}</p>
                           <p><b>Collateral:</b> {{ deal.collateral }}</p>
-                          <p><b>Active:</b> {{ deal.active }}</p>
-                          <p><b>Accepted:</b> {{ deal.accepted }}</p>
+                          <p><b>Canceled:</b> {{ deal.canceled }}</p>
+                          <p><b>Provider:</b> {{ deal.provider }}</p>
                           <p>
                             <b>Timestamp request:</b>
                             {{ deal.timestamp_request }}
@@ -82,14 +82,26 @@
                           <a
                             href="#"
                             v-if="
-                              deal.appeal !== undefined &&
-                              parseInt(deal.appeal.deal_index) ===
-                                parseInt(deal.index) &&
+                              deal.appeal.round !== undefined &&
                               parseInt(deal.appeal.round) < 99
                             "
                             >⌛Processing round {{ deal.appeal.round }}, slashes
                             are {{ deal.appeal.slashes }}.</a
                           >
+                          <div class="icon-opensea">
+                            <a
+                              :href="
+                                opensea + '/' + contract + '/' + deal.index
+                              "
+                              target="_blank"
+                            >
+                              <img
+                                src="../assets/opensea.svg"
+                                width="30"
+                                alt=""
+                              />
+                            </a>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -120,7 +132,10 @@
                   </section>
                 </b-upload>
               </b-field>
-              <b-input v-model="dealHash" placeholder="Deal IPFS CID"></b-input>
+              <b-input
+                v-model="dealUri"
+                placeholder="Deal URI (ex: ipfs://CID)"
+              ></b-input>
               <b-input
                 v-model="dealValue"
                 placeholder="Value of deal in gwei"
@@ -194,6 +209,8 @@ import Web3 from "web3";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Navbar from "@/components/Navbar.vue";
+
+import checkViewport from "@/mixins/checkViewport";
 import { io } from "socket.io-client";
 const FormData = require("form-data");
 const axios = require("axios");
@@ -201,9 +218,11 @@ const ABI = require("../abi.json");
 
 export default {
   name: "Home",
+  mixins: [checkViewport],
   data() {
     return {
       account: "",
+      opensea: process.env.VUE_APP_OPENSEA,
       contract: process.env.VUE_APP_CONTRACT,
       infuraId: process.env.VUE_APP_INFURA_ID,
       network: process.env.VUE_APP_NETWORK,
@@ -218,7 +237,7 @@ export default {
       deals: [],
       providers: [],
       logs: "",
-      dealHash: "",
+      dealUri: "",
       dealDuration: 3600,
       dealCollateral: "",
       dealProviders: "",
@@ -230,8 +249,8 @@ export default {
       isUploadingIPFS: false,
       slashingMultiplier: 10,
       // FOR LAYOUT
-      showConsole: false,
-      showNavbar: false,
+      // showConsole: false,
+      // showNavbar: false,
     };
   },
   components: {
@@ -323,34 +342,46 @@ export default {
       app.isWorking = false;
       app.log("Reading state from blockchain..");
       const contract = new app.web3.eth.Contract(app.abi, app.contract);
-      const totalDeals = await contract.methods.totalDeals().call();
+      // const totalDeals = await contract.methods.totalDeals().call();
       app.balance = await contract.methods.vault(app.account).call();
       app.balance = app.web3.utils.fromWei(app.balance);
       app.slashingMultiplier = parseInt(
         await contract.methods.slashing_multiplier().call()
       );
-
-      app.log("Found " + totalDeals + " deals.");
-      for (let k = 0; k <= totalDeals; k++) {
-        const deal = await contract.methods.deals(k).call();
-        if (deal.owner === app.account) {
-          deal.index = k;
-          deal.timestamp_end = deal.timestamp_start + deal.duration;
-          const active_appeal = await contract.methods
-            .active_appeals(deal.ipfs_hash)
-            .call();
-          if (active_appeal > 0) {
-            app.log("Found appeal for deal, asking details..");
-            const appeal = await contract.methods.appeals(active_appeal).call();
-            const round = await contract.methods.getRound(active_appeal).call();
-            appeal.round = round;
-            deal.appeal = appeal;
-          }
-          app.deals.push(deal);
-        } else {
-          app.log("Not the owner of deal " + k);
-        }
+      try {
+        app.isWorking = true;
+        app.workingMessage = "Fetching your deals, please wait...";
+        let deals = await axios.get(
+          process.env.VUE_APP_API_URL + "/deals/" + app.account
+        );
+        app.isWorking = false;
+        app.deals = deals.data;
+        app.log("Found " + app.deals.length + " deals.");
+        console.log(app.deals);
+      } catch (e) {
+        alert("Can't fetch deals from blockchain, please retry!");
       }
+      // app.log("Found " + totalDeals + " deals.");
+      // for (let k = 0; k <= totalDeals; k++) {
+      //   const deal = await contract.methods.deals(k).call();
+      //   if (deal.owner === app.account) {
+      //     deal.index = k;
+      //     deal.timestamp_end = deal.timestamp_start + deal.duration;
+      //     const active_appeal = await contract.methods
+      //       .active_appeals(deal.deal_uri)
+      //       .call();
+      //     if (active_appeal > 0) {
+      //       app.log("Found appeal for deal, asking details..");
+      //       const appeal = await contract.methods.appeals(active_appeal).call();
+      //       const round = await contract.methods.getRound(active_appeal).call();
+      //       appeal.round = round;
+      //       deal.appeal = appeal;
+      //     }
+      //     app.deals.push(deal);
+      //   } else {
+      //     app.log("Not the owner of deal " + k);
+      //   }
+      // }
       app.providers = [];
       app.referees = [];
       let ended = false;
@@ -412,7 +443,7 @@ export default {
             "Content-Type": "multipart/form-data;",
           },
         }).then(function (response) {
-          app.dealHash = response.data.Hash;
+          app.dealUri = "ipfs://" + response.data.Hash;
           app.isUploadingIPFS = false;
         });
       } else {
@@ -425,7 +456,7 @@ export default {
         if (
           parseInt(app.dealDuration) >= parseInt(app.minDuration) &&
           parseInt(app.dealDuration) <= parseInt(app.maxDuration) &&
-          app.dealHash.length > 0 &&
+          app.dealUri.length > 0 &&
           app.dealValue > 0 &&
           app.dealProviders.length > 0
         ) {
@@ -440,7 +471,7 @@ export default {
               const contract = new app.web3.eth.Contract(app.abi, app.contract);
               await contract.methods
                 .createDealProposal(
-                  app.dealHash,
+                  app.dealUri,
                   app.dealDuration,
                   app.web3.utils.toWei(app.dealCollateral, "gwei"),
                   [app.dealProviders]
@@ -483,7 +514,7 @@ export default {
               });
               app.loadState();
               app.showCreate = false;
-              app.dealHash = "";
+              app.dealUri = "";
               app.dealDuration = "";
               app.dealValue = "";
             } catch (e) {
@@ -545,9 +576,36 @@ export default {
             })
             .on("transactionHash", (tx) => {
               app.workingMessage = "Found pending transaction at " + tx;
+              this.$toast.warning("Found pending transaction at:" + tx, {
+                position: "top-right",
+                timeout: 5000,
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: true,
+                hideProgressBar: true,
+                closeButton: "button",
+                icon: "fa-solid fa-arrow-right-arrow-left",
+                rtl: false,
+              });
               app.log(app.workingMessage);
             });
-          alert("Appeal created!");
+          this.$toast("Appeal created!", {
+            position: "top-right",
+            timeout: 5000,
+            closeOnClick: true,
+            pauseOnFocusLoss: true,
+            pauseOnHover: true,
+            draggable: true,
+            draggablePercent: 0.6,
+            showCloseButtonOnHover: true,
+            hideProgressBar: true,
+            closeButton: "button",
+            icon: "fa-solid fa-check",
+            rtl: false,
+          });
           app.loadState();
         } catch (e) {
           app.isWorking = false;
@@ -592,32 +650,41 @@ export default {
       });
       socket.on("slash", (message) => {
         if (message !== undefined) {
-          const msg = JSON.parse(message);
-          if (msg[0] !== undefined && msg[0].message !== undefined) {
-            const realMessage = JSON.parse(msg[0].message);
-            const action = realMessage.action;
-            if (action !== undefined && action === "SLASHED") {
-              app.showToast("A provider was slashed!");
-            }
-          }
-          app.log(message);
-          app.log("SLASH, I'M HERE");
-          console.log("SLASH, I'M HERE");
+          app.parseMessage(message);
         }
       });
       socket.on("message", (message) => {
         if (message !== undefined) {
-          const msg = JSON.parse(message);
-          if (msg[0] !== undefined && msg[0].message !== undefined) {
-            const realMessage = JSON.parse(msg[0].message);
-            const action = realMessage.action;
-            if (action !== undefined && action === "ACCEPTED") {
-              app.showToast("Your deal prosal was accepted by provider!");
-            }
-          }
-          app.log(message);
+          app.parseMessage(message);
         }
       });
+    },
+    parseMessage(message) {
+      const app = this;
+      try {
+        const msg = JSON.parse(message);
+        console.log("msg", msg);
+        if (msg !== undefined && msg.message !== undefined) {
+          console.log("realMessage", realMessage);
+          console.log("action", action);
+          const realMessage = JSON.parse(msg.message);
+          const action = realMessage.action;
+          if (action !== undefined && action === "ACCEPTED") {
+            // TODO: Be sure accepted deal is yours
+            // TODO: Read deal_index from contract
+            // TODO: Check if deal.owner === app.account
+            app.showToast("Your deal prosal was accepted by provider!");
+          } else if (action !== undefined && action === "SLASHED") {
+            // TODO: Be sure slashed deal is yours
+            // TODO: Read deal_index from contract
+            // TODO: Check if deal.owner === app.account
+            app.showToast("A provider was slashed!");
+          }
+        }
+      } catch (e) {
+        console.log("Error parsing message from socket");
+        console.log(e);
+      }
     },
     showToast(message) {
       const app = this;

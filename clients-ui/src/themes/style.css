@@ -9,7 +9,7 @@ a span {
 .nav-container a {
   font-size: 1rem;
 }
-/* ==============> POSITIONING, MARGIN, PADDING <============== */
+/* ==============> POSITIONING, MARGIN, PADDING, ETC...<============== */
 
 .position-bottom-right {
   bottom: 20px;
@@ -19,6 +19,15 @@ a span {
 .position-top-right {
   top: 20px;
   right: 20px;
+}
+
+.pointer {
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.pointer:hover {
+  transform: scale(1.1);
+  transition: all 0.3s;
 }
 
 /* ==============> BUTTONS <============== */
@@ -46,13 +55,36 @@ a span {
   transition: all 0.3s;
 }
 
+button.button.is-rounded.is-dark {
+  transition: all 0.3s;
+}
+
+button.button.is-rounded.is-dark:hover {
+  background-color: #ced4da;
+  border: 1px solid black;
+  color: black;
+  transition: all 0.3s;
+}
+
 /* ==============> DEAL CREATION <============== */
 
 .box-deals {
+  position: relative;
   font-size: 12px;
   border: 1px solid #ced4da;
   border-radius: 5px;
   padding: 20px;
+}
+
+.icon-opensea {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  transition: all .3s;
+}
+.icon-opensea:hover {
+  transform: scale(1.1);
+  transition: all .3s;
 }
 
 /* ==============> LOGS <============== */
@@ -76,6 +108,8 @@ a span {
 .right-col hr {
   background-color: #ced4da;
 }
+
+/* ==============> LOGS <============== */
 
 /* ==============> ANIMATIONS <============== */
 /* LOGS SIDEBAR ANIMATION - IN & OUT */
