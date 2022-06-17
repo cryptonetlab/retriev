@@ -19,7 +19,7 @@ module Database {
           // if (process.env.MONGODB_CONNECTION?.indexOf("localhost") !== -1) {
           //   ssl = "";
           // }
-          const cert = await fs.readFileSync("./ca-certificate.crt");
+          // const cert = await fs.readFileSync("./ca-certificate.crt");
           let client = new MongoClient(
             process.env.MONGODB_CONNECTION,
             this.dbOptions
@@ -94,7 +94,7 @@ module Database {
       });
     }
 
-    public createUsersIndex() {
+    public createDealsIndex() {
       return new Promise(async (response) => {
         try {
           // let ssl = "?ssl=true";
@@ -107,37 +107,8 @@ module Database {
           );
           await client.connect();
           const db = await client.db(process.env.MONGODB_DBNAME);
-          let createIndex = await db.collection("users").createIndex({
-            address: "text",
-          });
-          await client.close();
-          response(createIndex);
-        } catch (e) {
-          console.log(e);
-          console.log("DB ERROR WHILE SEARCHING.");
-          response(false);
-        }
-      });
-    }
-
-    public createPaymentsIndex() {
-      return new Promise(async (response) => {
-        try {
-          let ssl = "?ssl=true";
-          if (process.env.MONGODB_CONNECTION?.indexOf("localhost") !== -1) {
-            ssl = "";
-          }
-          let client = new MongoClient(
-            process.env.MONGODB_CONNECTION + ssl,
-            this.dbOptions
-          );
-          await client.connect();
-          const db = await client.db(process.env.MONGODB_DBNAME);
-          let createIndex = await db.collection("payments").createIndex({
-            user: "text",
-            service: "text",
-            payment_intent: "text",
-            method: "text",
+          let createIndex = await db.collection("deals").createIndex({
+            owner: "text",
           });
           await client.close();
           response(createIndex);

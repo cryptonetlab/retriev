@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as Database from "./libs/database";
-import { contract, verify, parseDeals } from "./libs/web3";
+import { parseDeals, parseAppeals } from "./libs/web3";
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -11,11 +11,26 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// Init mongo database
+const db = new Database.Mongo();
+db.createDealsIndex();
+
 // Automatic parsers
 parseDeals()
-setInterval(function (){
+parseAppeals()
+setInterval(function () {
   parseDeals()
-}, 60000)
+  parseAppeals()
+}, 10000)
+
+// Public endpoints
+app.get("/deals/:address", async function (req, res) {
+  const db = new Database.Mongo();
+  const deals = await db.find('deals', { owner: req.params.address }, { timestamp_start: 1 })
+  res.send(deals)
+})
+
+// TODO: Add signup endpoint
 
 // Default endpoint
 app.use((req, res, next) => {
