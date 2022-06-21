@@ -24,11 +24,18 @@
             <div class="column is-6 is-12-mobile">
               <div class="column is-12">
                 <p class="mb-2">Provider ID</p>
-                <b-input v-model="provider" placeholder="999"></b-input>
+                <b-input
+                  v-model="provider"
+                  placeholder="999"
+                  disabled
+                ></b-input>
+                <p class="small">
+                  The Provider ID will be calculated automatically
+                </p>
               </div>
               <div class="column is-12">
                 <p class="mb-2">
-                  Provider Endpoint
+                  Provider Endpoint*
                   <i
                     @click="infoModal = true"
                     class="fa-solid fa-circle-info pointer"
@@ -44,11 +51,18 @@
                 ></b-input>
               </div>
               <div class="column is-12">
-                <p class="mb-2">Provider Name</p>
+                <div class="is-flex is-align-items-baseline">
+                  <p class="mb-2">Provider Name</p>
+                  <p class="small ml-2">(optional)</p>
+                </div>
+
                 <b-input v-model="address" placeholder="Protocol_One"></b-input>
               </div>
               <div class="column is-12">
-                <p class="mb-2">E-mail</p>
+                <div class="is-flex is-align-items-baseline">
+                  <p class="mb-2">E-mail</p>
+                  <p class="small ml-2">(optional)</p>
+                </div>
                 <b-input
                   v-model="email"
                   placeholder="example@gmail.com"

@@ -9,6 +9,10 @@ a span {
 .nav-container a {
   font-size: 1rem;
 }
+
+p.small {
+  font-size: 0.7rem;
+}
 /* ==============> POSITIONING, MARGIN, PADDING, ETC...<============== */
 
 .position-bottom-right {
