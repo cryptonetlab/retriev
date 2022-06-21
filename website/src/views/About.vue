@@ -1,7 +1,7 @@
 <template>
   <div class="about">
     <Navbar />
-    <div class="wrapper-page">
+    <div class="wrapper-page mb-5">
       <div class="container" :class="{ 'mt-5 mb-5': isDesktop && isTablet }">
         <div class="row" :class="{ 'mb-3': isMobile }">
           <div class="col-12 col-md-9 col-lg-6">
