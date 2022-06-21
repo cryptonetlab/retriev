@@ -110,8 +110,6 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     );
     // Event emitted when a deal is accepted
     event DealProposalAccepted(uint256 index);
-    // Event emitted when a deal is rejected
-    event DealRejected(uint256 index);
     // Event emitted when a deal is canceled before end
     event DealProposalCanceled(uint256 index);
     // Event emitted when a deal is redeemed
