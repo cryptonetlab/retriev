@@ -110,16 +110,16 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     );
     // Event emitted when a deal is accepted
     event DealProposalAccepted(uint256 index);
-    // Event emitted when a deal is canceled before end
+    // Event emitted when a deal is canceled before being accepted
     event DealProposalCanceled(uint256 index);
     // Event emitted when a deal is redeemed
     event DealRedeemed(uint256 index);
-    // Event emitted when a deal is invalidated
-    event DealInvalidated(uint256 index);
     // Event emitted when new appeal is created
     event AppealCreated(uint256 index, address provider, string deal_uri);
     // Event emitted when a slash message is recorded
     event AppealSlashed(uint256 index);
+    // Event emitted when a deal is invalidated by an appeal
+    event DealInvalidated(uint256 index);
 
     constructor(address _protocol_address) ERC721("Retriev", "RTV") {
         protocol_address = _protocol_address;
