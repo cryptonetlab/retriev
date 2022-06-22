@@ -44,13 +44,6 @@
                 <b-input v-model="address" placeholder="Protocol_One"></b-input>
               </div>
               <div class="column is-12">
-                <p class="mb-2">Filecoin Address*</p>
-                <b-input
-                  v-model="address"
-                  placeholder="f2plku564ddywnmb5b2ky7dhk4mb6uacsxuuev3pi"
-                ></b-input>
-              </div>
-              <div class="column is-12">
                 <div class="is-flex is-align-items-baseline">
                   <p class="mb-2">Provider Name</p>
                   <p class="small ml-2">(optional)</p>
@@ -139,7 +132,6 @@ export default {
       loading: false,
       // FORM
       provider: "",
-      address: "",
       email: "",
     };
   },
