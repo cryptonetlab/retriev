@@ -45,7 +45,7 @@ exports.abi = [
         "type": "uint256"
       }
     ],
-    "name": "AppealSlashed",
+    "name": "RoundSlashed",
     "type": "event"
   },
   {
@@ -442,7 +442,7 @@ exports.abi = [
   },
   {
     "inputs": [],
-    "name": "deal_timeout",
+    "name": "proposal_timeout",
     "outputs": [
       {
         "internalType": "uint32",

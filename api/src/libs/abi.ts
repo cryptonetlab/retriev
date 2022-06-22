@@ -45,7 +45,7 @@ export const ABI = [
                 "type": "uint256"
             }
         ],
-        "name": "AppealSlashed",
+        "name": "RoundSlashed",
         "type": "event"
     },
     {
@@ -442,7 +442,7 @@ export const ABI = [
     },
     {
         "inputs": [],
-        "name": "deal_timeout",
+        "name": "proposal_timeout",
         "outputs": [
             {
                 "internalType": "uint32",

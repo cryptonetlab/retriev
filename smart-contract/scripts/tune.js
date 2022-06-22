@@ -13,7 +13,7 @@ async function main() {
     const tune = {
         deposit_multiplier: { v256: 100, v8: 0, v32: 0 },
         slashing_multiplier: { v256: 10, v8: 0, v32: 0 },
-        deal_timeout: { v256: 0, v8: 0, v32: 86000 },
+        proposal_timeout: { v256: 0, v8: 0, v32: 86000 },
         round_duration: { v256: 0, v8: 0, v32: 300 },
         min_duration: { v256: 0, v8: 0, v32: 3600 },
         max_duration: { v256: 0, v8: 0, v32: 43200 },

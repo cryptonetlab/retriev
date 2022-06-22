@@ -91,7 +91,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     uint256 public slashing_multiplier = 1000;
     uint8 public committee_divider = 4;
     // Timeout to accept a deal (1 week)
-    uint32 public deal_timeout = 86_400;
+    uint32 public proposal_timeout = 86_400;
     uint8 public max_appeals = 5;
     // Internal counters for deals and appeals mapping
     Counters.Counter private dealCounter;
@@ -117,7 +117,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     // Event emitted when new appeal is created
     event AppealCreated(uint256 index, address provider, string deal_uri);
     // Event emitted when a slash message is recorded
-    event AppealSlashed(uint256 index);
+    event RoundSlashed(uint256 index);
     // Event emitted when a deal is invalidated by an appeal
     event DealInvalidated(uint256 index);
 
@@ -414,7 +414,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     function acceptDealProposal(uint256 deal_index) external nonReentrant {
         require(
             block.timestamp <
-                (deals[deal_index].timestamp_request + deal_timeout) &&
+                (deals[deal_index].timestamp_request + proposal_timeout) &&
                 !deals[deal_index].canceled &&
                 deals[deal_index].providers[msg.sender],
             "Deal expired, canceled or not allowed to accept"
@@ -557,7 +557,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             slashed,
             "Appeal wasn't slashed, not the leader or no consensus"
         );
-        emit AppealSlashed(appeal_index);
+        emit RoundSlashed(appeal_index);
         if (appeals[appeal_index].slashes >= returnSlashesThreshold()) {
             deals[deal_index].timestamp_start = 0;
             appeals[appeal_index].active = false;
@@ -612,7 +612,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         }else if (kind == 1) {
             slashing_multiplier = value256;
         } else if (kind == 2) {
-            deal_timeout = value32;
+            proposal_timeout = value32;
         } else if (kind == 3) {
             round_duration = value32;
         } else if (kind == 4) {
