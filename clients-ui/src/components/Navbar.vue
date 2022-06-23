@@ -27,7 +27,7 @@
           >
           <div class="mt-3">
             <a href="/"
-              ><i class="fa-solid fa-server mr-2"></i><span>dApp</span></a
+              ><i class="fa-solid fa-server mr-2"></i><span>Dashboard</span></a
             >
           </div>
           <div class="mt-3">

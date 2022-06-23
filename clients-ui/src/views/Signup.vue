@@ -58,7 +58,7 @@
                   Sign Up
                 </button>
               </div>
-              <div class="mt-5" v-if="isWorking">{{ workingMessage }}</div>
+              <!-- <div class="mt-5" v-if="isWorking">{{ workingMessage }}</div> -->
             </div>
           </div>
         </div>

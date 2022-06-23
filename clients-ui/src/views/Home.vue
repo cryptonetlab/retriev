@@ -161,10 +161,10 @@
                 >
                   <option
                     v-for="provider in providers"
-                    :value="provider"
-                    :key="provider"
+                    :value="provider.address"
+                    :key="provider.address"
                   >
-                    {{ provider }}
+                    {{ provider.address }} ({{ provider.endpoint }})
                   </option>
                 </b-select>
               </b-field>
@@ -357,27 +357,13 @@ export default {
       } catch (e) {
         alert("Can't fetch deals from blockchain, please retry!");
       }
-      // app.log("Found " + totalDeals + " deals.");
-      // for (let k = 0; k <= totalDeals; k++) {
-      //   const deal = await contract.methods.deals(k).call();
-      //   if (deal.owner === app.account) {
-      //     deal.index = k;
-      //     deal.timestamp_end = deal.timestamp_start + deal.duration;
-      //     const active_appeal = await contract.methods
-      //       .active_appeals(deal.deal_uri)
-      //       .call();
-      //     if (active_appeal > 0) {
-      //       app.log("Found appeal for deal, asking details..");
-      //       const appeal = await contract.methods.appeals(active_appeal).call();
-      //       const round = await contract.methods.getRound(active_appeal).call();
-      //       appeal.round = round;
-      //       deal.appeal = appeal;
-      //     }
-      //     app.deals.push(deal);
-      //   } else {
-      //     app.log("Not the owner of deal " + k);
-      //   }
-      // }
+
+      app.minDuration = parseInt(await contract.methods.min_duration().call());
+      app.maxDuration = await contract.methods.max_duration().call();
+      app.log("Min duration is: " + app.minDuration);
+      app.log("Max duration is: " + app.maxDuration);
+      app.loading = false;
+      // Connecting to p2p network
       app.providers = [];
       app.referees = [];
       let ended = false;
@@ -386,12 +372,18 @@ export default {
         try {
           const provider = await contract.methods.active_providers(i).call();
           if (app.providers.indexOf(provider) === -1) {
-            app.providers.push(provider);
             app.log("Found provider " + provider);
-            const providerDetails = await contract.methods
+            let providerDetails = await contract.methods
               .providers(provider)
               .call();
-            app.connectSocket(providerDetails.endpoint);
+            providerDetails.address = provider;
+            if (
+              providerDetails.endpoint.indexOf("localhost") === -1 &&
+              providerDetails.endpoint.indexOf("https") !== -1
+            ) {
+              app.providers.push(providerDetails);
+              app.connectSocket(providerDetails.endpoint);
+            }
           }
         } catch (e) {
           ended = true;
@@ -419,11 +411,6 @@ export default {
         i++;
       }
       app.log("Found " + app.providers.length + " active providers");
-      app.minDuration = parseInt(await contract.methods.min_duration().call());
-      app.maxDuration = await contract.methods.max_duration().call();
-      app.log("Min duration is: " + app.minDuration);
-      app.log("Max duration is: " + app.maxDuration);
-      app.loading = false;
     },
     async uploadFile() {
       const app = this;
