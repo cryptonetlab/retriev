@@ -101,10 +101,13 @@
           </header>
           <section class="modal-card-body">
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
+              Please follow official repository instructions to deploy your
+              provider node at:
+              <a href="https://github.com/protocol/retriev"
+                >https://github.com/protocol/retriev</a
+              >.<br /><br />
+              Endpoint is the public URI where Referee network / clients can
+              retrieve their files.
             </p>
           </section>
           <footer class="modal-card-foot">

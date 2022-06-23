@@ -1,16 +1,19 @@
 /* ==============> FONTS <============== */
 a {
   color: black;
+  font-family: "JetBrains Mono", monospace;
 }
 a span {
   text-decoration: underline;
 }
 
 .nav-container a {
+  font-family: "JetBrains Mono", monospace;
   font-size: 1rem;
 }
 
 p.small {
+  font-family: "JetBrains Mono", monospace;
   font-size: 0.7rem;
 }
 /* ==============> POSITIONING, MARGIN, PADDING, ETC...<============== */
@@ -51,6 +54,7 @@ p.small {
   cursor: pointer;
   transition: all 0.3s;
   z-index: 999;
+  font-family: "JetBrains Mono", monospace;
 }
 
 .btn-sidebar:hover {
@@ -60,10 +64,12 @@ p.small {
 }
 
 button.button.is-rounded.is-dark {
+  font-family: "JetBrains Mono", monospace !important;
   transition: all 0.3s;
 }
 
 button.button.is-rounded.is-dark:hover {
+  font-family: "JetBrains Mono", monospace;
   background-color: #ced4da;
   border: 1px solid black;
   color: black;
@@ -84,11 +90,11 @@ button.button.is-rounded.is-dark:hover {
   position: absolute;
   bottom: 10px;
   right: 10px;
-  transition: all .3s;
+  transition: all 0.3s;
 }
 .icon-opensea:hover {
   transform: scale(1.1);
-  transition: all .3s;
+  transition: all 0.3s;
 }
 
 /* ==============> LOGS <============== */
