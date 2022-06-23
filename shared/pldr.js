@@ -5,7 +5,12 @@ const homedir = require('os').homedir()
 const { exec, execSync } = require('child_process')
 const getIP = require('external-ip')()
 const axios = require('axios')
-const mainPath = homedir + '/.pldr'
+const argv = require('minimist')(process.argv.slice(2));
+let mainPath = homedir + '/.pldr'
+if (argv.docker !== undefined) {
+    mainPath = './pldr'
+    console.log('Docker mode active, using relative path.')
+}
 // Socket.io Server
 const express = require('express')
 const app = express()
@@ -64,7 +69,9 @@ module.exports = class PldrNode {
                 provider: process.env.WEB3_PROVIDER,
                 contract_address: process.env.CONTRACT_ADDRESS
             }
-            fs.writeFileSync(this.nodePath + '/configs.json', JSON.stringify(this.configs))
+            fs.writeFileSync(this.nodePath + '/configs.json', JSON.stringify(this.configs, null, 4))
+        } else {
+            console.log('Using configs:', this.configs)
         }
 
         if (daemon !== undefined && daemon === true) {
@@ -283,19 +290,20 @@ module.exports = class PldrNode {
      * IPFS functions
      */
     async ipfs() {
-        const node = this
-        console.log('Running IPFS daemon..')
-        try {
-            const ipfs_path = this.nodePath + '/ipfs'
-            if (!fs.existsSync(ipfs_path)) {
-                fs.mkdirSync(ipfs_path)
-                console.log("Init IPFS folder at:", ipfs_path)
-                exec('IPFS_PATH=' + ipfs_path + ' ipfs init', { stdio: 'inherit' })
+        if (argv.docker === undefined) {
+            console.log('Running IPFS daemon..')
+            try {
+                const ipfs_path = this.nodePath + '/ipfs'
+                if (!fs.existsSync(ipfs_path)) {
+                    fs.mkdirSync(ipfs_path)
+                    console.log("Init IPFS folder at:", ipfs_path)
+                    exec('IPFS_PATH=' + ipfs_path + ' ipfs init', { stdio: 'inherit' })
+                }
+                exec('IPFS_PATH=' + ipfs_path + ' ipfs daemon', { stdio: 'inherit' })
+                console.log('IPFS daemon is running correctly..')
+            } catch (e) {
+                console.log('Can\'t run IPFS daemon, please check your installation.')
             }
-            exec('IPFS_PATH=' + ipfs_path + ' ipfs daemon', { stdio: 'inherit' })
-            console.log('IPFS daemon is running correctly..')
-        } catch (e) {
-            console.log('Can\'t run IPFS daemon, please check your installation.')
         }
     }
 
@@ -337,7 +345,7 @@ module.exports = class PldrNode {
                 const file = await axios.post("http://127.0.0.1:5001/api/v0/get?arg=/ipfs/" + hash, { responseType: "arraybuffer" })
                 res.set("Content-Type", "application/x-tar")
                 res.send(file.data)
-                setTimeout(function() {
+                setTimeout(function () {
                     res.status(404).send("FILE_NOT_FOUND")
                 }, 30000)
             } catch (e) {

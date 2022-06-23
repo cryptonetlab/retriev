@@ -1,12 +1,15 @@
 const argv = require('minimist')(process.argv.slice(2));
 const cwd = process.cwd()
-const homedir = require('os').homedir()
+let homedir = require('os').homedir()
 const PldrNode = require('../../shared/pldr')
 const commands = require('./libs/fn')
 const debug = argv.debug !== undefined ? argv.debug : false
 const name = argv.name !== undefined ? argv.name : "pldr-provider"
 const port = argv.port !== undefined ? argv.port : 8000
 const daemon = argv.daemon !== undefined ? true : false
+if (argv.docker !== undefined) {
+    homedir = './'
+}
 // Print initial conditions if debug is active
 if (debug) {
     console.log('--')

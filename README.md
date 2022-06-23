@@ -8,3 +8,26 @@ There are 5 folders:
 - `referee-cli`: which contains *referee* logic to ask `providers` if some clients asks for a retrieval.
 
 For the description of the protocol see here: https://pl-strflt.notion.site/Data-Retrievability-Oracle-252f52f47b3944e8a54e8d0f553c5cd7
+
+# Use Docker
+To use the node you need a `Rinkeby` provider, we suggest to use (Infura)[https://infura.io].
+When you have your `PROJECT_ID` you can continue following this guide.
+
+To use docker follow these simple follow steps:
+
+```
+# Clone repository
+git clone https://github.com/protocol/retriev
+
+# Run first building script
+bash docker/scripts/build.sh PROJECT_ID
+
+# Run a node as referee
+bash docker/scripts/start.sh referee
+
+# Run a node as provider
+bash docker/scripts/start.sh provider
+
+# Stop node
+bash docker/scripts/stop.sh
+```
