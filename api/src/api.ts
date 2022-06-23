@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as Database from "./libs/database";
-import { parseDeals, parseAppeals } from "./libs/web3";
+import { parseDeals, parseAppeals, contract, verify } from "./libs/web3";
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -30,7 +30,29 @@ app.get("/deals/:address", async function (req, res) {
   res.send(deals)
 })
 
-// TODO: Add signup endpoint
+// Add signup endpoint
+app.post("/signup", async function (req, res) {
+  if (req.body.address !== undefined && req.body.endpoint !== undefined && req.body.signature !== undefined) {
+    const verified = <any>await verify("Sign me as PLDR provider.", req.body.signature)
+    if (verified !== false && verified.toUpperCase() === req.body.address.toUpperCase()) {
+      const db = new Database.Mongo();
+      const provider = await db.find('providers', { address: req.body.address })
+      if (provider === null) {
+        const instance = await contract()
+        const tx = await instance.contract.setProviderStatus(req.body.address, true, req.body.endpoint)
+        req.body.tx = tx
+        await db.insert('providers', req.body)
+        res.send({ message: "Provided added correctly", error: false, tx: tx })
+      } else {
+        res.send({ message: "Provider exists yet", error: true })
+      }
+    } else {
+      res.send({ message: "Can't verify address", error: true })
+    }
+  } else {
+    res.send({ message: "Malformed request", error: true })
+  }
+})
 
 // Default endpoint
 app.use((req, res, next) => {

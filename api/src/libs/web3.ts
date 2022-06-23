@@ -7,8 +7,12 @@ let isParsingDeals = false
 
 export const verify = (message, signature) => {
   return new Promise(async (response) => {
-    const verified = await ethers.utils.verifyMessage(message, signature);
-    response(verified);
+    try {
+      const verified = await ethers.utils.verifyMessage(message, signature);
+      response(verified);
+    } catch (e) {
+      response(false);
+    }
   });
 };
 
