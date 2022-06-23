@@ -106,8 +106,8 @@
               <a href="https://github.com/protocol/retriev"
                 >https://github.com/protocol/retriev</a
               >.<br /><br />
-              Endpoint is the public URI where Referee network / clients can
-              retrieve their files.
+              Endpoint is the public URI where the referee network can contact
+              you to retrieve files
             </p>
           </section>
           <footer class="modal-card-foot">
