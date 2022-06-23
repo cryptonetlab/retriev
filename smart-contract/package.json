@@ -5,7 +5,8 @@
     "test": "npx hardhat test",
     "network": "node scripts/_network.js",
     "verify": "node scripts/_verify.js",
-    "task": "node scripts/_task.js"
+    "task": "node scripts/_task.js",
+    "analyze": "rm -rf artifacts cache && clear && slither ."
   },
   "author": "Sebastiano Cataudo <sebastiano@yomi.digital>",
   "license": "MIT",

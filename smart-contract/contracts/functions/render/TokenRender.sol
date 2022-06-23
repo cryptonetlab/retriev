@@ -61,7 +61,7 @@ contract TokenRender {
         uint256 timestamp_start,
         uint256 duration,
         bool canceled
-    ) public pure returns (string memory) {
+    ) external pure returns (string memory) {
         if (contains("ipfs://", deal_uri)) {
             string[12] memory parts;
             parts[
@@ -80,14 +80,14 @@ contract TokenRender {
             // TODO: Check if active is needed or not
             if (timestamp_start > 0) {
                 parts[10] = "ACTIVE";
-            } else if (canceled == false) {
+            } else if (canceled) {
                 parts[10] = "CANCELED";
             } else {
                 parts[10] = "N/A";
             }
             parts[11] = "</text></svg>";
 
-            string memory output = string(
+            string memory svg = string(
                 abi.encodePacked(
                     parts[0],
                     parts[1],
@@ -99,9 +99,9 @@ contract TokenRender {
                     parts[7]
                 )
             );
-            output = string(
+            svg = string(
                 abi.encodePacked(
-                    output,
+                    svg,
                     parts[8],
                     parts[9],
                     parts[10],
@@ -116,13 +116,13 @@ contract TokenRender {
                             '{"name": "DEAL #',
                             Strings.toString(deal_index),
                             '", "description": "Retriev deal token", "image": "data:image/svg+xml;base64,',
-                            Base64.encode(bytes(output)),
+                            Base64.encode(bytes(svg)),
                             '"}'
                         )
                     )
                 )
             );
-            output = string(
+            string memory output = string(
                 abi.encodePacked("data:application/json;base64,", json)
             );
             return output;

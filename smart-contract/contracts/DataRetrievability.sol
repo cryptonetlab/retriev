@@ -65,7 +65,6 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         uint256 origin_timestamp;
     }
     // Render contract
-    address render_contract;
     IRENDER private token_render;
     // Mapping referees addresses
     mapping(address => Referee) public referees;
@@ -122,6 +121,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     event DealInvalidated(uint256 index);
 
     constructor(address _protocol_address) ERC721("Retriev", "RTV") {
+        require(_protocol_address != address(0), "Can't init protocol with black-hole");
         protocol_address = _protocol_address;
     }
 
@@ -129,7 +129,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         return dealCounter.current();
     }
 
-    function totalDeals() public view returns (uint256) {
+    function totalDeals() external view returns (uint256) {
         return dealCounter.current();
     }
 
@@ -151,7 +151,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         return output;
     }
 
-    function balanceOf(address _owner)
+    function balanceOf(address _to_check)
         public
         view
         virtual
@@ -163,7 +163,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         uint256 tnkId;
 
         for (tnkId = 1; tnkId <= totalTkns; tnkId++) {
-            if (ownerOf(tnkId) == _owner) {
+            if (ownerOf(tnkId) == _to_check) {
                 resultIndex++;
             }
         }
@@ -279,16 +279,14 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         This method will say if address is a referee or not
     */
     function isReferee(address check) public view returns (bool) {
-        // This may change if we use NFTs
-        return referees[check].active == true;
+        return referees[check].active;
     }
 
     /*
         This method will say if address is a provider or not
     */
     function isProvider(address check) public view returns (bool) {
-        // This may change if we use NFT
-        return providers[check].active == true;
+        return providers[check].active;
     }
 
     /*
@@ -442,7 +440,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             deals[deal_index].duration;
         require(block.timestamp > timeout, "Deal didn't ended, can't redeem");
         require(
-            getRound(active_appeals[deals[deal_index].deal_uri]) == 99,
+            getRound(active_appeals[deals[deal_index].deal_uri]) >= 99,
             "Found an active appeal, can't redeem"
         );
 
@@ -478,7 +476,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         require(
             active_appeals[deals[deal_index].deal_uri] == 0 ||
                 // Check if appeal is expired
-                getRound(active_appeals[deals[deal_index].deal_uri]) == 99,
+                getRound(active_appeals[deals[deal_index].deal_uri]) >= 99,
             "Appeal exists yet for provided hash"
         );
         // Be sure sent amount is exactly the appeal fee
@@ -594,10 +592,10 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     function withdrawFromVault(uint256 amount) external nonReentrant {
         uint256 balance = vault[msg.sender];
         require(balance >= amount, "Not enough balance to withdraw");
+        vault[msg.sender] -= amount;
         bool success;
         (success, ) = payable(msg.sender).call{value: amount}("");
         require(success, "Withdraw to user failed");
-        vault[msg.sender] -= amount;
     }
 
     // Admin function to fine tune the protocol
