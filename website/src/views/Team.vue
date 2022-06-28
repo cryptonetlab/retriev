@@ -2,18 +2,20 @@
   <div class="team">
     <Navbar />
     <div class="wrapper-page">
+      <div class="gap" v-if="isTablet"></div>
       <div class="container" :class="{ 'mt-5 mb-5': isDesktop && isTablet }">
         <div class="row" :class="{ 'mb-3': isMobile }">
-          <div class="col-12 col-md-9 col-lg-6">
-            <h3 class="mb-3">TEAM</h3>
-            <p>
-              Lorem ipsums block height, stacking sats hard fork UTXO public key
-              Merkle Tree double-spend problem stacking sats transaction.
-            </p>
+          <div class="col-12 col-md-9 col-lg-6 mt-5">
+            <h3 class="mb-3">CONTRIBUTORS</h3>
+            <h6>
+              Researchers from Cryptonet Lab, with contributions from Cryptoecon
+              Team Lab, designed the protocol which has been developed by
+              yomi.digital (and x)
+            </h6>
           </div>
         </div>
         <div v-if="!isMobile" class="gap"></div>
-        <div class="row mb-5">
+        <!-- <div class="row mb-5">
           <div
             class="col-12 col-md-5 col-lg-4 offset-lg-2"
             :class="{ 'mb-3': isMobile }"
@@ -54,10 +56,12 @@
             <p class="m-0"><b>Lorem Ipsum</b></p>
             <p>Lorem ipsums block height</p>
           </div>
-        </div>
+        </div> -->
       </div>
       <div v-if="!isDesktop" class="gap"></div>
     </div>
+    <div class="gap" v-if="isTablet"></div>
+    <div class="gap" v-if="isTablet"></div>
     <Footer />
   </div>
 </template>
@@ -69,7 +73,7 @@ import Footer from "@/components/Footer.vue";
 import checkViewport from "@/mixins/checkViewport";
 
 export default {
-  name: "Team",
+  name: "Contributors",
   mixins: [checkViewport],
   components: {
     Navbar,

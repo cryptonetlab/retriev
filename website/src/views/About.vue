@@ -1,47 +1,62 @@
 <template>
   <div class="about">
     <Navbar />
-    <div class="wrapper-page mb-5">
-      <div class="container" :class="{ 'mt-5 mb-5': isDesktop && isTablet }">
-        <div class="row" :class="{ 'mb-3': isMobile }">
-          <div class="col-12 col-md-9 col-lg-6">
-            <h3 class="mb-3">WHAT IS PROJECT NAME?</h3>
-            <p>
-              Lorem ipsums block height, stacking sats hard fork UTXO public key
-              Merkle Tree double-spend problem stacking sats transaction! Segwit
-              genesis block whitepaper halvening address whitepaper, sats
-              stacking sats. Inputs, private key full node blocksize
-              double-spend problem SHA-256 UTXO, genesis block transaction!
-              Nonce, proof-of-work.
-            </p>
+    <div class="wrapper-page">
+      <div class="container" :class="{ 'mt-5': isTablet }">
+        <div
+          class="row py-4 justify-content-start"
+          :class="{ 'mb-3': isMobile }"
+        >
+          <div class="col-12 col-md-9 col-lg-8 offset-md-1 offset-lg-1">
+            <h3>ABOUT</h3>
+            <h6>
+              We consider the setting of a decentralized storage network. That
+              is, we have clients and storage providers; the former delegate the
+              storage of their file to the network of the providers, which can
+              publicly prove their service (ie, persistent storage). This is
+              done following a specific protocol with detailed SLA about the
+              storage (for example, see Filecoin).
+            </h6>
           </div>
         </div>
-        <div v-if="!isMobile" class="gap"></div>
-        <div class="row justify-content-center mb-5">
+        <div v-if="!isMobile" class="gap-smaller"></div>
+        <div
+          class="row justify-content-start pb-4"
+          :class="{ 'mb-5': !isMobile && !isTablet }"
+        >
           <div class="col-12 col-md-5 col-lg-4" :class="{ 'mb-3': isMobile }">
-            <h3 class="mb-3">HOW IT WORKS?</h3>
+            <h3>WHY RETRIEVAL PINNING?</h3>
             <p>
-              Lorem ipsums block height, stacking sats hard fork UTXO public key
-              Merkle Tree double-spend problem stacking sats transaction! Segwit
-              genesis block whitepaper halvening address whitepaper, sats
-              stacking sats. Inputs, private key full node blocksize
-              double-spend problem SHA-256 UTXO, genesis block transaction!
-              Proof-of-work.
+              How can clients delegating storage be confident that the data can
+              be retrieved from the network (ie, the guaranteed retrieval
+              problem)? This protocol is made of a system of penalties and
+              incentives that pushes providers who promised a retrieval service
+              to fulfill this commitment
             </p>
           </div>
           <div class="col-12 col-md-5 col-lg-4 offset-lg-1">
-            <h3 class="mb-3">WHAT IT STANDS FOR?</h3>
+            <h3>HOW IT WORKS?</h3>
             <p>
-              Lorem ipsum soft fork mining halvening public key consensus
-              address, transaction peer-to-peer! Consensus genesis block block
-              height whitepaper block reward Bitcoin Improvement Proposal
-              hashrate UTXO.
+              – We have a consortium of providers that sign up to participate in
+              our system;<br />
+              – We have a fixed set of referees for which we can say that half
+              of them are honest (eg, 5 referees and we trust 3 of them);<br />
+              – Client and provider agree on a retrievability deal (aka the
+              assurance policy for the retrieval service); providers lock down a
+              collateral for each deal;<br />
+              – When a client does not get the requested file, it appeals to the
+              referees.<br />
+              One of them tries to retrieve the file asking it again to the
+              provider, if this works the file is forwarded to the client; If
+              not, we try again. After some failed attempts, the provider is
+              penalized: the collateral is taken away.
             </p>
           </div>
         </div>
       </div>
-      <div v-if="!isDesktop" class="gap"></div>
     </div>
+    <div class="gap" v-if="isTablet"></div>
+    <div class="gap" v-if="isTablet"></div>
     <Footer />
   </div>
 </template>

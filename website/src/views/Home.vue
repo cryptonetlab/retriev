@@ -1,19 +1,25 @@
 <template>
   <div class="home">
     <Navbar />
+    <div class="gap"></div>
     <div class="wrapper-page" :class="{ 'padding-5x': isDesktop }">
       <div :class="{ container: !isDesktop, 'container-fluid': isDesktop }">
         <div class="gap"></div>
         <div v-if="isDesktop" class="gap"></div>
         <div class="row">
-          <div class="col-12 col-md-6 col-lg-6">
+          <div class="col-12 col-md-10 col-lg-8 col-xl-6">
             <h1 class="m-0">
-              Lorem ipsum provider digital signature provider peer-to-peer sats
-              hashrate hash.
+              <b>Retrieval pinning</b> leverages on a reliable system of “missed
+              retrieval” penalties that increases the confidence in
+              decentralized storage networks .
             </h1>
-            <div class="custom-btn-primary mt-5 mb-5">Go to dApp</div>
+            <a href="https://dapp.pldr.dev">
+              <div class="custom-btn-primary mt-5 mb-5">Go to dApp</div></a
+            >
           </div>
         </div>
+        <div class="gap" v-if="!isDesktop"></div>
+        <div class="gap" v-if="isTablet"></div>
       </div>
     </div>
     <Footer />
