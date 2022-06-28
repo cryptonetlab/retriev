@@ -2,7 +2,7 @@
   <div class="team">
     <Navbar />
     <div class="wrapper-page">
-      <div class="gap" v-if="isTablet"></div>
+      <div class="gap" v-if="!isDesktop"></div>
       <div class="container" :class="{ 'mt-5 mb-5': isDesktop && isTablet }">
         <div class="row" :class="{ 'mb-3': isMobile }">
           <div class="col-12 col-md-9 col-lg-6 mt-5">
@@ -60,8 +60,8 @@
       </div>
       <div v-if="!isDesktop" class="gap"></div>
     </div>
-    <div class="gap" v-if="isTablet"></div>
-    <div class="gap" v-if="isTablet"></div>
+    <div class="gap" v-if="!isDesktop"></div>
+    <div class="gap" v-if="!isDesktop"></div>
     <Footer />
   </div>
 </template>
