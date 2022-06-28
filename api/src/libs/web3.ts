@@ -37,30 +37,34 @@ export const parseDeals = async () => {
     console.log("Parsing " + totalDeals + " deals to store informations.");
     const db = new Database.Mongo();
     for (let k = 1; k <= totalDeals; k++) {
-      // console.log('Parsing deal #' + k)
+      console.log('Parsing deal #' + k)
       const onchain_deal = await instance.contract.deals(k);
-      const owner = await instance.contract.ownerOf(k);
-      let deal = {
-        index: k,
-        timestamp_end: 0,
-        timestamp_start: onchain_deal.timestamp_start.toString(),
-        timestamp_request: onchain_deal.timestamp_request.toString(),
-        duration: onchain_deal.duration.toString(),
-        deal_uri: onchain_deal.deal_uri,
-        owner: onchain_deal.owner,
-        value: onchain_deal.value.toString(),
-        collateral: onchain_deal.collateral.toString(),
-        canceled: onchain_deal.canceled,
-        provider: owner,
-        appeal: {}
-      }
-      deal.index = k;
-      deal.timestamp_end = parseInt(deal.timestamp_start) + parseInt(deal.duration);
-      const checkDB = await db.find('deals', { index: k })
-      if (checkDB === null) {
-        await db.insert('deals', deal)
-      } else {
-        await db.update('deals', { index: k }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: deal.provider } })
+      try {
+        const owner = await instance.contract.ownerOf(k);
+        let deal = {
+          index: k,
+          timestamp_end: 0,
+          timestamp_start: onchain_deal.timestamp_start.toString(),
+          timestamp_request: onchain_deal.timestamp_request.toString(),
+          duration: onchain_deal.duration.toString(),
+          deal_uri: onchain_deal.deal_uri,
+          owner: onchain_deal.owner,
+          value: onchain_deal.value.toString(),
+          collateral: onchain_deal.collateral.toString(),
+          canceled: onchain_deal.canceled,
+          provider: owner,
+          appeal: {}
+        }
+        deal.index = k;
+        deal.timestamp_end = parseInt(deal.timestamp_start) + parseInt(deal.duration);
+        const checkDB = await db.find('deals', { index: k })
+        if (checkDB === null) {
+          await db.insert('deals', deal)
+        } else {
+          await db.update('deals', { index: k }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: deal.provider } })
+        }
+      } catch (e) {
+        console.log('-> Error while parsing deal #' + k)
       }
     }
     isParsingDeals = false
@@ -79,21 +83,25 @@ export const parseAppeals = async () => {
       const db = new Database.Mongo();
       if (active_appeal > 0) {
         console.log("Found appeal for deal, asking details..");
-        const onchain_appeal = await instance.contract.appeals(active_appeal);
-        if (onchain_appeal.deal_index.toString() === k.toString()) {
-          let appeal = {
-            round: 0,
-            active: onchain_appeal.active,
-            slashes: onchain_appeal.slashes.toString(),
-            origin_timestamp: onchain_appeal.origin_timestamp.toString()
+        try {
+          const onchain_appeal = await instance.contract.appeals(active_appeal);
+          if (onchain_appeal.deal_index.toString() === k.toString()) {
+            let appeal = {
+              round: 0,
+              active: onchain_appeal.active,
+              slashes: onchain_appeal.slashes.toString(),
+              origin_timestamp: onchain_appeal.origin_timestamp.toString()
+            }
+            const round = await instance.contract.getRound(active_appeal);
+            appeal.round = round.toString();
+            const checkDB = await db.find('deals', { index: k })
+            if (checkDB !== null) {
+              console.log('Saving appeal details to db..')
+              await db.update('deals', { index: k }, { $set: { appeal: appeal } })
+            }
           }
-          const round = await instance.contract.getRound(active_appeal);
-          appeal.round = round.toString();
-          const checkDB = await db.find('deals', { index: k })
-          if (checkDB !== null) {
-            console.log('Saving appeal details to db..')
-            await db.update('deals', { index: k }, { $set: { appeal: appeal } })
-          }
+        } catch (e) {
+          console.log('-> Error while parsing appeal.')
         }
       }
     }
