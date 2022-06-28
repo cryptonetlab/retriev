@@ -376,8 +376,8 @@ module.exports = class PldrNode {
                 if (provider.toUpperCase() !== this.configs.address.toUpperCase()) {
                     const details = await contract.providers(provider)
                     if (details.active) {
-                        console.log("Found provider: " + provider, details)
                         if (details.endpoint.indexOf('https') !== -1) {
+                            console.log("Found provider: " + provider, details)
                             this.peers.push({
                                 type: 'provider',
                                 identity: provider.toUpperCase(),
