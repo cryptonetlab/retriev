@@ -377,11 +377,13 @@ module.exports = class PldrNode {
                     const details = await contract.providers(provider)
                     if (details.active) {
                         console.log("Found provider: " + provider, details)
-                        this.peers.push({
-                            type: 'provider',
-                            identity: provider.toUpperCase(),
-                            endpoint: details.endpoint
-                        });
+                        if (details.endpoint.indexOf('https') !== -1) {
+                            this.peers.push({
+                                type: 'provider',
+                                identity: provider.toUpperCase(),
+                                endpoint: details.endpoint
+                            });
+                        }
                     }
                 }
             } catch (e) {
