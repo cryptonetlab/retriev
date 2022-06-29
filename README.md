@@ -4,7 +4,7 @@ Retrieval Pinning is a Protocol designed by CryptoNetLab that allows end users c
 
 If you want to go deeper on how the protocol works please read our [light paper](./PAPER.md).
 
-We have now an active deployment on Rinkeby network at [0xBc331A7bEa063DbCE8b3d16F77850B617Bc36cbA](https://rinkeby.etherscan.io/0xBc331A7bEa063DbCE8b3d16F77850B617Bc36cbA) and you can interact with the protocol using our dapp at [dapp.pldr.dev](https://dapp.pldr.dev). 
+We have now an active deployment on Rinkeby network at [0xBc331A7bEa063DbCE8b3d16F77850B617Bc36cbA](https://rinkeby.etherscan.io/address/0xBc331A7bEa063DbCE8b3d16F77850B617Bc36cbA) and you can interact with the protocol using our dapp at [dapp.pldr.dev](https://dapp.pldr.dev). 
 
 If you want to learn more about the project please visit our [official website](https://pldr.dev).
 # Architecture
