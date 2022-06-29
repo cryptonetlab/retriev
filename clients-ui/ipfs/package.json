@@ -1,0 +1,17 @@
+{
+  "name": "vue-ipfs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "upload": "node --experimental-modules ipfs.js"
+  },
+  "dependencies": {
+    "base-path-converter": "^1.0.2",
+    "dotenv": "^16.0.1",
+    "got": "^12.1.0",
+    "minimist": "^1.2.6",
+    "recursive-fs": "^2.1.0",
+    "web3.storage": "^4.2.0"
+  }
+}

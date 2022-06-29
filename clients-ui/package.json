@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "deploy": "vue-cli-service build && cd ipfs && yarn upload"
   },
   "dependencies": {
     "@walletconnect/web3-provider": "^1.7.7",
