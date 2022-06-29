@@ -22,7 +22,7 @@ async function parsers() {
   setInterval(async function () {
     parseDeals()
     parseAppeals()
-  }, 10000)
+  }, 60000)
 }
 parsers()
 
