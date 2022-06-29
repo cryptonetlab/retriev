@@ -20,6 +20,10 @@
           <a href="#" style="color: #000" @click="withdraw"
             >💵 withdraw them from contract</a
           >.
+          <b-message type="is-danger mt-3">
+            Retrieval Pinning is in testnet. This is an alpha version and
+            storage is at your own risk.
+          </b-message>
           <hr />
           <div v-if="!loading">
             <!-- Show all created deals -->

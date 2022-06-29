@@ -31,7 +31,7 @@
             >
           </div>
           <div class="mt-3">
-            <a href="/help"
+            <a href="https://filecoinproject.slack.com/archives/C03CJKWP2DR" target="_blank"
               ><i class="fa-solid fa-circle-question mr-2"></i>
               <span>Help</span></a
             >
