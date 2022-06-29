@@ -52,6 +52,31 @@
                             <b>Timestamp start:</b> {{ deal.timestamp_start
                             }}<br />
                           </p>
+                          <p>
+                            <b>Timestamp end:</b> {{ deal.timestamp_end }}<br />
+                          </p>
+                          <p
+                            v-if="
+                              parseInt(deal.timestamp_end) -
+                                new Date().getTime() / 1000 >
+                              0
+                            "
+                          >
+                            <b>Time remaining:</b>
+                            {{
+                              parseInt(deal.timestamp_end) -
+                              new Date().getTime() / 1000
+                            }}<br />
+                          </p>
+                          <p
+                            v-if="
+                              parseInt(deal.timestamp_end) -
+                                new Date().getTime() / 1000 <
+                              0
+                            "
+                          >
+                            <b>Time remaining:</b> deal ended
+                          </p>
                           <a href="#" v-if="deal.active === false"
                             >This deal is not active anymore</a
                           >
@@ -69,9 +94,10 @@
                           <a
                             href="#"
                             v-if="
-                              deal.appeal === undefined &&
+                              deal.appeal.active === undefined &&
                               parseInt(deal.timestamp_start) > 0 &&
-                              new Date().getTime() < deal.timestamp_end
+                              new Date().getTime() <
+                                parseInt(deal.timestamp_end * 1000)
                             "
                             @click="createAppeal(deal.index)"
                             >❌ create appeal</a
