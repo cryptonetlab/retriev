@@ -29,18 +29,18 @@ export const contract = async () => {
   return { contract, wallet, provider, ethers };
 };
 
-export const parseDeal = async (k) => {
+export const parseDeal = async (deal_index) => {
   return new Promise(async response => {
     const instance = await contract()
-    console.log('Parsing deal #' + k)
+    console.log('[DEALS] Parsing deal #' + deal_index)
     const db = new Database.Mongo();
-    const onchain_deal = await instance.contract.deals(k);
+    const onchain_deal = await instance.contract.deals(deal_index);
     try {
-      const owner = await instance.contract.ownerOf(k);
-      console.log('-> Owner is:', owner)
+      const owner = await instance.contract.ownerOf(deal_index);
+      console.log('[DEALS] -> Owner is:', owner)
       let deal = {
-        index: k,
-        timestamp_end: 0,
+        index: deal_index,
+        timestamp_end: "0",
         timestamp_start: onchain_deal.timestamp_start.toString(),
         timestamp_request: onchain_deal.timestamp_request.toString(),
         duration: onchain_deal.duration.toString(),
@@ -52,19 +52,18 @@ export const parseDeal = async (k) => {
         provider: owner,
         appeal: {}
       }
-      deal.index = k;
-      deal.timestamp_end = parseInt(deal.timestamp_start) + parseInt(deal.duration);
-      const checkDB = await db.find('deals', { index: k })
+      deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
+      const checkDB = await db.find('deals', { index: deal_index })
       if (checkDB === null) {
-        console.log('--> Inserting new deal')
+        console.log('[DEALS] --> Inserting new deal')
         await db.insert('deals', deal)
       } else {
-        console.log('--> Updating deal')
-        await db.update('deals', { index: k }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: deal.provider } })
+        console.log('[DEALS] --> Updating deal')
+        await db.update('deals', { index: deal_index }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: deal.provider } })
       }
       response(true)
     } catch (e) {
-      console.log('-> Error while parsing deal #' + k)
+      console.log('[DEALS] -> Error while parsing deal #', deal_index)
       response(false)
     }
   })
@@ -75,9 +74,22 @@ export const parseDeals = async () => {
     isParsingDeals = true
     const instance = await contract()
     const totalDeals = await instance.contract.totalDeals()
-    console.log("Parsing " + totalDeals + " deals to store informations.");
-    for (let k = 1; k <= totalDeals; k++) {
-      await parseDeal(k)
+    console.log("[DEALS] -> Parsing " + totalDeals + " deals to store informations.");
+    const db = new Database.Mongo();
+    for (let k = totalDeals; k >= 1; k--) {
+      const deal_index = parseInt(k.toString())
+      const checkDB = await db.find('deals', { index: deal_index })
+      if (checkDB === null) {
+        await parseDeal(deal_index)
+      } else if (checkDB.canceled === false) {
+        const now = new Date().getTime() / 1000
+        const expires_in = parseInt(checkDB.timestamp_end) - now
+        if (expires_in > 0 || parseInt(checkDB.timestamp_start) < now) {
+          await parseDeal(deal_index)
+        } else {
+          console.log('[DEALS] --> Deal expired')
+        }
+      }
     }
     isParsingDeals = false
     return true
@@ -93,7 +105,7 @@ export const parseAppeal = async (k) => {
     const active_appeal = await instance.contract.active_appeals(onchain_deal.deal_uri)
     const db = new Database.Mongo();
     if (active_appeal > 0) {
-      console.log("Found appeal for deal #" + k + ", asking details..");
+      console.log("[APPEALS] Found appeal for deal #" + k + ", asking details..");
       try {
         const onchain_appeal = await instance.contract.appeals(active_appeal);
         if (onchain_appeal.deal_index.toString() === k.toString()) {
@@ -104,11 +116,11 @@ export const parseAppeal = async (k) => {
             origin_timestamp: onchain_appeal.origin_timestamp.toString()
           }
           const round = await instance.contract.getRound(active_appeal);
-          console.log("--> Round is:", round.toString())
+          console.log("[APPEALS] --> Round is:", round.toString())
           appeal.round = round.toString();
           const checkDB = await db.find('deals', { index: k })
           if (checkDB !== null) {
-            console.log('---> Saving appeal details to db')
+            console.log('[APPEALS] ---> Saving appeal details to db')
             await db.update('deals', { index: k }, { $set: { appeal: appeal } })
           }
         }
@@ -118,7 +130,7 @@ export const parseAppeal = async (k) => {
         response(false)
       }
     } else {
-      console.log('No appeals found for id #' + k)
+      console.log('[APPEALS] No appeals found for id #', k)
       response(false)
     }
   })
@@ -128,10 +140,18 @@ export const parseAppeals = async () => {
   if (!isParsingAppeals) {
     isParsingAppeals = true
     const instance = await contract()
-    const totalDeals = await instance.contract.totalDeals()
-    console.log("Parsing " + totalDeals + " deals to search appeals.");
-    for (let k = 1; k <= totalDeals; k++) {
-      await parseAppeal(k)
+    const db = new Database.Mongo();
+    const deals = await db.find('deals', {}, { timestamp_start: -1 })
+    for (let k in deals) {
+      const deal = deals[k]
+      const now = new Date().getTime() / 1000
+      const expires_in = parseInt(deal.timestamp_end) - now
+      if (expires_in > 0) {
+        console.log('[APPEALS] Parsing deal ' + deal.index + ' to search appeals..')
+        await parseAppeal(deal.index)
+      } else {
+        console.log('[APPEALS] Deal ' + deal.index + ' elapsed.')
+      }
     }
     isParsingAppeals = false
     return true

@@ -17,10 +17,10 @@ db.createDealsIndex();
 
 // Automatic parsers
 async function parsers() {
-  await parseDeals()
+  parseDeals()
   parseAppeals()
   setInterval(async function () {
-    await parseDeals()
+    parseDeals()
     parseAppeals()
   }, 10000)
 }

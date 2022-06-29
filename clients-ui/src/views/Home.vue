@@ -98,10 +98,10 @@
                           <a
                             href="#"
                             v-if="
-                              deal.appeal.active === undefined &&
+                              (deal.appeal.active === undefined &&
                               parseInt(deal.timestamp_start) > 0 &&
                               new Date().getTime() <
-                                parseInt(deal.timestamp_end * 1000)
+                                parseInt(deal.timestamp_end * 1000)) || (deal.appeal.active !== undefined && parseInt(deal.appeal.round) === 99)
                             "
                             @click="createAppeal(deal.index)"
                             >❌ create appeal</a
