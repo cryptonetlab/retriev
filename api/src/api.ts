@@ -16,12 +16,15 @@ const db = new Database.Mongo();
 db.createDealsIndex();
 
 // Automatic parsers
-parseDeals()
-parseAppeals()
-setInterval(function () {
-  parseDeals()
+async function parsers() {
+  await parseDeals()
   parseAppeals()
-}, 10000)
+  setInterval(async function () {
+    await parseDeals()
+    parseAppeals()
+  }, 10000)
+}
+parsers()
 
 // Public endpoints
 app.get("/deals/:address", async function (req, res) {

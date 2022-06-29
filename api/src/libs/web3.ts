@@ -37,6 +37,7 @@ export const parseDeal = async (k) => {
     const onchain_deal = await instance.contract.deals(k);
     try {
       const owner = await instance.contract.ownerOf(k);
+      console.log('-> Owner is:', owner)
       let deal = {
         index: k,
         timestamp_end: 0,
@@ -79,6 +80,9 @@ export const parseDeals = async () => {
       await parseDeal(k)
     }
     isParsingDeals = false
+    return true
+  } else {
+    return false
   }
 };
 
@@ -130,5 +134,8 @@ export const parseAppeals = async () => {
       await parseAppeal(k)
     }
     isParsingAppeals = false
+    return true
+  } else {
+    return false
   }
 };
