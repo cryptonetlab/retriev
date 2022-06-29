@@ -9,8 +9,8 @@
         <div class="row">
           <div class="col-12 col-md-10 col-lg-8 col-xl-6">
             <h1 class="m-0">
-              <b>Retrieval pinning</b> leverages on a reliable system of “missed
-              retrieval” penalties that increases the confidence in
+              "<b>Retrieval pinning</b>" leverages on a reliable system of
+              “missed retrieval” penalties that increases the confidence in
               decentralized storage networks .
             </h1>
             <a href="https://dapp.pldr.dev" target="_blank">

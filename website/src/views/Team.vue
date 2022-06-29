@@ -13,8 +13,15 @@
                 href="https://research.protocol.ai/groups/cryptonetlab/"
                 target="_blank"
                 >Cryptonet Lab</a
-              >, with contributions from Cryptoecon Team Lab, designed the
-              protocol which has been developed by yomi.digital (and x)
+              >
+              designed the protocol - with contributions from
+              <a
+                href="https://research.protocol.ai/groups/cryptoeconlab/"
+                target="_blank"
+                >Cryptoecon Lab</a
+              >
+              - and it has been developed by
+              <a href="https://yomi.digital" target="_blank">yomi.digital</a>.
             </h6>
           </div>
         </div>

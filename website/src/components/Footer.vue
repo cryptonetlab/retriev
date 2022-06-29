@@ -20,7 +20,7 @@
             :class="{ 'b-top pt-4': isMobile }"
           >
             <h4>
-              Retrieval Pinning is part of an interoperable ecosystem of
+              Retrieval Pinning will be part of an interoperable ecosystem of
               on-chain storage products.
             </h4>
           </div>
