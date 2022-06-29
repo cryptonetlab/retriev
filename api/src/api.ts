@@ -16,12 +16,12 @@ const db = new Database.Mongo();
 db.createDealsIndex();
 
 // Automatic parsers
-// parseDeals()
-// parseAppeals()
-// setInterval(function () {
-//   parseDeals()
-//   parseAppeals()
-// }, 10000)
+parseDeals()
+parseAppeals()
+setInterval(function () {
+  parseDeals()
+  parseAppeals()
+}, 10000)
 
 // Public endpoints
 app.get("/deals/:address", async function (req, res) {
@@ -31,12 +31,13 @@ app.get("/deals/:address", async function (req, res) {
 })
 
 app.get("/parse/:id", async function (req, res) {
-  console.log('Manual parsing deal #' + req.params.id)
-  await parseDeal(req.params.id)
-  console.log('Manual parsing appeal for deal #' + req.params.id)
-  await parseAppeal(req.params.id)
+  const deal_id = parseInt(req.params.id)
+  console.log('Manual parsing deal #' + deal_id)
+  await parseDeal(deal_id)
+  console.log('Manual parsing appeal for deal #' + deal_id)
+  await parseAppeal(deal_id)
   const db = new Database.Mongo();
-  const deal = await db.find('deals', { index: req.params.id })
+  const deal = await db.find('deals', { index: deal_id })
   res.send(deal)
 })
 
