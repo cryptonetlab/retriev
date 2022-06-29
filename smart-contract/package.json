@@ -6,7 +6,8 @@
     "network": "node scripts/_network.js",
     "verify": "node scripts/_verify.js",
     "task": "node scripts/_task.js",
-    "analyze": "rm -rf artifacts cache && clear && slither ."
+    "analyze:full": "rm -rf artifacts cache && clear && slither .",
+    "analyze:print": "rm -rf artifacts cache && clear && slither . --print human-summary"
   },
   "author": "Sebastiano Cataudo <sebastiano@yomi.digital>",
   "license": "MIT",
