@@ -100,10 +100,11 @@ export const parseAppeal = async (k) => {
             origin_timestamp: onchain_appeal.origin_timestamp.toString()
           }
           const round = await instance.contract.getRound(active_appeal);
+          console.log("--> Round is:", round.toString())
           appeal.round = round.toString();
           const checkDB = await db.find('deals', { index: k })
           if (checkDB !== null) {
-            console.log('Saving appeal details to db..')
+            console.log('---> Saving appeal details to db')
             await db.update('deals', { index: k }, { $set: { appeal: appeal } })
           }
         }
