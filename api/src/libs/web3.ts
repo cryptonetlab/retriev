@@ -28,44 +28,51 @@ export const contract = async () => {
   );
   return { contract, wallet, provider, ethers };
 };
-
+export const parseDeal = async (k) => {
+  return new Promise(async response => {
+    const instance = await contract()
+    console.log('Parsing deal #' + k)
+    const db = new Database.Mongo();
+    const onchain_deal = await instance.contract.deals(k);
+    try {
+      const owner = await instance.contract.ownerOf(k);
+      let deal = {
+        index: k,
+        timestamp_end: 0,
+        timestamp_start: onchain_deal.timestamp_start.toString(),
+        timestamp_request: onchain_deal.timestamp_request.toString(),
+        duration: onchain_deal.duration.toString(),
+        deal_uri: onchain_deal.deal_uri,
+        owner: onchain_deal.owner,
+        value: onchain_deal.value.toString(),
+        collateral: onchain_deal.collateral.toString(),
+        canceled: onchain_deal.canceled,
+        provider: owner,
+        appeal: {}
+      }
+      deal.index = k;
+      deal.timestamp_end = parseInt(deal.timestamp_start) + parseInt(deal.duration);
+      const checkDB = await db.find('deals', { index: k })
+      if (checkDB === null) {
+        await db.insert('deals', deal)
+      } else {
+        await db.update('deals', { index: k }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: deal.provider } })
+      }
+      response(true)
+    } catch (e) {
+      console.log('-> Error while parsing deal #' + k)
+      response(false)
+    }
+  })
+}
 export const parseDeals = async () => {
   if (!isParsingDeals) {
     isParsingDeals = true
     const instance = await contract()
     const totalDeals = await instance.contract.totalDeals()
     console.log("Parsing " + totalDeals + " deals to store informations.");
-    const db = new Database.Mongo();
     for (let k = 1; k <= totalDeals; k++) {
-      console.log('Parsing deal #' + k)
-      const onchain_deal = await instance.contract.deals(k);
-      try {
-        const owner = await instance.contract.ownerOf(k);
-        let deal = {
-          index: k,
-          timestamp_end: 0,
-          timestamp_start: onchain_deal.timestamp_start.toString(),
-          timestamp_request: onchain_deal.timestamp_request.toString(),
-          duration: onchain_deal.duration.toString(),
-          deal_uri: onchain_deal.deal_uri,
-          owner: onchain_deal.owner,
-          value: onchain_deal.value.toString(),
-          collateral: onchain_deal.collateral.toString(),
-          canceled: onchain_deal.canceled,
-          provider: owner,
-          appeal: {}
-        }
-        deal.index = k;
-        deal.timestamp_end = parseInt(deal.timestamp_start) + parseInt(deal.duration);
-        const checkDB = await db.find('deals', { index: k })
-        if (checkDB === null) {
-          await db.insert('deals', deal)
-        } else {
-          await db.update('deals', { index: k }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: deal.provider } })
-        }
-      } catch (e) {
-        console.log('-> Error while parsing deal #' + k)
-      }
+      await parseDeal(k)
     }
     isParsingDeals = false
   }

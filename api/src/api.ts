@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as Database from "./libs/database";
-import { parseDeals, parseAppeals, contract, verify } from "./libs/web3";
+import { parseDeals, parseAppeals, parseDeal, contract, verify } from "./libs/web3";
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -28,6 +28,13 @@ app.get("/deals/:address", async function (req, res) {
   const db = new Database.Mongo();
   const deals = await db.find('deals', { owner: req.params.address }, { timestamp_start: 1 })
   res.send(deals)
+})
+
+app.get("/parse/:id", async function (req, res) {
+  await parseDeal(req.params.id)
+  const db = new Database.Mongo();
+  const deal = await db.find('deals', { index: req.params.id })
+  res.send(deal)
 })
 
 // Add signup endpoint
