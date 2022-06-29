@@ -180,6 +180,9 @@ https://YOUR_DOMAIN/identity
 
 For example our demo-provider will answer [here](https://provider.pldr.dev/identity).
 
+## Signup as provider
+
+If you completed this procedure to be included as provider inside the protocol you're now able to follow this link and signup: https://dapp.pldr.dev/#/signup.
 # Support
 
 If you need support please feel free to jump into our [Slack](https://filecoinproject.slack.com/archives/C03CJKWP2DR) channel and ask for it.
