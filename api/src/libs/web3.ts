@@ -28,6 +28,7 @@ export const contract = async () => {
   );
   return { contract, wallet, provider, ethers };
 };
+
 export const parseDeal = async (k) => {
   return new Promise(async response => {
     const instance = await contract()
@@ -54,8 +55,10 @@ export const parseDeal = async (k) => {
       deal.timestamp_end = parseInt(deal.timestamp_start) + parseInt(deal.duration);
       const checkDB = await db.find('deals', { index: k })
       if (checkDB === null) {
+        console.log('--> Inserting new deal')
         await db.insert('deals', deal)
       } else {
+        console.log('--> Updating deal')
         await db.update('deals', { index: k }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: deal.provider } })
       }
       response(true)
@@ -65,6 +68,7 @@ export const parseDeal = async (k) => {
     }
   })
 }
+
 export const parseDeals = async () => {
   if (!isParsingDeals) {
     isParsingDeals = true
@@ -78,6 +82,43 @@ export const parseDeals = async () => {
   }
 };
 
+export const parseAppeal = async (k) => {
+  return new Promise(async response => {
+    const instance = await contract()
+    const onchain_deal = await instance.contract.deals(k);
+    const active_appeal = await instance.contract.active_appeals(onchain_deal.deal_uri)
+    const db = new Database.Mongo();
+    if (active_appeal > 0) {
+      console.log("Found appeal for deal #" + k + ", asking details..");
+      try {
+        const onchain_appeal = await instance.contract.appeals(active_appeal);
+        if (onchain_appeal.deal_index.toString() === k.toString()) {
+          let appeal = {
+            round: 0,
+            active: onchain_appeal.active,
+            slashes: onchain_appeal.slashes.toString(),
+            origin_timestamp: onchain_appeal.origin_timestamp.toString()
+          }
+          const round = await instance.contract.getRound(active_appeal);
+          appeal.round = round.toString();
+          const checkDB = await db.find('deals', { index: k })
+          if (checkDB !== null) {
+            console.log('Saving appeal details to db..')
+            await db.update('deals', { index: k }, { $set: { appeal: appeal } })
+          }
+        }
+        response(true)
+      } catch (e) {
+        console.log('-> Error while parsing appeal.')
+        response(false)
+      }
+    } else {
+      console.log('No appeals found for id #' + k)
+      response(false)
+    }
+  })
+}
+
 export const parseAppeals = async () => {
   if (!isParsingAppeals) {
     isParsingAppeals = true
@@ -85,32 +126,7 @@ export const parseAppeals = async () => {
     const totalDeals = await instance.contract.totalDeals()
     console.log("Parsing " + totalDeals + " deals to search appeals.");
     for (let k = 1; k <= totalDeals; k++) {
-      const onchain_deal = await instance.contract.deals(k);
-      const active_appeal = await instance.contract.active_appeals(onchain_deal.deal_uri)
-      const db = new Database.Mongo();
-      if (active_appeal > 0) {
-        console.log("Found appeal for deal, asking details..");
-        try {
-          const onchain_appeal = await instance.contract.appeals(active_appeal);
-          if (onchain_appeal.deal_index.toString() === k.toString()) {
-            let appeal = {
-              round: 0,
-              active: onchain_appeal.active,
-              slashes: onchain_appeal.slashes.toString(),
-              origin_timestamp: onchain_appeal.origin_timestamp.toString()
-            }
-            const round = await instance.contract.getRound(active_appeal);
-            appeal.round = round.toString();
-            const checkDB = await db.find('deals', { index: k })
-            if (checkDB !== null) {
-              console.log('Saving appeal details to db..')
-              await db.update('deals', { index: k }, { $set: { appeal: appeal } })
-            }
-          }
-        } catch (e) {
-          console.log('-> Error while parsing appeal.')
-        }
-      }
+      await parseAppeal(k)
     }
     isParsingAppeals = false
   }

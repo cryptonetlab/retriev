@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as Database from "./libs/database";
-import { parseDeals, parseAppeals, parseDeal, contract, verify } from "./libs/web3";
+import { parseDeals, parseAppeals, parseDeal, parseAppeal, contract, verify } from "./libs/web3";
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -16,12 +16,12 @@ const db = new Database.Mongo();
 db.createDealsIndex();
 
 // Automatic parsers
-parseDeals()
-parseAppeals()
-setInterval(function () {
-  parseDeals()
-  parseAppeals()
-}, 10000)
+// parseDeals()
+// parseAppeals()
+// setInterval(function () {
+//   parseDeals()
+//   parseAppeals()
+// }, 10000)
 
 // Public endpoints
 app.get("/deals/:address", async function (req, res) {
@@ -31,7 +31,10 @@ app.get("/deals/:address", async function (req, res) {
 })
 
 app.get("/parse/:id", async function (req, res) {
+  console.log('Manual parsing deal #' + req.params.id)
   await parseDeal(req.params.id)
+  console.log('Manual parsing appeal for deal #' + req.params.id)
+  await parseAppeal(req.params.id)
   const db = new Database.Mongo();
   const deal = await db.find('deals', { index: req.params.id })
   res.send(deal)
