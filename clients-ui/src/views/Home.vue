@@ -129,18 +129,39 @@
                   </section>
                 </b-upload>
               </b-field>
-              <b-input
-                v-model="dealUri"
-                placeholder="Deal URI (ex: ipfs://CID)"
-              ></b-input>
-              <b-input
-                v-model="dealValue"
-                placeholder="Value of deal in gwei"
-              ></b-input>
-              <b-input
-                v-model="dealCollateral"
-                placeholder="Value of collateral in gwei"
-              ></b-input>
+              <div class="mb-3">
+                <p>Deal URI</p>
+                <b-input
+                  v-model="dealUri"
+                  placeholder="ex: ipfs://CID"
+                ></b-input>
+              </div>
+              <div class="mb-3">
+                <p>
+                  Payment in gwei
+                  <i
+                    @click="infoGwei = true"
+                    class="fa-solid fa-circle-info pointer"
+                  ></i>
+                </p>
+                <b-input
+                  v-model="dealValue"
+                  placeholder="Payment in gwei"
+                ></b-input>
+              </div>
+              <div class="mb-3">
+                <p>
+                  Collateral in gwei
+                  <i
+                    @click="infoCollateral = true"
+                    class="fa-solid fa-circle-info pointer"
+                  ></i>
+                </p>
+                <b-input
+                  v-model="dealCollateral"
+                  placeholder="Collateral in gwei"
+                ></b-input>
+              </div>
               <br />
               <b-field
                 v-if="parseInt(minDuration) > 0 && parseInt(maxDuration) > 0"
@@ -189,6 +210,71 @@
           <div v-if="logState" class="right-col" v-html="logs"></div>
         </Transition>
         <!-- END - Application Logs -->
+
+        <!-- Modal Payment in gwei -->
+        <b-modal
+          v-model="infoGwei"
+          has-modal-card
+          trap-focus
+          :destroy-on-hide="false"
+          aria-role="dialog"
+          aria-label="Payment in gwei"
+          close-button-aria-label="Close"
+          aria-modal
+        >
+          <template>
+            <div class="modal-card" style="width: auto">
+              <header class="modal-card-head">
+                <p class="modal-card-title">Payment in gwei</p>
+              </header>
+              <section class="modal-card-body">
+                <p>Payment is the amount of tokens paid to the provider</p>
+              </section>
+              <footer class="modal-card-foot">
+                <b-button
+                  class="button is-rounded is-dark"
+                  label="Close"
+                  @click="infoGwei = !infoGwei"
+                />
+              </footer>
+            </div>
+          </template>
+        </b-modal>
+        <!-- END Modal Modal Payment in gwei -->
+
+        <!-- Modal Collateral in gwei -->
+        <b-modal
+          v-model="infoCollateral"
+          has-modal-card
+          trap-focus
+          :destroy-on-hide="false"
+          aria-role="dialog"
+          aria-label="Collateral in gwei"
+          close-button-aria-label="Close"
+          aria-modal
+        >
+          <template>
+            <div class="modal-card" style="width: auto">
+              <header class="modal-card-head">
+                <p class="modal-card-title">Collateral in gwei</p>
+              </header>
+              <section class="modal-card-body">
+                <p>
+                  Collateral is locked down from the provider account. Remeber
+                  that collateral needs to be ≥ Payment and ≤ 1000*Payment
+                </p>
+              </section>
+              <footer class="modal-card-foot">
+                <b-button
+                  class="button is-rounded is-dark"
+                  label="Close"
+                  @click="infoCollateral = !infoCollateral"
+                />
+              </footer>
+            </div>
+          </template>
+        </b-modal>
+        <!-- END Modal Modal Collateral in gwei -->
       </div>
       <div
         class="container has-text-centered"
@@ -247,6 +333,8 @@ export default {
       slashingMultiplier: 10,
       // FOR LAYOUT
       logState: false,
+      infoGwei: false,
+      infoCollateral: false,
     };
   },
   components: {
