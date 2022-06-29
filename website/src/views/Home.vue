@@ -13,7 +13,7 @@
               retrieval” penalties that increases the confidence in
               decentralized storage networks .
             </h1>
-            <a href="https://dapp.pldr.dev">
+            <a href="https://dapp.pldr.dev" target="_blank">
               <div class="custom-btn-primary mt-5 mb-5">Go to dApp</div></a
             >
           </div>

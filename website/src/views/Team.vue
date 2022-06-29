@@ -8,9 +8,13 @@
           <div class="col-12 col-md-9 col-lg-6 mt-5">
             <h3 class="mb-3">CONTRIBUTORS</h3>
             <h6>
-              Researchers from Cryptonet Lab, with contributions from Cryptoecon
-              Team Lab, designed the protocol which has been developed by
-              yomi.digital (and x)
+              Researchers from
+              <a
+                href="https://research.protocol.ai/groups/cryptonetlab/"
+                target="_blank"
+                >Cryptonet Lab</a
+              >, with contributions from Cryptoecon Team Lab, designed the
+              protocol which has been developed by yomi.digital (and x)
             </h6>
           </div>
         </div>

@@ -7,8 +7,8 @@
       <div class="navbar-brand">
         <a href="/"><img src="../assets/img/logo.svg" alt="" /></a>
       </div>
-      <a href="https://dapp.pldr.dev"
-        ><div class="custom-btn-primary">MVP</div></a
+      <a href="https://dapp.pldr.dev" target="_blank"
+        ><div class="custom-btn-primary">Go to dApp</div></a
       >
     </div>
     <div
@@ -16,7 +16,10 @@
       :class="{ 'negative-left': isMobile }"
     >
       <div class="col-3 col-md-2 col-lg-1 b-left">
-        <a href="https://github.com/protocol/retriev" class="nav-link"
+        <a
+          href="https://github.com/protocol/retriev"
+          target="_blank"
+          class="nav-link"
           >GitHub</a
         >
       </div>
@@ -29,7 +32,12 @@
         >
       </div>
       <div class="col-3 col-md-2 col-lg-1 b-left">
-        <a href="" class="nav-link">Slack</a>
+        <a
+          href="https://filecoinproject.slack.com/archives/C03CJKWP2DR"
+          target="_blank"
+          class="nav-link"
+          >Slack</a
+        >
       </div>
       <div class="col-3 col-md-2 col-lg-1 b-left">
         <a href="/#/about" class="nav-link">About</a>
