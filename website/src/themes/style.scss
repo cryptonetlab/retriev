@@ -6,6 +6,11 @@ body {
   background-color: var(--bg-color-primary);
   overflow-x: hidden;
 }
+
+.home {
+  background-color: var(--bg-color-primary);
+}
+
 @mixin padding-x-container {
   padding: 0 5vw;
   margin: 0;
@@ -86,8 +91,8 @@ h3 {
 }
 h4 {
   font-family: "Inter";
-  font-weight: 600;
-  font-size: 1.125rem !important;
+  font-weight: 400 !important;
+  font-size: 0.938rem !important;
   line-height: 125%;
   color: var(--font-color-primary);
 }
@@ -101,13 +106,11 @@ h6 {
 }
 
 p {
-  /* Desktop / Text small */
-
   font-family: "IBM Plex Serif";
   font-style: normal;
   font-weight: 400;
-  font-size: 0.9rem;
-  line-height: 125%;
+  font-size: 1.2rem;
+  line-height: 130%;
   color: var(--font-color-primary);
 }
 
@@ -144,7 +147,7 @@ p {
   width: 100%;
   margin: 0;
   z-index: 999;
-  padding: 0 5vw 100px 5vw;
+  padding: 0 0 100px 0;
   background: rgba($color: #fef3ec, $alpha: 0.8);
   .nav-link {
     font-family: "Inter";
@@ -165,10 +168,9 @@ p {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
+  width: 100%;
   margin: 0;
   z-index: 999;
-  @include padding-x-container();
   background: rgba($color: #fef3ec, $alpha: 0.8);
 
   .navbar-mobile {
@@ -196,7 +198,7 @@ p {
     line-height: 125%;
     text-align: start;
     padding: 0;
-    padding-top: 1rem;
+    padding-top: 1.6rem;
     &:hover {
       text-decoration: underline;
       color: var(--font-color);
@@ -250,7 +252,7 @@ p {
 
   font-family: "Inter", sans-serif;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 0.938rem;
   color: var(--font-color-complementar);
 
   transition: all 0.3s;

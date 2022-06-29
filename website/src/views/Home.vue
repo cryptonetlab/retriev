@@ -1,28 +1,29 @@
 <template>
   <div class="home">
-    <Navbar />
-    <div class="gap"></div>
-    <div class="wrapper-page" :class="{ 'padding-5x': isDesktop }">
-      <div :class="{ container: !isDesktop, 'container-fluid': isDesktop }">
-        <div v-if="!isMobile && !isTablet" class="gap"></div>
-        <div v-if="isDesktop" class="gap"></div>
-        <div class="row" :class="{'px-3': !isDekstop}">
-          <div class="col-12 col-md-10 col-lg-8">
-            <h1 class="m-0">
-              <b>Retrieval pinning</b> leverages on a reliable system of
-              “missed retrieval” penalties that increases the confidence in
-              decentralized storage networks .
-            </h1>
-            <a href="https://dapp.pldr.dev" target="_blank">
-              <div class="custom-btn-primary mt-5 mb-5">Go to dApp</div></a
-            >
+    <div class="container bg-color">
+      <Navbar />
+      <div :class="{'gap' :isMobile}"></div>
+      <div class="wrapper-page">
+        <div :class="{ container: !isDesktop }">
+          <div v-if="!isMobile && !isTablet" class="gap"></div>
+          <div class="row" :class="{ 'px-3': !isDesktop }">
+            <div class="col-12 col-md-10 col-lg-8">
+              <h1 class="m-0">
+                <b>Retrieval pinning</b> leverages on a reliable system of
+                “missed retrieval” penalties that increases the confidence in
+                decentralized storage networks .
+              </h1>
+              <a href="https://dapp.pldr.dev" target="_blank">
+                <div class="custom-btn-primary mt-5 mb-5">Go to dApp</div></a
+              >
+            </div>
           </div>
+          <div class="gap" v-if="!isDesktop"></div>
+          <div class="gap" v-if="isTablet"></div>
         </div>
-        <div class="gap" v-if="!isDesktop"></div>
-        <div class="gap" v-if="isTablet"></div>
       </div>
+      <Footer />
     </div>
-    <Footer />
   </div>
 </template>
 
