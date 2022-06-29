@@ -8,14 +8,8 @@
           :class="{ 'mb-3': isMobile }"
         >
           <div class="col-12 col-md-9 col-lg-8 offset-md-1 offset-lg-1">
-            <h3>ABOUT</h3>
+            <h3>CONTEXT</h3>
             <h6>
-              <!-- We consider the setting of a decentralized storage network. That
-              is, we have clients and storage providers; the former delegate the
-              storage of their file to the network of the providers, which can
-              publicly prove their service (ie, persistent storage). This is
-              done following a specific protocol with detailed SLA about the
-              storage (for example, see Filecoin). -->
               In the setting of a decentralized storage network there are
               clients who delegate the storage of their files to a network of
               providers.
