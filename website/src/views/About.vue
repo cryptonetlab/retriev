@@ -1,7 +1,7 @@
 <template>
   <div class="about">
     <Navbar />
-    <div class="wrapper-page">
+    <div class="wrapper-page" :class="{'px-3': !isDesktop}">
       <div class="container" :class="{ 'mt-5': isTablet }">
         <div
           class="row py-4 justify-content-start"
@@ -18,8 +18,8 @@
         </div>
         <div v-if="!isMobile" class="gap-smaller"></div>
         <div
-          class="row justify-content-start pb-4"
-          :class="{ 'mb-5': !isMobile && !isTablet }"
+          class="row justify-content-center pb-4"
+          :class="{ 'pb-5': isDesktop }"
         >
           <div class="col-12 col-md-5 col-lg-4" :class="{ 'mb-3': isMobile }">
             <h3>WHY RETRIEVAL PINNING?</h3>
@@ -50,8 +50,8 @@
         </div>
       </div>
     </div>
-    <div class="gap" v-if="isTablet"></div>
-    <div class="gap" v-if="isTablet"></div>
+    <div class="gap" v-if="!isDesktop"></div>
+    <div class="gap" v-if="!isDesktop"></div>
     <Footer />
   </div>
 </template>
@@ -61,6 +61,7 @@
 import Navbar from "@/components/Navbar.vue";
 import Footer from "@/components/Footer.vue";
 import checkViewport from "@/mixins/checkViewport";
+
 
 export default {
   name: "About",

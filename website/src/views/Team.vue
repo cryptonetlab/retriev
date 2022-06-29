@@ -1,16 +1,16 @@
 <template>
   <div class="team">
     <Navbar />
-    <div class="wrapper-page">
+    <div class="wrapper-page" :class="{'px-3': !isDekstop}">
       <div class="gap" v-if="!isDesktop"></div>
       <div class="container" :class="{ 'mt-5 mb-5': isDesktop && isTablet }">
         <div class="row" :class="{ 'mb-3': isMobile }">
-          <div class="col-12 col-md-9 col-lg-6 mt-5">
+          <div class="col-12 col-md-9 col-lg-6 mt-5 offset-md-1 offset-lg-1">
             <h3 class="mb-3">CONTRIBUTORS</h3>
             <h6>
               Researchers from
               <a
-                href="https://research.protocol.ai/groups/cryptonetlab/"
+                href="http://cryptonet.org/"
                 target="_blank"
                 >Cryptonet Lab</a
               >
