@@ -14,7 +14,7 @@
 
       <div class="container" v-if="account">
         <div>
-          <h1 class="title is-3">Data retrievability Oracle</h1>
+          <h1 class="title is-3">Retrieval Pinning</h1>
           Welcome back {{ account }}<br />
           Internal balance in contract is {{ balance }} ETH,
           <a href="#" style="color: #000" @click="withdraw"
@@ -120,8 +120,8 @@
               <div v-if="isUploadingIPFS">
                 Uploading file on IPFS, please wait..
               </div>
-              <b-field v-if="!fileToMint.name">
-                <b-upload v-model="fileToMint" expanded drag-drop>
+              <b-field v-if="!fileToUpload.name">
+                <b-upload v-model="fileToUpload" expanded drag-drop>
                   <section class="section">
                     <div class="content has-text-centered">
                       <p>Drop your file here or click to upload</p>
@@ -242,7 +242,7 @@ export default {
       abi: ABI,
       balance: 0,
       infuraURL: "https://ipfs.infura.io:5001/api/v0/add",
-      fileToMint: {},
+      fileToUpload: {},
       isUploadingIPFS: false,
       slashingMultiplier: 10,
       // FOR LAYOUT
@@ -253,7 +253,7 @@ export default {
     Navbar,
   },
   watch: {
-    fileToMint() {
+    fileToUpload() {
       this.uploadFile();
     },
     async dealValue() {
@@ -351,9 +351,15 @@ export default {
           process.env.VUE_APP_API_URL + "/deals/" + app.account
         );
         app.isWorking = false;
-        app.deals = deals.data;
+        let keys = [];
+        for (let k in deals.data) {
+          let deal = deals.data[k];
+          if (keys.indexOf(parseInt(deal.index)) === -1) {
+            keys.push(parseInt(deal.index));
+            app.deals.push(deal);
+          }
+        }
         app.log("Found " + app.deals.length + " deals.");
-        console.log(app.deals);
       } catch (e) {
         alert("Can't fetch deals from blockchain, please retry!");
       }
@@ -414,10 +420,10 @@ export default {
     },
     async uploadFile() {
       const app = this;
-      if (app.fileToMint.name && !app.isUploadingIPFS) {
+      if (app.fileToUpload.name && !app.isUploadingIPFS) {
         app.isUploadingIPFS = true;
         const formData = new FormData();
-        formData.append("file", app.fileToMint);
+        formData.append("file", app.fileToUpload);
         axios({
           method: "post",
           url: app.infuraURL,
@@ -429,8 +435,6 @@ export default {
           app.dealUri = "ipfs://" + response.data.Hash;
           app.isUploadingIPFS = false;
         });
-      } else {
-        alert("Select a file first!");
       }
     },
     async createDealProposal() {
@@ -452,7 +456,7 @@ export default {
             app.workingMessage = "Please confirm action with metamask..";
             try {
               const contract = new app.web3.eth.Contract(app.abi, app.contract);
-              await contract.methods
+              const receipt = await contract.methods
                 .createDealProposal(
                   app.dealUri,
                   app.dealDuration,
@@ -480,26 +484,45 @@ export default {
                     rtl: false,
                   });
                 });
-
-              this.$toast("Deal proposal created!", {
-                position: "top-right",
-                timeout: 5000,
-                closeOnClick: true,
-                pauseOnFocusLoss: true,
-                pauseOnHover: true,
-                draggable: true,
-                draggablePercent: 0.6,
-                showCloseButtonOnHover: true,
-                hideProgressBar: true,
-                closeButton: "button",
-                icon: "fa-solid fa-check",
-                rtl: false,
-              });
-              app.loadState();
-              app.showCreate = false;
-              app.dealUri = "";
-              app.dealDuration = "";
-              app.dealValue = "";
+              console.log("BLOCKCHAIN_RECEIPT", receipt);
+              const dealId =
+                receipt.events?.DealProposalCreated?.returnValues?.index;
+              if (dealId !== undefined) {
+                console.log("DEAL_ID", dealId);
+                this.$toast("Deal proposal created!", {
+                  position: "top-right",
+                  timeout: 5000,
+                  closeOnClick: true,
+                  pauseOnFocusLoss: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  draggablePercent: 0.6,
+                  showCloseButtonOnHover: true,
+                  hideProgressBar: true,
+                  closeButton: "button",
+                  icon: "fa-solid fa-check",
+                  rtl: false,
+                });
+                app.workingMessage = "Waiting for API update..";
+                setTimeout(async function () {
+                  let updated = false;
+                  while (!updated) {
+                    const parsed = await axios.get(
+                      process.env.VUE_APP_API_URL + "/parse/" + dealId
+                    );
+                    console.log("PARSED_API", parsed);
+                    if (parsed.data.index !== undefined) {
+                      updated = true;
+                    }
+                  }
+                  app.loadState();
+                  app.showCreate = false;
+                  app.fileToUpload = "";
+                  app.dealUri = "";
+                  app.dealDuration = "";
+                  app.dealValue = "";
+                }, 2000);
+              }
             } catch (e) {
               app.isWorking = false;
               alert(e.message);
