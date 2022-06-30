@@ -64,6 +64,9 @@ export const parseDeal = async (deal_index) => {
       response(true)
     } catch (e) {
       console.log('[DEALS] -> Error while parsing deal #', deal_index)
+      console.log('--')
+      console.log(e)
+      console.log('--')
       response(false)
     }
   })
@@ -98,17 +101,17 @@ export const parseDeals = async () => {
   }
 };
 
-export const parseAppeal = async (k) => {
+export const parseAppeal = async (deal_index) => {
   return new Promise(async response => {
     const instance = await contract()
-    const onchain_deal = await instance.contract.deals(k);
+    const onchain_deal = await instance.contract.deals(deal_index);
     const active_appeal = await instance.contract.active_appeals(onchain_deal.deal_uri)
     const db = new Database.Mongo();
     if (active_appeal > 0) {
-      console.log("[APPEALS] Found appeal for deal #" + k + ", asking details..");
+      console.log("[APPEALS] Found appeal for deal #" + deal_index + ", asking details..");
       try {
         const onchain_appeal = await instance.contract.appeals(active_appeal);
-        if (onchain_appeal.deal_index.toString() === k.toString()) {
+        if (onchain_appeal.deal_index.toString() === deal_index.toString()) {
           let appeal = {
             round: 0,
             active: onchain_appeal.active,
@@ -118,10 +121,10 @@ export const parseAppeal = async (k) => {
           const round = await instance.contract.getRound(active_appeal);
           console.log("[APPEALS] --> Round is:", round.toString())
           appeal.round = round.toString();
-          const checkDB = await db.find('deals', { index: k })
+          const checkDB = await db.find('deals', { index: deal_index })
           if (checkDB !== null) {
             console.log('[APPEALS] ---> Saving appeal details to db')
-            await db.update('deals', { index: k }, { $set: { appeal: appeal } })
+            await db.update('deals', { index: deal_index }, { $set: { appeal: appeal } })
           }
         }
         response(true)
@@ -130,7 +133,7 @@ export const parseAppeal = async (k) => {
         response(false)
       }
     } else {
-      console.log('[APPEALS] No appeals found for id #', k)
+      console.log('[APPEALS] No appeals found for id #', deal_index)
       response(false)
     }
   })
@@ -139,7 +142,6 @@ export const parseAppeal = async (k) => {
 export const parseAppeals = async () => {
   if (!isParsingAppeals) {
     isParsingAppeals = true
-    const instance = await contract()
     const db = new Database.Mongo();
     const deals = await db.find('deals', {}, { timestamp_start: -1 })
     for (let k in deals) {
@@ -150,7 +152,7 @@ export const parseAppeals = async () => {
         console.log('[APPEALS] Parsing deal ' + deal.index + ' to search appeals..')
         await parseAppeal(deal.index)
       } else {
-        console.log('[APPEALS] Deal ' + deal.index + ' elapsed.')
+        console.log('[APPEALS] Deal ' + deal.index + ' expired.')
       }
     }
     isParsingAppeals = false
@@ -158,4 +160,53 @@ export const parseAppeals = async () => {
   } else {
     return false
   }
+};
+
+export const listenEvents = async () => {
+  const instance = await contract()
+  console.log('Setting up on-chain event listeners..')
+  instance.contract.on("Transfer", async (from, to, index) => {
+    console.log('[EVENT] Transfer event from', from, 'to', to)
+    if (from === "0x0000000000000000000000000000000000000000") {
+      console.log("[EVENT] Deal proposal accepted")
+      const deal_index = parseInt(index.toString())
+      parseDeal(deal_index)
+    }
+  })
+  instance.contract.on("DealProposalCanceled", async (index) => {
+    console.log("[EVENT] Deal proposal canceled")
+    const deal_index = parseInt(index.toString())
+    parseDeal(deal_index)
+  })
+  instance.contract.on("AppealCreated", async (appeal_index) => {
+    console.log("[EVENT] Appeal created")
+    const appeal = await instance.contract.appeals(appeal_index)
+    const deal_index = parseInt(appeal.deal_index.toString())
+    const round_duration = await instance.contract.round_duration()
+    const halt_time = (round_duration / 2) * 1000
+    let parserInterval = setInterval(async function () {
+      const round = await instance.contract.getRound(appeal_index)
+      if (round.toString() !== "99") {
+        console.log('[APPEAL] Parsing round #' + round.toString() + ' of appeal #' + appeal_index.toString())
+        await parseDeal(deal_index)
+        parseAppeal(deal_index)
+      } else {
+        console.log('[APPEAL] Appeal #' + appeal_index.toString() + ' ended')
+        clearInterval(parserInterval)
+      }
+    }, halt_time)
+  })
+  instance.contract.on("RoundSlashed", async (appeal_index) => {
+    console.log("[EVENT] Round slashed")
+    const appeal = await instance.contract.appeals(appeal_index)
+    const deal_index = parseInt(appeal.deal_index.toString())
+    await parseDeal(deal_index)
+    parseAppeal(deal_index)
+  })
+  instance.contract.on("DealInvalidated", async (index) => {
+    console.log("[EVENT] Deal invalidated")
+    const deal_index = parseInt(index.toString())
+    await parseDeal(deal_index)
+    parseAppeal(deal_index)
+  })
 };

@@ -116,7 +116,6 @@ const processappeal = async (node, index) => {
                 }
             } else {
                 const round_duration = await contract.round_duration()
-                // TODO: Be sure this matches protocol design
                 const halt_time = (round_duration / 2) * 1000
                 console.log("Leader is:", leader, "waiting for " + halt_time + " seconds before try to retrieve file..")
                 appealsProcessing[index] = setTimeout(async function () {

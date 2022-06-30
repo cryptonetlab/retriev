@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as Database from "./libs/database";
-import { parseDeals, parseAppeals, parseDeal, parseAppeal, contract, verify } from "./libs/web3";
+import { parseDeals, parseAppeals, parseDeal, parseAppeal, contract, verify, listenEvents } from "./libs/web3";
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -17,12 +17,9 @@ db.createDealsIndex();
 
 // Automatic parsers
 async function parsers() {
+  listenEvents()
   parseDeals()
   parseAppeals()
-  setInterval(async function () {
-    parseDeals()
-    parseAppeals()
-  }, 60000)
 }
 parsers()
 
