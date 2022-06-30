@@ -182,12 +182,12 @@ export const listenEvents = async () => {
     console.log("[EVENT] Appeal created")
     const appeal = await instance.contract.appeals(appeal_index)
     const deal_index = parseInt(appeal.deal_index.toString())
-    const round_duration = await instance.contract.round_duration()
-    const halt_time = (round_duration / 2) * 1000
     setTimeout(async function () {
       await parseDeal(deal_index)
       parseAppeal(deal_index)
     }, 5000)
+    const round_duration = await instance.contract.round_duration()
+    const halt_time = (round_duration / 2) * 1000
     let parserInterval = setInterval(async function () {
       const round = await instance.contract.getRound(appeal_index)
       if (round.toString() !== "99") {
