@@ -31,62 +31,65 @@
               <a href="#" style="color: #000" @click="showCreate = true"
                 >📄 new deal proposal</a
               >
-              <div class="mt-5" v-if="deals.length > 0">
-                <div
-                  class="is-flex is-align-items-center is-justify-content-space-between mb-5"
-                >
-                  <div>
-                    <b class="title is-5 mb-3">Manage your deals</b>
-                  </div>
-                  <div class="ml-5">
-                    <div class="dropdown me-10-desktop">
-                      <div class="dropdown__face" @click="filtered = !filtered">
-                        <div class="dropdown__text">
-                          Status<span v-if="activeDeal || endedDeal">: </span>
-                          <span v-if="activeDeal">Active</span>
-                          <span v-if="endedDeal">Ended</span>
-                          <i
-                            v-if="!filtered"
-                            class="ml-3 fa-solid fa-chevron-right"
-                          ></i>
-                          <i
-                            v-if="filtered"
-                            class="ml-3 fa-solid fa-chevron-down"
-                          ></i>
-                        </div>
+              <div
+                class="is-flex is-align-items-center is-justify-content-space-between mb-5"
+              >
+                <div v-if="deals.length === 0" style="width: 80%">
+                  You have no active Deals or Proposal. Create a new one or view
+                  the history of Deals you have created.
+                </div>
+                <div v-if="deals.length > 0">
+                  <b class="title is-5 mb-3">Manage your deals</b>
+                </div>
+                <div class="ml-5">
+                  <div class="dropdown me-10-desktop">
+                    <div class="dropdown__face" @click="filtered = !filtered">
+                      <div class="dropdown__text">
+                        Status<span v-if="activeDeal || endedDeal">: </span>
+                        <span v-if="activeDeal">Active</span>
+                        <span v-if="endedDeal">Ended</span>
+                        <i
+                          v-if="!filtered"
+                          class="ml-3 fa-solid fa-chevron-right"
+                        ></i>
+                        <i
+                          v-if="filtered"
+                          class="ml-3 fa-solid fa-chevron-down"
+                        ></i>
                       </div>
-                      <Transition
-                        name="custom-fade"
-                        enter-active-class="fade-in-top"
-                        leave-active-class="fade-out-top"
-                      >
-                        <ul v-if="filtered" class="dropdown__items">
-                          <li
-                            @click="
-                              (activeDeal = true),
-                                (endedDeal = false),
-                                (filtered = false),
-                                activeDeals()
-                            "
-                          >
-                            Active
-                          </li>
-                          <li
-                            @click="
-                              (endedDeal = true),
-                                (activeDeal = false),
-                                (filtered = false),
-                                expiredDeals()
-                            "
-                          >
-                            Ended
-                          </li>
-                        </ul>
-                      </Transition>
                     </div>
+                    <Transition
+                      name="custom-fade"
+                      enter-active-class="fade-in-top"
+                      leave-active-class="fade-out-top"
+                    >
+                      <ul v-if="filtered" class="dropdown__items">
+                        <li
+                          @click="
+                            (activeDeal = true),
+                              (endedDeal = false),
+                              (filtered = false),
+                              activeDeals()
+                          "
+                        >
+                          Active
+                        </li>
+                        <li
+                          @click="
+                            (endedDeal = true),
+                              (activeDeal = false),
+                              (filtered = false),
+                              expiredDeals()
+                          "
+                        >
+                          Ended
+                        </li>
+                      </ul>
+                    </Transition>
                   </div>
                 </div>
-
+              </div>
+              <div class="mt-5" v-if="deals.length > 0">
                 <div>
                   <div class="columns is-multiline">
                     <div
@@ -201,9 +204,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
-              <div v-if="deals.length === 0">
-                No deals or proposal, create a new one.
               </div>
             </div>
             <!-- END - Show all created deals -->
@@ -436,7 +436,7 @@ export default {
       infoCollateral: false,
       // FILTER
       filtered: false,
-      activeDeal: false,
+      activeDeal: true,
       endedDeal: false,
     };
   },
@@ -552,6 +552,7 @@ export default {
         }
         app.log("Found " + app.deals.length + " deals.");
         console.log(app.deals);
+        this.activeDeals();
       } catch (e) {
         alert("Can't fetch deals from blockchain, please retry!");
       }
