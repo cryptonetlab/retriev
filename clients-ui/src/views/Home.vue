@@ -133,6 +133,15 @@
                               />
                             </a>
                           </div>
+                          <div class="icon-refresh">
+                            <i
+                              class="fa-solid fa-arrow-rotate-right"
+                              @click="
+                                selectedDeal = deal;
+                                refreshDeal();
+                              "
+                            ></i>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -365,6 +374,8 @@ export default {
       fileToUpload: {},
       isUploadingIPFS: false,
       slashingMultiplier: 10,
+      // REFRESH SINGLE DEAL
+      selectedDeal: {},
       // FOR LAYOUT
       logState: false,
       infoGwei: false,
@@ -482,6 +493,7 @@ export default {
           }
         }
         app.log("Found " + app.deals.length + " deals.");
+        console.log(app.deals);
       } catch (e) {
         alert("Can't fetch deals from blockchain, please retry!");
       }
@@ -835,6 +847,38 @@ export default {
         setTimeout(function () {
           app.isToasting = false;
         }, 6200);
+      }
+    },
+    async refreshDeal() {
+      const app = this;
+      if (!app.isWorking) {
+        app.isWorking = true;
+        app.log("Updating deal please wait..");
+        app.$toast.warning("Updating deal please wait..", {
+          position: "top-right",
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: true,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: "fa-solid fa-hourglass",
+          rtl: false,
+        });
+        try {
+          let refresh = await axios.get(
+            process.env.VUE_APP_API_URL + "/parse/" + app.selectedDeal._id
+          );
+          console.log("refreshed", refresh);
+        } catch (e) {
+          app.isWorking = false;
+          alert(e.message);
+        }
+        app.isWorking = false;
+        app.workingMessage = "";
       }
     },
   },
