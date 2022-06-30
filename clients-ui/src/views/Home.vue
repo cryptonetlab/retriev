@@ -12,7 +12,7 @@
       </div>
       <!-- END - Logs button show/hide -->
 
-      <div class="container" v-if="account">
+      <div class="container" :class="{ 'move-page': logState }" v-if="account">
         <div>
           <h1 class="title is-3">Retrieval Pinning</h1>
           Welcome back {{ account }}<br />

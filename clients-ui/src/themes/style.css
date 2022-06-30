@@ -207,8 +207,24 @@ button.button.is-rounded.is-dark:hover {
   word-break: break-all;
   font-size: 12px;
   border-left: 1px solid black;
-  z-index: 2;
+  z-index: 9;
   background-color: #f3f5f7;
+}
+
+.move-page {
+  margin: 0;
+  position: absolute;
+  top: 3rem;
+  animation-name: example;
+  animation-duration: 0.5s;
+}
+@keyframes example {
+  from {
+    left: 5rem;
+  }
+  to {
+    left: 3rem;
+  }
 }
 
 .right-col hr {
