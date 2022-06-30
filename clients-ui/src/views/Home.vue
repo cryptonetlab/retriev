@@ -103,7 +103,9 @@
                                 new Date().getTime() <
                                   parseInt(deal.timestamp_end * 1000)) ||
                               (deal.appeal.active !== undefined &&
-                                parseInt(deal.appeal.round) === 99)
+                                parseInt(deal.appeal.round) === 99 &&
+                                new Date().getTime() <
+                                  parseInt(deal.timestamp_end * 1000))
                             "
                             @click="createAppeal(deal.index)"
                             >❌ create appeal</a
