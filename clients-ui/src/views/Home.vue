@@ -32,7 +32,61 @@
                 >📄 new deal proposal</a
               >
               <div class="mt-5" v-if="deals.length > 0">
-                <b class="title is-5 mb-3">Manage your deals</b><br /><br />
+                <div
+                  class="is-flex is-align-items-center is-justify-content-space-between mb-5"
+                >
+                  <div>
+                    <b class="title is-5 mb-3">Manage your deals</b>
+                  </div>
+                  <div class="ml-5">
+                    <div class="dropdown me-10-desktop">
+                      <div class="dropdown__face" @click="filtered = !filtered">
+                        <div class="dropdown__text">
+                          Status<span v-if="activeDeal || endedDeal">: </span>
+                          <span v-if="activeDeal">Active</span>
+                          <span v-if="endedDeal">Ended</span>
+                          <i
+                            v-if="!filtered"
+                            class="ml-3 fa-solid fa-chevron-right"
+                          ></i>
+                          <i
+                            v-if="filtered"
+                            class="ml-3 fa-solid fa-chevron-down"
+                          ></i>
+                        </div>
+                      </div>
+                      <Transition
+                        name="custom-fade"
+                        enter-active-class="fade-in-top"
+                        leave-active-class="fade-out-top"
+                      >
+                        <ul v-if="filtered" class="dropdown__items">
+                          <li
+                            @click="
+                              (activeDeal = true),
+                                (endedDeal = false),
+                                (filtered = false),
+                                activeDeals()
+                            "
+                          >
+                            Active
+                          </li>
+                          <li
+                            @click="
+                              (endedDeal = true),
+                                (activeDeal = false),
+                                (filtered = false),
+                                expiredDeals()
+                            "
+                          >
+                            Ended
+                          </li>
+                        </ul>
+                      </Transition>
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <div class="columns is-multiline">
                     <div
@@ -380,6 +434,10 @@ export default {
       logState: false,
       infoGwei: false,
       infoCollateral: false,
+      // FILTER
+      filtered: false,
+      activeDeal: false,
+      endedDeal: false,
     };
   },
   components: {
@@ -879,6 +937,66 @@ export default {
         }
         app.isWorking = false;
         app.workingMessage = "";
+      }
+    },
+    async expiredDeals() {
+      const app = this;
+      console.log("im here");
+      if (!app.isWorking) {
+        app.isWorking = true;
+        app.deals = [];
+        try {
+          let deals = await axios.get(
+            process.env.VUE_APP_API_URL + "/deals/" + app.account
+          );
+          app.isWorking = false;
+          let keys = [];
+          for (let k in deals.data) {
+            let deal = deals.data[k];
+            if (keys.indexOf(parseInt(deal.index)) === -1) {
+              if (
+                parseInt(deal.timestamp_end) - new Date().getTime() / 1000 <
+                0
+              ) {
+                keys.push(parseInt(deal.index));
+                app.deals.push(deal);
+              }
+            }
+          }
+          console.log(app.deals);
+        } catch (e) {
+          alert("Can't fetch deals from blockchain, please retry!");
+        }
+      }
+    },
+    async activeDeals() {
+      const app = this;
+      console.log("im here");
+      if (!app.isWorking) {
+        app.isWorking = true;
+        app.deals = [];
+        try {
+          let deals = await axios.get(
+            process.env.VUE_APP_API_URL + "/deals/" + app.account
+          );
+          app.isWorking = false;
+          let keys = [];
+          for (let k in deals.data) {
+            let deal = deals.data[k];
+            if (keys.indexOf(parseInt(deal.index)) === -1) {
+              if (
+                parseInt(deal.timestamp_end) - new Date().getTime() / 1000 >
+                0
+              ) {
+                keys.push(parseInt(deal.index));
+                app.deals.push(deal);
+              }
+            }
+          }
+          console.log(app.deals);
+        } catch (e) {
+          alert("Can't fetch deals from blockchain, please retry!");
+        }
       }
     },
   },
