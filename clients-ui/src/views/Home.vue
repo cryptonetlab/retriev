@@ -99,9 +99,11 @@
                             href="#"
                             v-if="
                               (deal.appeal.active === undefined &&
-                              parseInt(deal.timestamp_start) > 0 &&
-                              new Date().getTime() <
-                                parseInt(deal.timestamp_end * 1000)) || (deal.appeal.active !== undefined && parseInt(deal.appeal.round) === 99)
+                                parseInt(deal.timestamp_start) > 0 &&
+                                new Date().getTime() <
+                                  parseInt(deal.timestamp_end * 1000)) ||
+                              (deal.appeal.active !== undefined &&
+                                parseInt(deal.appeal.round) === 99)
                             "
                             @click="createAppeal(deal.index)"
                             >❌ create appeal</a
@@ -797,7 +799,7 @@ export default {
             // TODO: Be sure accepted deal is yours
             // TODO: Read deal_index from contract
             // TODO: Check if deal.owner === app.account
-            app.showToast("Your deal prosal was accepted by provider!");
+            app.showToast("Your deal proposal was accepted by provider!");
           } else if (action !== undefined && action === "SLASHED") {
             // TODO: Be sure slashed deal is yours
             // TODO: Read deal_index from contract
