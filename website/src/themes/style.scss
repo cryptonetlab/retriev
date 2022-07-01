@@ -67,6 +67,7 @@ body {
 .footer a {
   text-underline-offset: 10px !important;
 }
+
 h1 {
   font-family: "IBM Plex Serif", serif;
   font-weight: 300 !important;
@@ -78,6 +79,7 @@ h1 {
     font-weight: 700 !important;
   }
 }
+
 h3 {
   font-family: "Inter";
   font-style: normal;
@@ -89,6 +91,7 @@ h3 {
   color: var(--font-color-primary);
   margin: 0;
 }
+
 h4 {
   font-family: "Inter";
   font-weight: 400 !important;
@@ -96,6 +99,7 @@ h4 {
   line-height: 125%;
   color: var(--font-color-primary);
 }
+
 h6 {
   font-family: "IBM Plex Serif";
   font-style: normal;
@@ -110,7 +114,7 @@ p {
   font-style: normal;
   font-weight: 400;
   font-size: 1.2rem;
-  line-height: 130%;
+  line-height: 150%;
   color: var(--font-color-primary);
 }
 

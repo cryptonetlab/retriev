@@ -9,7 +9,7 @@
           <a href="/"><img src="../assets/img/logo.svg" alt="" /></a>
         </div>
         <a href="https://dapp.pldr.dev" target="_blank"
-          ><div class="custom-btn-primary">Go to dApp</div></a
+          ><div class="custom-btn-primary">Launch dApp</div></a
         >
       </div>
       <div class="row justify-content-end b-top">

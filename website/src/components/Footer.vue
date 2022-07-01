@@ -5,7 +5,7 @@
         <div class="col-12 col-md-6 col-lg-6 pt-5"></div>
         <div class="col-3 col-md-2 col-lg-2 b-left px-0 pt-5"></div>
         <div class="col-3 col-md-2 col-lg-2 b-left px-0 pt-5"></div>
-        <div class="col-3 col-md-2 col-lg-2 b-left px-0 pt-5"></div>
+        <!-- <div class="col-3 col-md-2 col-lg-2 b-left px-0 pt-5"></div> -->
       </div>
       <div class="row negative-top" :class="{ 'px-5': isMobile }">
         <div class="col-12 col-md-6 col-lg-6" :class="{ 'mb-2': isMobile }">
@@ -27,12 +27,12 @@
         >
           <a href="/#/contributors" class="nav-link">Contributors</a>
         </div>
-        <div
+        <!-- <div
           class="col-4 col-md-2 col-lg-2 px-0"
           :class="{ 'pt-3 b-top b-left': isMobile }"
         >
           <a href="" class="nav-link">News</a>
-        </div>
+        </div> -->
         <div
           class="col-4 col-md-2 col-lg-2 px-0"
           :class="{ 'pt-3 b-top b-left': isMobile }"

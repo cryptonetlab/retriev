@@ -27,12 +27,12 @@
             <h3>HOW IT WORKS?</h3>
             <p>
               → A fixed set of referees is part of the protocol: half of them
-              is supposed to be honest; <br />
+              is supposed to be honest; <br /><br />
               → Any interested storage provider can sign up to offer assurance
-              policies for retrieval services;<br />
+              policies for retrieval services;<br /><br />
               → Client and provider agree on a retrievability deal - the client
               sets a payment and the provider locks down a collateral for each
-              deal: <br />
+              deal: <br /><br />
               → When a client does not get the requested file, it appeals to the
               referees. They try to retrieve the file asking it to the provider:
               if this works the file is forwarded to the client; if not, they

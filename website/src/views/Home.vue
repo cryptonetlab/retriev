@@ -14,7 +14,7 @@
                 decentralized storage networks .
               </h1>
               <a href="https://dapp.pldr.dev" target="_blank">
-                <div class="custom-btn-primary mt-5 mb-5">Go to dApp</div></a
+                <div class="custom-btn-primary mt-5 mb-5">Launch dApp</div></a
               >
             </div>
           </div>
