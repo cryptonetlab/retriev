@@ -89,9 +89,10 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     // Multipliers
     uint256 public slashing_multiplier = 1000;
     uint8 public committee_divider = 4;
-    // Timeout to accept a deal (1 week)
+    // Deal parameters
     uint32 public proposal_timeout = 86_400;
     uint8 public max_appeals = 5;
+    uint256 public min_deal_value = 0;
     // Internal counters for deals and appeals mapping
     Counters.Counter private dealCounter;
     Counters.Counter private appealCounter;
@@ -344,7 +345,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         );
         uint256 maximum_collateral = slashing_multiplier * msg.value;
         require(
-            msg.value > 0 && collateral >= msg.value && collateral <= maximum_collateral,
+            msg.value >= min_deal_value && collateral >= msg.value && collateral <= maximum_collateral,
             "Collateral or value out of range"
         );
         // Creating next id
