@@ -324,7 +324,13 @@ const daemon = async (node) => {
     for (let k in appealsEvents) {
         const appealEvent = appealsEvents[k]
         const appealIndex = appealEvent.args.index
-        processappeal(node, appealIndex)
+        // TODO: Be sure deal is started, if not started startappeal first
+        const appeal = returnappeal(appealIndex)
+        if (appeal.origin_timestamp > 0) {
+            processappeal(node, appealIndex)
+        } else {
+            startappeal(appealIndex)
+        }
     }
     // Listen for appeals in contract
     contract.on("AppealCreated", (index, provider, ipfs_hash) => {

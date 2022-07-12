@@ -61,6 +61,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         mapping(uint256 => bool) processed;
         // Counter for slashes
         uint128 slashes;
+        // Block timestamp of deal creation
+        uint256 request_timestamp;
         // Adding block timestamp to calculate timeout
         uint256 origin_timestamp;
     }
@@ -114,13 +116,18 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     event DealRedeemed(uint256 index);
     // Event emitted when new appeal is created
     event AppealCreated(uint256 index, address provider, string deal_uri);
+    // Event emitted when new appeal started
+    event AppealStarted(uint256 index);
     // Event emitted when a slash message is recorded
     event RoundSlashed(uint256 index);
     // Event emitted when a deal is invalidated by an appeal
     event DealInvalidated(uint256 index);
 
     constructor(address _protocol_address) ERC721("Retriev", "RTV") {
-        require(_protocol_address != address(0), "Can't init protocol with black-hole");
+        require(
+            _protocol_address != address(0),
+            "Can't init protocol with black-hole"
+        );
         protocol_address = _protocol_address;
     }
 
@@ -345,7 +352,9 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         );
         uint256 maximum_collateral = slashing_multiplier * msg.value;
         require(
-            msg.value >= min_deal_value && collateral >= msg.value && collateral <= maximum_collateral,
+            msg.value >= min_deal_value &&
+                collateral >= msg.value &&
+                collateral <= maximum_collateral,
             "Collateral or value out of range"
         );
         // Creating next id
@@ -456,10 +465,13 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     }
 
     /*
-        This method will allow referees to create an appeal
+        This method will allow client to create an appeal
     */
     function createAppeal(uint256 deal_index) external payable nonReentrant {
-        require(tot_appeals[deal_index] < max_appeals, "Can't create more appeals on deal");
+        require(
+            tot_appeals[deal_index] < max_appeals,
+            "Can't create more appeals on deal"
+        );
         require(deals[deal_index].timestamp_start > 0, "Deal is not active");
         require(
             block.timestamp <
@@ -497,13 +509,30 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         // Creating appeal
         appeals[index].deal_index = deal_index;
         appeals[index].active = true;
-        appeals[index].origin_timestamp = block.timestamp;
+        appeals[index].request_timestamp = block.timestamp;
         // Emit appeal created event
         emit AppealCreated(
             index,
             ownerOf(deal_index),
             deals[deal_index].deal_uri
         );
+    }
+
+    /*
+        This method will allow referees to start an appeal
+    */
+    function startAppeal(uint256 appeal_index) external {
+        require(
+            appeals[appeal_index].origin_timestamp == 0,
+            "Appeal started yet"
+        );
+        require(
+            referees[msg.sender].active,
+            "Only referees can start appeals"
+        );
+        appeals[appeal_index].origin_timestamp = block.timestamp;
+        // Emit appeal created event
+        emit AppealStarted(appeal_index);
     }
 
     /*
@@ -604,9 +633,9 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         uint8 value8,
         uint32 value32
     ) external onlyOwner {
-        if(kind == 0) {
+        if (kind == 0) {
             committee_divider = value8;
-        }else if (kind == 1) {
+        } else if (kind == 1) {
             slashing_multiplier = value256;
         } else if (kind == 2) {
             proposal_timeout = value32;
@@ -620,7 +649,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             slashes_threshold = value8;
         } else if (kind == 7) {
             rounds_limit = value8;
-        } else if(kind == 8){
+        } else if (kind == 8) {
             max_appeals = value8;
         }
     }

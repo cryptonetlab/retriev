@@ -11,6 +11,7 @@ yarn task deal:create $1
 yarn task deposit $1
 yarn task deal:accept $1
 yarn task appeal:create $1
+yarn task appeal:start $1
 yarn task appeal:round $1
 echo "Waiting 60s before redeem deal"
 sleep 60

@@ -8,13 +8,9 @@ yarn task render $1
 fi
 
 yarn task deal:create $1
-sleep 5
 yarn task deposit $1
-sleep 5
 yarn task deal:accept $1
-sleep 5
 yarn task appeal:create $1
-sleep 5
+yarn task appeal:start $1
 yarn task appeal:slash $1
-sleep 5
 yarn task vault $1
