@@ -99,36 +99,70 @@
                     >
                       <div class="box-deals">
                         <div>
-                          <p><b>Index:</b> {{ deal.index }}</p>
-                          <p><b>Hash</b>: {{ deal.deal_uri }}</p>
-                          <p><b>Value:</b> {{ deal.value }}</p>
-                          <p><b>Collateral:</b> {{ deal.collateral }}</p>
-                          <p><b>Canceled:</b> {{ deal.canceled }}</p>
-                          <p><b>Provider:</b> {{ deal.provider }}</p>
-                          <p>
-                            <b>Timestamp request:</b>
-                            {{ deal.timestamp_request }}
-                          </p>
-                          <p>
-                            <b>Timestamp start:</b> {{ deal.timestamp_start
-                            }}<br />
-                          </p>
-                          <p>
-                            <b>Timestamp end:</b> {{ deal.timestamp_end }}<br />
-                          </p>
-                          <p
-                            v-if="
-                              parseInt(deal.timestamp_end) -
-                                new Date().getTime() / 1000 >
-                              0
-                            "
-                          >
-                            <b>Time remaining:</b>
-                            {{
-                              parseInt(deal.timestamp_end) -
-                              new Date().getTime() / 1000
-                            }}<br />
-                          </p>
+                          <div>
+                            <p><b>Index:</b> {{ deal.index }}</p>
+                          </div>
+                          <div>
+                            <p>
+                              <b>Deal URI: </b>
+                              <a
+                                :href="
+                                  deal.deal_uri.replace(
+                                    'ipfs://',
+                                    'https://dweb.link/ipfs/'
+                                  )
+                                "
+                                target="_blank"
+                                >{{ deal.deal_uri }}</a
+                              >
+                            </p>
+                          </div>
+                          <div>
+                            <p><b>Value:</b> {{ deal.value }}</p>
+                          </div>
+                          <div>
+                            <p><b>Collateral:</b> {{ deal.collateral }}</p>
+                          </div>
+                          <div>
+                            <p><b>Canceled:</b> {{ deal.canceled }}</p>
+                          </div>
+                          <div>
+                            <p><b>Provider:</b> {{ deal.provider }}</p>
+                          </div>
+                          <div>
+                            <p>
+                              <b>Timestamp request:</b>
+                              {{ deal.timestamp_request }}
+                            </p>
+                          </div>
+                          <div>
+                            <p>
+                              <b>Timestamp start:</b> {{ deal.timestamp_start
+                              }}<br />
+                            </p>
+                          </div>
+                          <div>
+                            <p>
+                              <b>Timestamp end:</b> {{ deal.timestamp_end
+                              }}<br />
+                            </p>
+                          </div>
+                          <div>
+                            <p
+                              v-if="
+                                parseInt(deal.timestamp_end) -
+                                  new Date().getTime() / 1000 >
+                                0
+                              "
+                            >
+                              <b>Time remaining:</b>
+                              {{
+                                parseInt(deal.timestamp_end) -
+                                new Date().getTime() / 1000
+                              }}<br />
+                            </p>
+                          </div>
+
                           <p
                             v-if="
                               parseInt(deal.timestamp_end) -
