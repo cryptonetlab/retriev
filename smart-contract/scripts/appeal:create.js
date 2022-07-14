@@ -11,19 +11,24 @@ async function main() {
 
     // Working always with last deal
     const deal_index = await contract.totalDeals()
-
-    try {
-        const fee = await contract.returnAppealFee(deal_index)
-        console.log("Fee for appeal is:", ethers.utils.formatEther(fee.toString()))
-        const tx = await contract.createAppeal(deal_index, { value: fee })
-        console.log('Pending transaction at: ' + tx.hash)
-        await tx.wait()
-        console.log('Appeal successfully created at ' + tx.hash + '!')
-        const appeal = await contract.appeals(deal_index)
-        console.log("Appeal is:", appeal)
-    } catch (e) {
-        console.log(e.message)
-        console.log('Can\'t create appeal, check transaction.')
+    const can_create_appeal = await contract.canAddressAppeal(deal_index, wallet.address)
+    console.log("Can address create the appeal?", can_create_appeal)
+    if (can_create_appeal) {
+        try {
+            const fee = await contract.returnAppealFee(deal_index)
+            console.log("Fee for appeal is:", ethers.utils.formatEther(fee.toString()))
+            const tx = await contract.createAppeal(deal_index, { value: fee })
+            console.log('Pending transaction at: ' + tx.hash)
+            await tx.wait()
+            console.log('Appeal successfully created at ' + tx.hash + '!')
+            const appeal = await contract.appeals(deal_index)
+            console.log("Appeal is:", appeal)
+        } catch (e) {
+            console.log(e.message)
+            console.log('Can\'t create appeal, check transaction.')
+        }
+    } else {
+        console.log("Address not allowed to create appeals")
     }
 }
 

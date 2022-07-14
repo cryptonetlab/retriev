@@ -18,13 +18,15 @@ async function main() {
     const min_duration = await contract.min_duration()
     const duration = min_duration; // Duration of the deal (2 minutes for test)
     const collateral = ethers.utils.parseUnits(value, 'gwei') // Setting 0 if you need minimum one
+    const appeal_addresses = [wallet.address]
     try {
         console.log("Creating new deal with URI: " + dedal_uri)
         const tx = await contract.createDealProposal(
             dedal_uri,
             duration,
             collateral,
-            ipfs_providers
+            ipfs_providers,
+            appeal_addresses
             , { value: ethers.utils.parseUnits(value, 'gwei') })
         console.log('Pending transaction at: ' + tx.hash)
         await tx.wait()

@@ -49,6 +49,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         address owner;
         // Describe if deal is canceled or not
         bool canceled;
+        // Addresses authorized to create appeals
+        mapping(address => bool) appeal_addresses;
     }
 
     // Defining appeal struct
@@ -108,7 +110,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     event DealProposalCreated(
         uint256 index,
         address[] providers,
-        string deal_uri
+        string deal_uri,
+        address[] appeal_addresses
     );
     // Event emitted when a deal is canceled before being accepted
     event DealProposalCanceled(uint256 index);
@@ -344,7 +347,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         string memory _deal_uri,
         uint256 duration,
         uint256 collateral,
-        address[] memory _providers
+        address[] memory _providers,
+        address[] memory _appeal_addresses
     ) external payable nonReentrant {
         require(
             duration >= min_duration && duration <= max_duration,
@@ -356,6 +360,10 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
                 collateral >= msg.value &&
                 collateral <= maximum_collateral,
             "Collateral or value out of range"
+        );
+        require(
+            _appeal_addresses.length > 0,
+            "You must define one or more appeal addresses"
         );
         // Creating next id
         dealCounter.increment();
@@ -375,10 +383,14 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             );*/
             deals[index].providers[_providers[i]] = true;
         }
+        // CAdd appeal addresses to deal
+        for (uint256 i = 0; i < _appeal_addresses.length; i++) {
+            deals[index].appeal_addresses[_appeal_addresses[i]] = true;
+        }
         // When created the amount of money is owned by sender
         vault[address(this)] += msg.value;
         // Emit event
-        emit DealProposalCreated(index, _providers, _deal_uri);
+        emit DealProposalCreated(index, _providers, _deal_uri, _appeal_addresses);
     }
 
     /*
@@ -412,6 +424,17 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         returns (bool)
     {
         return deals[deal_index].providers[provider];
+    }
+
+    /*
+        This method will return appeal address status in deal
+    */
+    function canAddressAppeal(uint256 deal_index, address appeal_address)
+        external
+        view
+        returns (bool)
+    {
+        return deals[deal_index].appeal_addresses[appeal_address];
     }
 
     /*
@@ -480,8 +503,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             "Deal ended, can't create appeals"
         );
         require(
-            deals[deal_index].owner == msg.sender,
-            "Only owner can create appeal"
+            deals[deal_index].appeal_addresses[msg.sender],
+            "Only authorized addresses can create appeal"
         );
         // Check if appeal exists or is expired
         require(
@@ -526,10 +549,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             appeals[appeal_index].origin_timestamp == 0,
             "Appeal started yet"
         );
-        require(
-            referees[msg.sender].active,
-            "Only referees can start appeals"
-        );
+        require(referees[msg.sender].active, "Only referees can start appeals");
         appeals[appeal_index].origin_timestamp = block.timestamp;
         // Emit appeal created event
         emit AppealStarted(appeal_index);
