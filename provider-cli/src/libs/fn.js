@@ -28,9 +28,9 @@ const deals = async (node, ...args) => {
             case "list":
                 console.log("Asking complete list to blockchain..")
                 for (let k = 1; k <= totalDeals; k++) {
-                    const deal = await contract.deals(k);
+                    const owner = await contract.ownerOf(k);
                     console.log("Checking if deal #" + k + " was accepted by current provider..")
-                    if (deal.accepted === wallet.address) {
+                    if (owner === wallet.address) {
                         deals.push(k)
                     }
                 }
@@ -44,8 +44,8 @@ const deals = async (node, ...args) => {
                     console.log("Checking if deal #" + k + " allows provider to accept..")
                     const canAccept = await contract.isProviderInDeal(k, wallet.address)
                     if (canAccept) {
-                        const deal = await contract.deals(k);
-                        if (deal.accepted === '0x0000000000000000000000000000000000000000') {
+                        const owner = await contract.ownerOf(k);
+                        if (owner === '0x0000000000000000000000000000000000000000') {
                             deals.push(k)
                         }
                     }
