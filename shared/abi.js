@@ -45,7 +45,7 @@ exports.abi = [
         "type": "uint256"
       }
     ],
-    "name": "RoundSlashed",
+    "name": "AppealStarted",
     "type": "event"
   },
   {
@@ -121,19 +121,6 @@ exports.abi = [
         "type": "uint256"
       }
     ],
-    "name": "DealProposalAccepted",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
-    ],
     "name": "DealProposalCanceled",
     "type": "event"
   },
@@ -179,19 +166,6 @@ exports.abi = [
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
-    ],
-    "name": "DealRejected",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
@@ -205,6 +179,19 @@ exports.abi = [
       }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "RoundSlashed",
     "type": "event"
   },
   {
@@ -329,6 +316,11 @@ exports.abi = [
       },
       {
         "internalType": "uint256",
+        "name": "request_timestamp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "origin_timestamp",
         "type": "uint256"
       }
@@ -358,7 +350,7 @@ exports.abi = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "_owner",
+        "name": "_to_check",
         "type": "address"
       }
     ],
@@ -368,6 +360,30 @@ exports.abi = [
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "deal_index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "appeal_address",
+        "type": "address"
+      }
+    ],
+    "name": "canAddressAppeal",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -433,24 +449,16 @@ exports.abi = [
         "internalType": "address[]",
         "name": "_providers",
         "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_appeal_addresses",
+        "type": "address[]"
       }
     ],
     "name": "createDealProposal",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "proposal_timeout",
-    "outputs": [
-      {
-        "internalType": "uint32",
-        "name": "",
-        "type": "uint32"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -704,6 +712,19 @@ exports.abi = [
   },
   {
     "inputs": [],
+    "name": "min_deal_value",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "min_duration",
     "outputs": [
       {
@@ -781,6 +802,19 @@ exports.abi = [
     "name": "processAppeal",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proposal_timeout",
+    "outputs": [
+      {
+        "internalType": "uint32",
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1074,6 +1108,19 @@ exports.abi = [
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "appeal_index",
+        "type": "uint256"
+      }
+    ],
+    "name": "startAppeal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
