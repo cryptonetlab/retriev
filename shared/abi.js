@@ -144,6 +144,12 @@ exports.abi = [
         "internalType": "string",
         "name": "deal_uri",
         "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "appeal_addresses",
+        "type": "address[]"
       }
     ],
     "name": "DealProposalCreated",

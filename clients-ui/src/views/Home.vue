@@ -688,7 +688,8 @@ export default {
                   app.dealUri,
                   app.dealDuration,
                   app.web3.utils.toWei(app.dealCollateral, "gwei"),
-                  [app.dealProviders]
+                  [app.dealProviders],
+                  [app.account]
                 )
                 .send({
                   value: app.web3.utils.toWei(app.dealValue, "gwei"),

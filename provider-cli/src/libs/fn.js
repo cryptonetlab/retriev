@@ -125,26 +125,30 @@ const getbalance = async (node) => {
     console.log("Balance is " + ethers.utils.formatEther(balance) + " ETH")
 }
 
-const daemon = async (node) => {
-    console.log("Running provider daemon..")
+const getproposals = async (node) => {
     const { contract, wallet, ethers } = await node.contract()
-    // Listen for proposal and accept them automatically, just for test
-    contract.on("DealProposalCreated", async (deal_index, providers, ipfs_hash) => {
-        console.log("New deal proposal created, processing..")
+    const filter = await contract.filters.DealProposalCreated()
+    const appealsEvents = await contract.queryFilter(filter)
+    return appealsEvents
+}
+
+const processdeal = (node, deal_index) => {
+    return new Promise(async response => {
         try {
-            const balance1 = await contract.vault(wallet.address)
-            console.log("Balance before accept is:", ethers.utils.formatEther(balance1.toString()))
-            const proposal = await contract.deals(deal_index)
-            const deposit_needed = proposal.value * 100;
-            console.log("Deposit needed is:", ethers.utils.formatEther(deposit_needed.toString()))
-            if (balance1 < deposit_needed) {
-                console.log('Need to deposit, not enough balance inside contract..')
-                const tx = await contract.depositToVault({ value: deposit_needed })
-                console.log("Depositing at " + tx.hash)
-                await tx.wait()
-            }
+            const { contract, wallet, ethers } = await node.contract()
             const canAccept = await contract.isProviderInDeal(deal_index, wallet.address)
             if (canAccept) {
+                const balance1 = await contract.vault(wallet.address)
+                console.log("Balance before accept is:", ethers.utils.formatEther(balance1.toString()))
+                const proposal = await contract.deals(deal_index)
+                const deposit_needed = proposal.value * 100;
+                console.log("Deposit needed is:", ethers.utils.formatEther(deposit_needed.toString()))
+                if (balance1 < deposit_needed) {
+                    console.log('Need to deposit, not enough balance inside contract..')
+                    const tx = await contract.depositToVault({ value: deposit_needed })
+                    console.log("Depositing at " + tx.hash)
+                    await tx.wait()
+                }
                 // TODO: Be sure that file exists and i can pin it
                 // TODO: Put an hard limit on file dimension
                 console.log("Can accept, listed as provider in deal.")
@@ -160,13 +164,32 @@ const daemon = async (node) => {
                     txid: tx.hash
                 })
                 await node.broadcast(message, "message")
+                response(true)
             } else {
                 console.log("Not a provider in this deal, can't accept.")
+                response(true)
             }
         } catch (e) {
             console.log(e)
             console.log('Can\'t accept deal, check transaction.')
+            response(false)
         }
+    })
+}
+
+const daemon = async (node) => {
+    console.log("Running provider daemon..")
+    const { contract, wallet, ethers } = await node.contract()
+    // Parse proposals
+    const proposals = await getproposals(node)
+    for (let k in proposals) {
+        const proposal = proposals[k]
+        await processdeal(node, proposal.args.index)
+    }
+    // Listen for proposal and accept them automatically, just for test
+    contract.on("DealProposalCreated", async (deal_index) => {
+        console.log("New deal proposal created, processing..")
+        await processdeal(node, deal_index)
     })
 }
 
