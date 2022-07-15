@@ -18,6 +18,26 @@ const sendmessage = async (node, ...args) => {
     }
 }
 
+const updatepinningeservice = async (node, service) => {
+    // TODO: Update internal pinning service to save deals
+}
+
+const updatepricestrategy = async (node, price) => {
+    // TODO: Update price strategy for automatic accept
+}
+
+const returnpricestrategy = async (node) => {
+    // TODO: Return price strategy
+}
+
+const subscribe = async (node) => {
+    // TODO: Subscribe to protocol
+}
+
+const getdeals = async (node) => {
+    // TODO: Return active deals
+}
+
 const deals = async (node, ...args) => {
     if (args[1] !== undefined) {
         const deal_command = args[1]
