@@ -1,0 +1,30 @@
+{
+    "name": "pldr-provider",
+    "version": "0.0.1",
+    "description": "",
+    "main": "src/stress.js",
+    "bin": "src/stress.js",
+    "scripts": {
+        "test:identity": "node src/stress.js --debug --name=stressdev --port=8000 getidentity",
+        "test:peers": "node src/stress.js --debug --name=stressdev --port=8000 ipfs swarm peers",
+        "test:pins": "node src/stress.js --debug --name=stressdev --port=8000 ipfs pin ls",
+        "compile": "pkg . --out-path bin",
+        "start": "./bin/pldr-provider-linux --debug --name=stress --port=8000"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "axios": "^0.24.0",
+        "body-parser": "^1.19.0",
+        "dotenv": "^10.0.0",
+        "ethers": "^5.6.2",
+        "express": "^4.17.1",
+        "minimist": "^1.2.6",
+        "public-ip": "^4.0.4"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.14",
+        "pkg": "^5.6.0"
+    }
+}
