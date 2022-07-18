@@ -13,7 +13,7 @@ const ipfsApi = (method, endpoint, arguments) => {
             setTimeout(function () {
                 console.log('IPFS timed out..')
                 response(false)
-            }, 120000)
+            }, 60000)
             let request = {
                 "method": method,
                 "url": "http://localhost:5001/api/v0" + endpoint
@@ -208,6 +208,7 @@ const processdeal = (node, deal_index) => {
                     const file_stats = await ipfsApi("post", "/files/stat?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/"))
                     console.log("File stats:", file_stats)
                     if (file_stats !== false && file_stats.Size !== undefined) {
+                        // TODO: Check for max file size
                         let expected_price = file_stats.Size * parseInt(configs.price_strategy) * proposal.duration
                         console.log('Expected price in wei is:', expected_price)
                         console.log('Deal value is:', proposal.value.toString())
@@ -215,6 +216,13 @@ const processdeal = (node, deal_index) => {
                             policyMet = true
                         }
                     } else if (proposalCache.indexOf(deal_index) === -1) {
+                        const message = JSON.stringify({
+                            deal_index: deal_index,
+                            owner: proposal.owner,
+                            action: "UNRETRIEVALABLE",
+                            deal_uri: proposal.deal_uri
+                        })
+                        await node.broadcast(message, "message")
                         console.log('Adding deal in cache for future retrieval')
                         proposalCache.push(deal_index)
                     }
@@ -245,6 +253,8 @@ const processdeal = (node, deal_index) => {
                             const message = JSON.stringify({
                                 deal_index: deal_index,
                                 action: "ACCEPTED",
+                                owner: proposal.owner,
+                                deal_uri: proposal.deal_uri,
                                 txid: tx.hash
                             })
                             await node.broadcast(message, "message")
