@@ -231,15 +231,16 @@ const processdeal = (node, deal_index) => {
                         console.log("Balance before accept is:", ethers.utils.formatEther(deposited.toString()))
                         const deposit_needed = proposal.value * 100;
                         console.log("Deposit needed is:", ethers.utils.formatEther(deposit_needed.toString()), "ETH")
-                        const balance = parseInt((await wallet.getBalance()).toString())
-                        if (deposited < deposit_needed && balance >= deposit_needed) {
-                            console.log('Need to deposit, not enough balance inside contract..')
-                            const tx = await contract.depositToVault({ value: deposit_needed.toString() })
-                            console.log("Depositing at " + tx.hash)
-                            await tx.wait()
-                        } else {
-                            console.log("Can't accept, not enough funds to deposit.")
-                            canAccept = false
+                        if (deposited < deposit_needed) {
+                            try {
+                                console.log('Need to deposit, not enough balance inside contract..')
+                                const tx = await contract.depositToVault({ value: deposit_needed.toString() })
+                                console.log("Depositing at " + tx.hash)
+                                await tx.wait()
+                            } catch (e) {
+                                console.log("Can't deposit..")
+                                canAccept = false
+                            }
                         }
                         // Be sure provider can accept deal
                         if (canAccept) {
