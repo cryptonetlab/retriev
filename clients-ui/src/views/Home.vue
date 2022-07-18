@@ -32,7 +32,10 @@
                 >📄 new deal proposal</a
               >
               <div
-                class="is-flex is-align-items-center is-justify-content-space-between mb-5"
+                class="
+                  is-flex is-align-items-center is-justify-content-space-between
+                  mb-5
+                "
               >
                 <div v-if="deals.length === 0" style="width: 80%">
                   You have no active Deals or Proposal. Create a new one or view
@@ -269,20 +272,20 @@
               </div>
               <div class="mb-3">
                 <p>
-                  Payment in gwei
+                  Payment in wei
                   <i
-                    @click="infoGwei = true"
+                    @click="infoWei = true"
                     class="fa-solid fa-circle-info pointer"
                   ></i>
                 </p>
                 <b-input
                   v-model="dealValue"
-                  placeholder="Payment in gwei"
+                  placeholder="Payment in wei"
                 ></b-input>
               </div>
               <div class="mb-3">
                 <p>
-                  Collateral in gwei
+                  Collateral in wei
                   <i
                     @click="infoCollateral = true"
                     class="fa-solid fa-circle-info pointer"
@@ -290,7 +293,7 @@
                 </p>
                 <b-input
                   v-model="dealCollateral"
-                  placeholder="Collateral in gwei"
+                  placeholder="Collateral in wei"
                 ></b-input>
               </div>
               <br />
@@ -344,7 +347,7 @@
 
         <!-- Modal Payment in gwei -->
         <b-modal
-          v-model="infoGwei"
+          v-model="infoWei"
           has-modal-card
           trap-focus
           :destroy-on-hide="false"
@@ -365,7 +368,7 @@
                 <b-button
                   class="button is-rounded is-dark"
                   label="Close"
-                  @click="infoGwei = !infoGwei"
+                  @click="infoWei = !infoWei"
                 />
               </footer>
             </div>
@@ -466,12 +469,14 @@ export default {
       selectedDeal: {},
       // FOR LAYOUT
       logState: false,
-      infoGwei: false,
+      infoWei: false,
       infoCollateral: false,
       // FILTER
       filtered: false,
       activeDeal: true,
       endedDeal: false,
+      // JUST FOR TEST
+      hardcodedPrice: 5,
     };
   },
   components: {
@@ -491,6 +496,11 @@ export default {
       if (parseInt(app.dealCollateral) > parseInt(maximumCollateral)) {
         app.log("Min collateral is " + maximumCollateral + ", please fix it!");
       }
+    },
+    dealDuration() {
+      const app = this;
+      app.dealValue =
+        app.hardcodedPrice * app.dealDuration * app.fileToUpload.size;
     },
   },
   methods: {
@@ -651,6 +661,9 @@ export default {
         app.isUploadingIPFS = true;
         const formData = new FormData();
         formData.append("file", app.fileToUpload);
+        console.log("UPLOADED_FILE", app.fileToUpload);
+        app.dealValue =
+          app.hardcodedPrice * app.dealDuration * app.fileToUpload.size;
         axios({
           method: "post",
           url: app.infuraURL,
@@ -687,12 +700,12 @@ export default {
                 .createDealProposal(
                   app.dealUri,
                   app.dealDuration,
-                  app.web3.utils.toWei(app.dealCollateral, "gwei"),
+                  app.dealCollateral.toString(),
                   [app.dealProviders],
                   [app.account]
                 )
                 .send({
-                  value: app.web3.utils.toWei(app.dealValue, "gwei"),
+                  value: app.dealValue.toString(),
                   from: app.account,
                 })
                 .on("transactionHash", (tx) => {
