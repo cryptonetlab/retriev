@@ -32,10 +32,7 @@
                 >📄 new deal proposal</a
               >
               <div
-                class="
-                  is-flex is-align-items-center is-justify-content-space-between
-                  mb-5
-                "
+                class="is-flex is-align-items-center is-justify-content-space-between mb-5"
               >
                 <div v-if="deals.length === 0" style="width: 80%">
                   You have no active Deals or Proposal. Create a new one or view
@@ -255,7 +252,12 @@
                 Uploading file on IPFS, please wait..
               </div>
               <b-field v-if="!fileToUpload.name">
-                <b-upload v-model="fileToUpload" expanded drag-drop>
+                <b-upload
+                  v-model="fileToUpload"
+                  expanded
+                  drag-drop
+                  :disabled="isWorking"
+                >
                   <section class="section">
                     <div class="content has-text-centered">
                       <p>Drop your file here or click to upload</p>
@@ -266,6 +268,7 @@
               <div class="mb-3">
                 <p>Deal URI</p>
                 <b-input
+                  :disabled="isWorking"
                   v-model="dealUri"
                   placeholder="ex: ipfs://CID"
                 ></b-input>
@@ -280,6 +283,7 @@
                 </p>
                 <b-input
                   v-model="dealValue"
+                  :disabled="isWorking"
                   placeholder="Payment in wei"
                 ></b-input>
               </div>
@@ -292,6 +296,7 @@
                   ></i>
                 </p>
                 <b-input
+                  :disabled="isWorking"
                   v-model="dealCollateral"
                   placeholder="Collateral in wei"
                 ></b-input>
@@ -302,6 +307,7 @@
                 label="Duration of deal in seconds"
               >
                 <b-slider
+                  :disabled="isWorking"
                   :min="parseInt(minDuration)"
                   :max="parseInt(maxDuration)"
                   :step="1"
@@ -311,6 +317,7 @@
               <!-- JUST FOR MVP, PROVIDER SHOULD BE A MULTISELECT -->
               <b-field label="Select a provider">
                 <b-select
+                  :disabled="isWorking"
                   v-model="dealProviders"
                   placeholder="Select a provider"
                 >
@@ -710,7 +717,8 @@ export default {
                 })
                 .on("transactionHash", (tx) => {
                   app.workingMessage = "Found pending transaction at " + tx;
-                  this.$toast.warning("Found pending transaction at:" + tx, {
+                  app.log("Found pending transaction at: ", tx);
+                  this.$toast.warning("Found pending transaction at: " + tx, {
                     position: "top-right",
                     timeout: 5000,
                     closeOnClick: true,
@@ -725,7 +733,24 @@ export default {
                     rtl: false,
                   });
                 });
-              console.log("BLOCKCHAIN_RECEIPT", receipt);
+              console.log("BLOCKCHAIN_RECEIPT ", receipt);
+              app.log("Transaction success at: ", receipt.blockHash);
+              app.workingMessage =
+                "Transaction success at: " + receipt.blockHash;
+              this.$toast("Transaction success at: " + receipt.blockHash, {
+                position: "top-right",
+                timeout: 5000,
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: true,
+                hideProgressBar: true,
+                closeButton: "button",
+                icon: "fa-solid fa-arrow-right-arrow-left",
+                rtl: false,
+              });
               const dealId =
                 receipt.events?.DealProposalCreated?.returnValues?.index;
               if (dealId !== undefined) {
@@ -768,6 +793,17 @@ export default {
               app.isWorking = false;
               alert(e.message);
             }
+
+            setTimeout(async function () {
+              app.isWorking = false;
+              app.workingMessage = "";
+              app.showCreate = false;
+              app.loadState();
+              app.fileToUpload = "";
+              app.dealUri = "";
+              app.dealDuration = "";
+              app.dealValue = "";
+            }, 2000);
           } else {
             alert(
               "Max collateral is " +
@@ -912,20 +948,40 @@ export default {
         const msg = JSON.parse(message);
         console.log("msg", msg);
         if (msg !== undefined && msg.message !== undefined) {
-          console.log("realMessage", realMessage);
-          console.log("action", action);
           const realMessage = JSON.parse(msg.message);
           const action = realMessage.action;
-          if (action !== undefined && action === "ACCEPTED") {
+          console.log("realMessage", realMessage);
+          console.log("action", action);
+          console.log("Owner is:", realMessage.owner);
+          if (
+            action !== undefined &&
+            action === "ACCEPTED" &&
+            realMessage.owner.toLowerCase() === app.account.toLowerCase()
+          ) {
             // TODO: Be sure accepted deal is yours
             // TODO: Read deal_index from contract
-            // TODO: Check if deal.owner === app.account
             app.showToast("Your deal proposal was accepted by provider!");
-          } else if (action !== undefined && action === "SLASHED") {
-            // TODO: Be sure slashed deal is yours
+            app.log("Your deal proposal was accepted by provider!");
+          } else if (
+            action !== undefined &&
+            action === "SLASHED" &&
+            realMessage.owner.toLowerCase() === app.account.toLowerCase()
+          ) {
             // TODO: Read deal_index from contract
-            // TODO: Check if deal.owner === app.account
             app.showToast("A provider was slashed!");
+            app.log("A provider was slashed!");
+          } else if (
+            action !== undefined &&
+            action === "UNRETRIEVALABLE" &&
+            realMessage.owner.toLowerCase() === app.account.toLowerCase()
+          ) {
+            // TODO: Read deal_index from contract
+            app.showErrorToast(
+              "File is unretrievalable! Provider can't accept your deal proposal"
+            );
+            app.log(
+              "File is unretrievalable! Provider can't accept your deal proposal"
+            );
           }
         }
       } catch (e) {
@@ -949,6 +1005,29 @@ export default {
           hideProgressBar: true,
           closeButton: "button",
           icon: "fa-solid fa-check",
+          rtl: false,
+        });
+        setTimeout(function () {
+          app.isToasting = false;
+        }, 6200);
+      }
+    },
+    showErrorToast(message) {
+      const app = this;
+      if (!app.isToasting) {
+        app.isToasting = true;
+        app.$toast.error(message, {
+          position: "top-right",
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: true,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
           rtl: false,
         });
         setTimeout(function () {
@@ -990,7 +1069,8 @@ export default {
     },
     async expiredDeals() {
       const app = this;
-      console.log("im here");
+      app.log("Checking expired deals...");
+      console.log("Checking expired deals...");
       if (!app.isWorking) {
         app.isWorking = true;
         app.deals = [];
@@ -1020,7 +1100,8 @@ export default {
     },
     async activeDeals() {
       const app = this;
-      console.log("im here");
+      console.log("Checking active deals...");
+      app.log("Checking active deals...");
       if (!app.isWorking) {
         app.isWorking = true;
         app.deals = [];
