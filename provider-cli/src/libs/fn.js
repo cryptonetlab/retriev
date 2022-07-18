@@ -1,10 +1,33 @@
 const axios = require('axios');
 const fs = require('fs');
 const argv = require('minimist')(process.argv.slice(2));
-
+let proposalCache = []
 
 const ipfs = (node, ...args) => {
     node.runIpfsNativeCommand(args.join(' '))
+}
+
+const ipfsApi = (method, endpoint, arguments) => {
+    return new Promise(async response => {
+        try {
+            setTimeout(function () {
+                console.log('IPFS timed out..')
+                response(false)
+            }, 120000)
+            let request = {
+                "method": method,
+                "url": "http://localhost:5001/api/v0" + endpoint
+            }
+            if (arguments !== undefined) {
+                request.data = arguments
+            }
+            const res = await axios(request)
+            response(res.data)
+        } catch (e) {
+            console.log(e.message)
+            response(false)
+        }
+    })
 }
 
 const getidentity = (node) => {
@@ -167,8 +190,9 @@ const getproposals = async (node) => {
 const processdeal = (node, deal_index) => {
     return new Promise(async response => {
         try {
+            const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
             const { contract, wallet, ethers } = await node.contract()
-            const canAccept = await contract.isProviderInDeal(deal_index, wallet.address)
+            let canAccept = await contract.isProviderInDeal(deal_index, wallet.address)
             if (canAccept) {
                 const proposal = await contract.deals(deal_index)
                 const proposal_timeout = await contract.proposal_timeout()
@@ -178,38 +202,82 @@ const processdeal = (node, deal_index) => {
                 console.log("Deal expires at:", expires_at)
                 console.log("Deal accepted?", accepted)
                 if (expires_at > new Date().getTime() && !accepted) {
-                    const balance1 = await contract.vault(wallet.address)
-                    console.log("Balance before accept is:", ethers.utils.formatEther(balance1.toString()))
-                    const deposit_needed = proposal.value * 100;
-                    console.log("Deposit needed is:", ethers.utils.formatEther(deposit_needed.toString()))
-                    if (balance1 < deposit_needed) {
-                        console.log('Need to deposit, not enough balance inside contract..')
-                        const tx = await contract.depositToVault({ value: deposit_needed })
-                        console.log("Depositing at " + tx.hash)
-                        await tx.wait()
+                    let policyMet = false
+                    // Retrive the file from IPFS
+                    console.log("Retrieving file stats from:", proposal.deal_uri)
+                    const file_stats = await ipfsApi("post", "/files/stat?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/"))
+                    console.log("File stats:", file_stats)
+                    if (file_stats !== false && file_stats.Size !== undefined) {
+                        let expected_price = file_stats.Size * parseInt(configs.price_strategy) * proposal.duration
+                        console.log('Expected price in wei is:', expected_price)
+                        console.log('Deal value is:', proposal.value.toString())
+                        if (parseInt(proposal.value.toString()) >= expected_price) {
+                            policyMet = true
+                        }
+                    } else if (proposalCache.indexOf(deal_index) === -1) {
+                        console.log('Adding deal in cache for future retrieval')
+                        proposalCache.push(deal_index)
                     }
-                    // TODO: Be sure that file exists and i can pin it
-                    // TODO: Put an hard limit on file dimension
-                    console.log("Can accept, listed as provider in deal.")
-                    const tx = await contract.acceptDealProposal(deal_index)
-                    console.log('Pending transaction at: ' + tx.hash)
-                    await tx.wait()
-                    console.log('Deal accepted at ' + tx.hash + '!')
-                    const balance2 = await contract.vault(wallet.address)
-                    console.log("Balance after accept is:", ethers.utils.formatEther(balance2.toString()))
-                    const message = JSON.stringify({
-                        deal_index: deal_index,
-                        action: "ACCEPTED",
-                        txid: tx.hash
-                    })
-                    await node.broadcast(message, "message")
-                    response(true)
+                    if (policyMet) {
+                        const deposited = await contract.vault(wallet.address)
+                        console.log("Balance before accept is:", ethers.utils.formatEther(deposited.toString()))
+                        const deposit_needed = proposal.value * 100;
+                        console.log("Deposit needed is:", ethers.utils.formatEther(deposit_needed.toString()), "ETH")
+                        const balance = parseInt((await wallet.getBalance()).toString())
+                        if (deposited < deposit_needed && balance >= deposit_needed) {
+                            console.log('Need to deposit, not enough balance inside contract..')
+                            const tx = await contract.depositToVault({ value: deposit_needed.toString() })
+                            console.log("Depositing at " + tx.hash)
+                            await tx.wait()
+                        } else {
+                            console.log("Can't accept, not enough funds to deposit.")
+                            canAccept = false
+                        }
+                        // Be sure provider can accept deal
+                        if (canAccept) {
+                            console.log("Can accept, listed as provider in deal.")
+                            const tx = await contract.acceptDealProposal(deal_index)
+                            console.log('Pending transaction at: ' + tx.hash)
+                            await tx.wait()
+                            console.log('Deal accepted at ' + tx.hash + '!')
+                            const balance2 = await contract.vault(wallet.address)
+                            console.log("Balance after accept is:", ethers.utils.formatEther(balance2.toString()))
+                            const message = JSON.stringify({
+                                deal_index: deal_index,
+                                action: "ACCEPTED",
+                                txid: tx.hash
+                            })
+                            await node.broadcast(message, "message")
+                            // Be sure deal is not in cache anymore
+                            let temp = []
+                            for (let k in proposalCache) {
+                                if (proposalCache[k] !== deal_index) {
+                                    temp.push(proposalCache[k])
+                                }
+                            }
+                            proposalCache = temp
+                            response(true)
+                        } else {
+                            response(false)
+                        }
+                    } else {
+                        console.log("Policy didn't met, can't accept automatically")
+                        response(false)
+                    }
                 } else {
+                    // Be sure deal is not in cache anymore
+                    let temp = []
+                    for (let k in proposalCache) {
+                        if (proposalCache[k] !== deal_index) {
+                            temp.push(proposalCache[k])
+                        }
+                    }
                     console.log("Deal expired or accepted yet, can't accept anymore.")
+                    response(false)
                 }
             } else {
                 console.log("Not a provider in this deal, can't accept.")
-                response(true)
+                response(false)
             }
         } catch (e) {
             console.log(e)
@@ -219,15 +287,30 @@ const processdeal = (node, deal_index) => {
     })
 }
 
+const processCache = async (node) => {
+    if (proposalCache.length > 0) {
+        for (let k in proposalCache) {
+            await processdeal(node, proposalCache[k])
+        }
+    } else {
+        console.log('Cache is empty, nothing to do..')
+    }
+}
+
 const daemon = async (node) => {
     console.log("Running provider daemon..")
     const { contract, wallet, ethers } = await node.contract()
     // Parse proposals
-    const proposals = await getproposals(node)
+    const proposals = (await getproposals(node)).reverse()
     for (let k in proposals) {
         const proposal = proposals[k]
         await processdeal(node, proposal.args.index)
     }
+    // Parse proposal cache any 60s
+    setInterval(function () {
+        console.log('Processing cache..')
+        processCache(node)
+    }, 60000)
     // Listen for proposal and accept them automatically, just for test
     contract.on("DealProposalCreated", async (deal_index) => {
         console.log("New deal proposal created, processing..")
