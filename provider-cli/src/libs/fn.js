@@ -1,4 +1,7 @@
 const axios = require('axios');
+const fs = require('fs');
+const argv = require('minimist')(process.argv.slice(2));
+
 
 const ipfs = (node, ...args) => {
     node.runIpfsNativeCommand(args.join(' '))
@@ -18,24 +21,33 @@ const sendmessage = async (node, ...args) => {
     }
 }
 
-const updatepinningeservice = async (node, service) => {
+const setuppinning = async (node, service) => {
     // TODO: Update internal pinning service to save deals
 }
 
-const updatepricestrategy = async (node, price) => {
-    // TODO: Update price strategy for automatic accept
+const setupstrategy = async (node, price) => {
+    const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
+    if (argv._ !== undefined && argv._.length === 2 && parseInt(argv._[1]) >= 0) {
+        configs.price_strategy = parseInt(argv._[1])
+        try {
+            fs.writeFileSync(node.nodePath + "/configs.json", JSON.stringify(configs, null, 4))
+            console.log("Price policy changed correctly to:", configs.price_strategy)
+        } catch (e) {
+            console.log("Can't save file to disk, retry.")
+        }
+    } else {
+        console.log("Please provide a minimum price for retrieval pinning.")
+        console.log("`Please run setupstrategy <PRICE>`")
+    }
 }
 
-const returnpricestrategy = async (node) => {
-    // TODO: Return price strategy
+const getstrategy = async (node) => {
+    const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
+    console.log("Price strategy is:", configs.price_strategy)
 }
 
 const subscribe = async (node) => {
     // TODO: Subscribe to protocol
-}
-
-const getdeals = async (node) => {
-    // TODO: Return active deals
 }
 
 const deals = async (node, ...args) => {
@@ -158,33 +170,43 @@ const processdeal = (node, deal_index) => {
             const { contract, wallet, ethers } = await node.contract()
             const canAccept = await contract.isProviderInDeal(deal_index, wallet.address)
             if (canAccept) {
-                const balance1 = await contract.vault(wallet.address)
-                console.log("Balance before accept is:", ethers.utils.formatEther(balance1.toString()))
                 const proposal = await contract.deals(deal_index)
-                const deposit_needed = proposal.value * 100;
-                console.log("Deposit needed is:", ethers.utils.formatEther(deposit_needed.toString()))
-                if (balance1 < deposit_needed) {
-                    console.log('Need to deposit, not enough balance inside contract..')
-                    const tx = await contract.depositToVault({ value: deposit_needed })
-                    console.log("Depositing at " + tx.hash)
+                const proposal_timeout = await contract.proposal_timeout()
+                // Check if deal was accepted or expired
+                const expires_at = parseInt(proposal.timestamp_request.toString() + parseInt(proposal_timeout.toString())) * 1000
+                const accepted = parseInt(proposal.timestamp_start.toString()) > 0
+                console.log("Deal expires at:", expires_at)
+                console.log("Deal accepted?", accepted)
+                if (expires_at > new Date().getTime() && !accepted) {
+                    const balance1 = await contract.vault(wallet.address)
+                    console.log("Balance before accept is:", ethers.utils.formatEther(balance1.toString()))
+                    const deposit_needed = proposal.value * 100;
+                    console.log("Deposit needed is:", ethers.utils.formatEther(deposit_needed.toString()))
+                    if (balance1 < deposit_needed) {
+                        console.log('Need to deposit, not enough balance inside contract..')
+                        const tx = await contract.depositToVault({ value: deposit_needed })
+                        console.log("Depositing at " + tx.hash)
+                        await tx.wait()
+                    }
+                    // TODO: Be sure that file exists and i can pin it
+                    // TODO: Put an hard limit on file dimension
+                    console.log("Can accept, listed as provider in deal.")
+                    const tx = await contract.acceptDealProposal(deal_index)
+                    console.log('Pending transaction at: ' + tx.hash)
                     await tx.wait()
+                    console.log('Deal accepted at ' + tx.hash + '!')
+                    const balance2 = await contract.vault(wallet.address)
+                    console.log("Balance after accept is:", ethers.utils.formatEther(balance2.toString()))
+                    const message = JSON.stringify({
+                        deal_index: deal_index,
+                        action: "ACCEPTED",
+                        txid: tx.hash
+                    })
+                    await node.broadcast(message, "message")
+                    response(true)
+                } else {
+                    console.log("Deal expired or accepted yet, can't accept anymore.")
                 }
-                // TODO: Be sure that file exists and i can pin it
-                // TODO: Put an hard limit on file dimension
-                console.log("Can accept, listed as provider in deal.")
-                const tx = await contract.acceptDealProposal(deal_index)
-                console.log('Pending transaction at: ' + tx.hash)
-                await tx.wait()
-                console.log('Deal accepted at ' + tx.hash + '!')
-                const balance2 = await contract.vault(wallet.address)
-                console.log("Balance after accept is:", ethers.utils.formatEther(balance2.toString()))
-                const message = JSON.stringify({
-                    deal_index: deal_index,
-                    action: "ACCEPTED",
-                    txid: tx.hash
-                })
-                await node.broadcast(message, "message")
-                response(true)
             } else {
                 console.log("Not a provider in this deal, can't accept.")
                 response(true)
@@ -213,4 +235,4 @@ const daemon = async (node) => {
     })
 }
 
-module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance }
+module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance, subscribe, setupstrategy, getstrategy, setuppinning }

@@ -67,7 +67,9 @@ module.exports = class PldrNode {
                 key: wallet.privateKey,
                 address: wallet.address,
                 provider: process.env.WEB3_PROVIDER,
-                contract_address: process.env.CONTRACT_ADDRESS
+                contract_address: process.env.CONTRACT_ADDRESS,
+                price_strategy: 0,
+                max_dimension: 20000000
             }
             fs.writeFileSync(this.nodePath + '/configs.json', JSON.stringify(this.configs, null, 4))
         } else {
