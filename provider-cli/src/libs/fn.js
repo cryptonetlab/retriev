@@ -2,6 +2,7 @@ const axios = require('axios');
 const fs = require('fs');
 const argv = require('minimist')(process.argv.slice(2));
 let proposalCache = []
+let isProcessing = false
 
 const ipfs = (node, ...args) => {
     node.runIpfsNativeCommand(args.join(' '))
@@ -299,12 +300,17 @@ const processdeal = (node, deal_index) => {
 }
 
 const processCache = async (node) => {
-    if (proposalCache.length > 0) {
-        for (let k in proposalCache) {
-            await processdeal(node, proposalCache[k])
+    if (!isProcessing) {
+        if (proposalCache.length > 0) {
+            isProcessing = true
+            for (let k in proposalCache) {
+                await processdeal(node, proposalCache[k])
+            }
+            isProcessing = false
+            console.log("Ending process cache..")
+        } else {
+            console.log('Cache is empty, nothing to do..')
         }
-    } else {
-        console.log('Cache is empty, nothing to do..')
     }
 }
 
