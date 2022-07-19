@@ -15,7 +15,8 @@
         "test:deals": "node src/provider.js --debug --name=providerdev --port=8000 deals",
         "test:getbalance": "node src/provider.js --debug --name=providerdev --port=8000 getbalance",
         "test:withdraw": "node src/provider.js --debug --name=providerdev --port=8000 withdraw",
-        "test:strategy": "node src/provider.js --debug --name=providerdev --port=8000 setupstrategy 5 && node src/provider.js --debug --name=providerdev --port=8000 getstrategy",
+        "test:strategy": "node src/provider.js --debug --name=providerdev --port=8000 setupstrategy 20000000 && node src/provider.js --debug --name=providerdev --port=8000 getstrategy",
+        "test:maxsize": "node src/provider.js --debug --name=providerdev --port=8000 setupmaxsize 20000000 && node src/provider.js --debug --name=providerdev --port=8000 getmaxsize",
         "compile": "pkg . --out-path bin",
         "start": "./bin/pldr-provider-linux --debug --name=provider0 --port=8000 --daemon"
     },

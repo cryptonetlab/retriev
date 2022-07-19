@@ -45,11 +45,27 @@ const sendmessage = async (node, ...args) => {
     }
 }
 
+const setupmaxsize = async (node, service) => {
+    const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
+    if (argv._ !== undefined && argv._.length === 2 && parseInt(argv._[1]) >= 0) {
+        configs.max_size = parseInt(argv._[1])
+        try {
+            fs.writeFileSync(node.nodePath + "/configs.json", JSON.stringify(configs, null, 4))
+            console.log("Max size policy changed correctly to:", configs.max_size)
+        } catch (e) {
+            console.log("Can't save file to disk, retry.")
+        }
+    } else {
+        console.log("Please provide a maximum size for pinned files.")
+        console.log("`Please run setupmaxsize <SIZE>`")
+    }
+}
+
 const setuppinning = async (node, service) => {
     // TODO: Update internal pinning service to save deals
 }
 
-const setupstrategy = async (node, price) => {
+const setupstrategy = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     if (argv._ !== undefined && argv._.length === 2 && parseInt(argv._[1]) >= 0) {
         configs.price_strategy = parseInt(argv._[1])
@@ -68,6 +84,11 @@ const setupstrategy = async (node, price) => {
 const getstrategy = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     console.log("Price strategy is:", configs.price_strategy)
+}
+
+const getmaxsize = async (node) => {
+    const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
+    console.log("Max allowed size is:", configs.max_size)
 }
 
 const subscribe = async (node) => {
@@ -209,19 +230,29 @@ const processdeal = (node, deal_index) => {
                     const file_stats = await ipfsApi("post", "/files/stat?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/"))
                     console.log("File stats:", file_stats)
                     if (file_stats !== false && file_stats.Size !== undefined) {
-                        // TODO: Check for max file size
-                        let expected_price = file_stats.Size * parseInt(configs.price_strategy) * proposal.duration
-                        console.log('Expected price in wei is:', expected_price)
-                        console.log('Deal value is:', proposal.value.toString())
-                        if (parseInt(proposal.value.toString()) >= expected_price) {
+                        if (configs.price_strategy !== undefined && parseInt(configs.price_strategy) > 0) {
+                            let expected_price = file_stats.Size * parseInt(configs.price_strategy) * proposal.duration
+                            console.log('Expected price in wei is:', expected_price)
+                            console.log('Deal value is:', proposal.value.toString())
+                            if (parseInt(proposal.value.toString()) >= expected_price) {
+                                policyMet = true
+                            }
+                        } else {
                             policyMet = true
+                        }
+                        // Check if file size is lower than accepted one
+                        if (policyMet && configs.max_size !== undefined && parseInt(configs.max_size) > 0) {
+                            if (parseInt(file_stats.Size) > parseInt(configs.max_size)) {
+                                policyMet = false
+                            }
                         }
                     } else if (proposalCache.indexOf(deal_index) === -1) {
                         const message = JSON.stringify({
                             deal_index: deal_index,
                             owner: proposal.owner,
                             action: "UNRETRIEVALABLE",
-                            deal_uri: proposal.deal_uri
+                            deal_uri: proposal.deal_uri,
+                            timestamp: new Date().getTime()
                         })
                         await node.broadcast(message, "message")
                         console.log('Adding deal in cache for future retrieval')
@@ -335,4 +366,4 @@ const daemon = async (node) => {
     })
 }
 
-module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance, subscribe, setupstrategy, getstrategy, setuppinning }
+module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance, subscribe, setupstrategy, getstrategy, setuppinning, setupmaxsize, getmaxsize }

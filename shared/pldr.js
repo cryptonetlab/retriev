@@ -69,7 +69,7 @@ module.exports = class PldrNode {
                 provider: process.env.WEB3_PROVIDER,
                 contract_address: process.env.CONTRACT_ADDRESS,
                 price_strategy: 0,
-                max_dimension: 20000000
+                max_size: 20000000
             }
             fs.writeFileSync(this.nodePath + '/configs.json', JSON.stringify(this.configs, null, 4))
         } else {
