@@ -243,6 +243,7 @@ const processdeal = (node, deal_index) => {
                         // Check if file size is lower than accepted one
                         if (policyMet && configs.max_size !== undefined && parseInt(configs.max_size) > 0) {
                             if (parseInt(file_stats.Size) > parseInt(configs.max_size)) {
+                                console.log("File is too large, can't accept.")
                                 policyMet = false
                             }
                         }
