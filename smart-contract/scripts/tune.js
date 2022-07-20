@@ -11,12 +11,12 @@ async function main() {
     const contract = new ethers.Contract(configs.contract_address, ABI.abi, wallet)
 
     const tune = {
-        deposit_multiplier: { v256: 100, v8: 0, v32: 0 },
+        committee_divider: { v256: 0, v8: 4, v32: 0 },
         slashing_multiplier: { v256: 10, v8: 0, v32: 0 },
         proposal_timeout: { v256: 0, v8: 0, v32: 86000 },
         round_duration: { v256: 0, v8: 0, v32: 300 },
-        min_duration: { v256: 0, v8: 0, v32: 3600 },
-        max_duration: { v256: 0, v8: 0, v32: 43200 },
+        min_duration: { v256: 0, v8: 0, v32: 86400 },
+        max_duration: { v256: 0, v8: 0, v32: 31536000 },
         slashes_threshold: { v256: 0, v8: 12, v32: 0 },
         rounds_limit: { v256: 0, v8: 12, v32: 0 }
     }
@@ -25,15 +25,17 @@ async function main() {
         for (let k in tune) {
             console.log("Changing parameter " + k + " to:", tune[k])
             const before = await contract[k]()
-            console.log("Value before change is:", before)
-            await contract.tuneProtocol(i, tune[k].v256, tune[k].v8, tune[k].v32)
+            console.log("Value before change is:", before.toString())
+            const receipt = await contract.tuneProtocol(i, tune[k].v256, tune[k].v8, tune[k].v32)
+            await receipt.wait()
+            console.log(receipt)
             const changed = await contract[k]()
-            console.log("Changed value is:", changed)
+            console.log("Changed value is:", changed.toString())
             i++
         }
     } catch (e) {
         console.log(e)
-        console.log('Can\'t create deal, check transaction.')
+        console.log('Can\'t tune protocol, check transaction.')
     }
 }
 

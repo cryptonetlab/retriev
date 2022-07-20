@@ -102,8 +102,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     Counters.Counter private appealCounter;
     // Round parameters
     uint32 public round_duration = 300;
-    uint32 public min_duration = 3600;
-    uint32 public max_duration = 43_200;
+    uint32 public min_duration = 86_400;
+    uint32 public max_duration = 31_536_000;
     uint8 public slashes_threshold = 12;
     uint8 public rounds_limit = 12;
     // Event emitted when new deal is created
