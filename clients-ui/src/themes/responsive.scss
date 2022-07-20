@@ -1,0 +1,22 @@
+@media screen and (max-width: 767px) {
+  html,
+  body {
+    font-size: 13px;
+  }
+  .btn-primary,
+  .btn-secondary,
+  .custom_dropdown {
+    width: 100%;
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) {
+  .btn-primary,
+  .btn-secondary,
+  .custom_dropdown {
+    width: 100%;
+  }
+  h2.pay-off {
+    font-size: 1rem;
+  }
+}

@@ -5,8 +5,10 @@ import Buefy from "buefy";
 import "buefy/dist/buefy.css";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
-import "./themes/style.css";
-import "./themes/responsive.css";
+
+import 'animate.css';
+import "./themes/style.scss";
+import "./themes/responsive.scss";
 
 Vue.use(Toast, {
   transition: "Vue-Toastification__bounce",

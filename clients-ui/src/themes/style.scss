@@ -1,8 +1,122 @@
 /* ==============> FONTS <============== */
+:root {
+  --primary-color: #002b4d;
+  --secondary-color: #186ceb;
+  --secondary-color-light: #cce7ff;
+  --secondary-color-highcontrast: #f1f9ff;
+  --tertiary-color: #edd2be;
+  --tertiary-color-light: #fef3ec;
+  --light-color: white;
+}
+
+/* ==============> MIXINS AND GENERAL STYLE <============== */
+html,
+body {
+  background-color: var(--secondary-color-highcontrast);
+}
+
+@mixin badge {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 3px 30px;
+  border-radius: 34px;
+  span {
+    font-family: "Inter";
+    font-weight: 600;
+    font-size: 0.75rem;
+    line-height: 1;
+    text-align: center;
+  }
+}
+
+@mixin btn-minimal {
+  background-color: transparent;
+  text-transform: uppercase;
+  padding: 10px 30px;
+  vertical-align: middle;
+  box-sizing: border-box;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.3s;
+  @include font-plex;
+  letter-spacing: 0.04em;
+  font-size: 0.813rem;
+  font-weight: 500;
+  color: var(--tertiary-color-light);
+  border: 1px solid var(--tertiary-color-light);
+  border-radius: 0px !important;
+  transition: all 0.3s;
+  &:hover {
+    background-color: var(--secondary-color);
+    transition: all 0.3s;
+    color: var(--tertiary-color-light);
+  }
+}
+
+@mixin btn-light {
+  background-color: var(--secondary-color);
+  border: 1px solid var(--tertiary-color-light);
+  &:hover {
+    -webkit-box-shadow: 6px 6px 0px 1px var(--tertiary-color-light);
+    box-shadow: 6px 6px 0px 1px var(--tertiary-color-light);
+  }
+}
+
+@mixin btn-dark {
+  background-color: var(--secondary-color);
+  border: 1px solid var(--primary-color);
+  &:hover {
+    -webkit-box-shadow: 6px 6px 0px 1px var(--primary-color);
+    box-shadow: 6px 6px 0px 1px var(--primary-color);
+  }
+}
+
+@mixin btn-white {
+  background-color: var(--light-color);
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  &:hover {
+    -webkit-box-shadow: 6px 6px 0px 1px var(--primary-color);
+    box-shadow: 6px 6px 0px 1px var(--primary-color);
+  }
+}
+
+@mixin btn {
+  text-transform: uppercase;
+  padding: 10px 30px;
+  vertical-align: middle;
+  box-sizing: border-box;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: var(--tertiary-color-light);
+  @include font-plex;
+  letter-spacing: 0.04em;
+  font-size: 0.813rem;
+  font-weight: 500;
+  &:hover {
+    transition: all 0.3s;
+  }
+}
+
+@mixin font-inter {
+  font-family: "Inter", sans-serif;
+}
+
+@mixin font-plex {
+  font-family: "IBM Plex Mono", monospace;
+}
+
+/* ==============> FONTS <============== */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
 a {
   color: black;
   font-family: "JetBrains Mono", monospace;
 }
+
 a span {
   text-decoration: underline;
 }
@@ -16,7 +130,70 @@ p.small {
   font-family: "JetBrains Mono", monospace;
   font-size: 0.7rem;
 }
+
+.connect-container {
+  p {
+    @include font-inter;
+    font-size: 1rem;
+    color: var(--tertiary-color-light);
+  }
+}
+
+h2.pay-off {
+  @include font-inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+h5 {
+  @include font-inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.688rem;
+  line-height: 200%;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--primary-color);
+}
+
 /* ==============> POSITIONING, MARGIN, PADDING, ETC...<============== */
+
+.bg-color-dark {
+  background-color: var(--primary-color) !important;
+}
+
+.bg-color-light {
+  background-color: var(--secondary-color-highcontrast);
+}
+
+.b-top-colored-dark {
+  border-top: 1px solid var(--primary-color);
+}
+
+.b-bottom-colored-dark {
+  border-bottom: 1px solid var(--primary-color);
+}
+
+.b-top-colored {
+  border-top: 1px solid var(--tertiary-color-light);
+}
+
+.b-left-colored {
+  border-left: 1px solid var(--tertiary-color-light);
+}
+
+.flex-force {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  * {
+    box-sizing: border-box;
+    margin: 0;
+  }
+}
 
 .position-bottom-right {
   bottom: 20px;
@@ -32,12 +209,91 @@ p.small {
   cursor: pointer;
   transition: all 0.3s;
 }
+
 .pointer:hover {
   transform: scale(1.1);
   transition: all 0.3s;
 }
 
+.tertiary-light-text {
+  color: var(--tertiary-color-light);
+}
+
 /* ==============> BUTTONS <============== */
+
+.btn-active {
+  border: 1px solid var(--secondary-color);
+  color: var(--secondary-color);
+  &:hover {
+    background-color: var(--secondary-color);
+    color: var(--tertiary-color-light);
+    transition: all 0.3s;
+  }
+}
+.btn-white {
+  @include btn();
+  @include btn-white();
+}
+.btn-light {
+  @include btn-minimal();
+}
+
+.btn-inactive {
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  &:hover {
+    background-color: var(--primary-color);
+    color: var(--tertiary-color-light);
+    transition: all 0.3s;
+  }
+}
+
+.btn-icon {
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  text-transform: uppercase;
+  padding: 8px 12px;
+  vertical-align: middle;
+  box-sizing: border-box;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.3s;
+  @include font-plex;
+  letter-spacing: 0.04em;
+  font-size: 1rem;
+  font-weight: 500;
+  &:hover {
+    background-color: var(--primary-color);
+    color: var(--tertiary-color-light);
+    transition: all 0.3s;
+  }
+}
+
+.btn-primary {
+  @include btn;
+  @include btn-light;
+}
+
+.btn-secondary {
+  @include btn;
+  @include btn-dark;
+}
+
+.btn-tertiary {
+  background-color: transparent;
+  text-transform: uppercase;
+  padding: 10px 30px;
+  vertical-align: middle;
+  box-sizing: border-box;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.3s;
+  @include font-plex;
+  letter-spacing: 0.04em;
+  font-size: 0.813rem;
+  font-weight: 500;
+}
 
 .btn-sidebar {
   position: fixed;
@@ -63,6 +319,10 @@ p.small {
   transition: all 0.3s;
 }
 
+.button {
+  height: unset !important;
+}
+
 button.button.is-rounded.is-dark {
   font-family: "JetBrains Mono", monospace !important;
   transition: all 0.3s;
@@ -76,7 +336,7 @@ button.button.is-rounded.is-dark:hover {
   transition: all 0.3s;
 }
 
-.dropdown {
+.custom_dropdown {
   position: relative;
   filter: url(#goo);
   vertical-align: middle;
@@ -85,24 +345,31 @@ button.button.is-rounded.is-dark:hover {
   text-align: center;
   box-sizing: border-box;
   z-index: 5;
+  width: 100%;
 }
 
-.dropdown__text {
+.custom_dropdown__text {
   font-size: 0.8rem;
+  text-transform: uppercase;
+  span.small {
+    font-size: 0.6rem;
+  }
+  i {
+    width: 10px;
+  }
 }
 
-.dropdown__face {
+.custom_dropdown__face {
   background-color: white;
   display: block;
   position: relative;
-  padding: 12px 24px;
-  border-radius: 25px;
+  padding: 14px 30px;
   color: black;
   border: 1px solid black;
   cursor: pointer;
 }
 
-.dropdown::before {
+.custom_dropdown::before {
   content: "";
   background-color: transparent;
   position: absolute;
@@ -112,7 +379,7 @@ button.button.is-rounded.is-dark:hover {
   width: 20px;
 }
 
-.dropdown li {
+.custom_dropdown li {
   margin: 5px 0;
   color: black;
   text-decoration: none;
@@ -120,14 +387,13 @@ button.button.is-rounded.is-dark:hover {
   cursor: pointer;
 }
 
-.dropdown li:hover {
+.custom_dropdown li:hover {
   font-weight: 900;
   text-decoration: underline;
 }
 
-.dropdown__items {
+.custom_dropdown__items {
   background-color: white;
-  border-radius: 10px;
   font-weight: 200;
   padding: 10px;
   margin: 25px 0 0 0;
@@ -151,9 +417,142 @@ button.button.is-rounded.is-dark:hover {
   scrollbar-width: none; /* Firefox */
 }
 
-.dropdown::-webkit-scrollbar {
+.custom_dropdown::-webkit-scrollbar {
   display: none; /* Safari and Chrome */
 }
+
+.field {
+  .is-info {
+    border-color: var(--primary-color);
+  }
+  .input {
+    height: unset;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    border-radius: 0;
+  }
+}
+
+.control.has-icons-left .icon,
+.control.has-icons-right .icon {
+  height: 100%;
+}
+
+a.dropdown-item.is-active,
+.dropdown .dropdown-menu .has-link a.is-active,
+button.dropdown-item.is-active {
+  background-color: var(--primary-color);
+  color: var(--tertiary-color-light);
+}
+/* ==============> DASHBOARD <============== */
+
+.header {
+  background-color: var(--primary-color);
+  img {
+    height: 43px;
+  }
+}
+
+.alert-banner {
+  background-color: #f2cfcf;
+  p,
+  i {
+    color: #cc3d3d;
+  }
+}
+
+.badge {
+  @include badge;
+}
+
+.badge-pending {
+  background: #fff6bd;
+  span {
+    color: #ae9700;
+  }
+}
+
+.badge-success {
+  background: #d2eac0;
+  span {
+    color: #4baa00;
+  }
+}
+
+.badge-ended {
+  background: #dedcd0;
+  span {
+    color: #7d7c77;
+  }
+}
+
+.badge-requested {
+  background: #186ceb;
+  span {
+    color: white;
+  }
+}
+
+.badge-slashed {
+  background: #002b4d;
+  span {
+    color: white;
+  }
+}
+
+.card {
+  padding: 10px 0;
+  .card-footer:last-child,
+  .card-content:last-child,
+  .card-header:last-child {
+    border: 0;
+    box-shadow: none;
+  }
+  .card-header,
+  .collapse-trigger {
+    align-items: center;
+    display: flex;
+  }
+  .card-header {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+}
+
+.divider {
+  width: 1px;
+  background-color: rgb(217, 217, 217);
+  height: 55px;
+}
+
+img.network-logo {
+  width: 25px;
+  height: auto;
+}
+
+/* ==============> CONNECT WALLET <============== */
+
+.connect-container {
+  width: 100%;
+  height: auto;
+  min-height: 100vh;
+  background-color: #002b4d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  .logo {
+    width: 150px;
+    height: 150px;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+}
+
 /* ==============> DEAL CREATION <============== */
 
 .box-deals {
@@ -218,6 +617,7 @@ button.button.is-rounded.is-dark:hover {
   animation-name: example;
   animation-duration: 0.5s;
 }
+
 @keyframes example {
   from {
     left: 5rem;
@@ -227,13 +627,19 @@ button.button.is-rounded.is-dark:hover {
   }
 }
 
-.right-col hr {
-  background-color: #ced4da;
+hr {
+  background-color: var(--primary-color);
 }
 
 /* ==============> LOGS <============== */
 
 /* ==============> ANIMATIONS <============== */
+
+// ANIMATION DAPP FADE IN
+// .animate__animated.animate__fadeIn {
+//   animation-delay: 0.3s;
+// }
+
 /* LOGS SIDEBAR ANIMATION - IN & OUT */
 .slide-in-right {
   -webkit-animation: slide-in-right 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)

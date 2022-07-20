@@ -6,10 +6,10 @@
         navState = !navState;
         hideLogs();
       "
-      class="btn-sidebar position-top-right"
+      class="btn-light"
+      style="padding: 10px 15px"
     >
-      <i v-if="!navState" class="fa-solid fa-bars"></i>
-      <i v-if="navState" class="fa-solid fa-times"></i>
+      <i class="fa-solid fa-ellipsis"></i>
     </div>
     <!--End | Nav Button show/hide -->
 
@@ -18,20 +18,27 @@
       enter-active-class="slide-in-right"
       leave-active-class="slide-out-right"
     >
-      <div v-if="navState" class="right-col">
+      <div
+        v-if="navState"
+        @mouseout="!navState"
+        @mouseleave="closeNav()"
+        class="right-col"
+      >
         <div class="nav-container mt-5 pt-5">
-          <a href="/#/signup">
+          <!-- <a href="/#/signup">
             <button class="button is-rounded is-dark">
               Signup as Provider
             </button></a
-          >
+          > -->
           <div class="mt-3">
             <a href="/"
               ><i class="fa-solid fa-server mr-2"></i><span>Dashboard</span></a
             >
           </div>
           <div class="mt-3">
-            <a href="https://filecoinproject.slack.com/archives/C03CJKWP2DR" target="_blank"
+            <a
+              href="https://filecoinproject.slack.com/archives/C03CJKWP2DR"
+              target="_blank"
               ><i class="fa-solid fa-circle-question mr-2"></i>
               <span>Help</span></a
             >
@@ -66,6 +73,11 @@ export default {
   methods: {
     hideLogs() {
       this.$emit("hide");
+    },
+    closeNav() {
+      const app = this;
+      app.navState = false;
+      console.log("closing nav");
     },
   },
 };
