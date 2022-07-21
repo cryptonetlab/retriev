@@ -92,7 +92,26 @@ const getmaxsize = async (node) => {
 }
 
 const subscribe = async (node) => {
-    // TODO: Subscribe to protocol
+    const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
+    if (configs.api_url !== undefined) {
+        if (argv._[1] !== undefined && argv._[1].indexOf('https') !== undefined) {
+            const message = "Sign me as PLDR provider."
+            const signature = await node.sign(message)
+            const { wallet } = await node.contract()
+            console.log('Signature is:', signature)
+            console.log('Sending request to api..')
+            const subscription = await axios.post(configs.api_url + '/signup', {
+                endpoint: argv._[1],
+                address: wallet.address,
+                signature: signature
+            })
+            console.log('Response is:', subscription.data.message)
+        } else {
+            console.log('You must provide an endpoint where referees and clients will contact you.')
+        }
+    } else {
+        console.log('Can\'t signup, API URL is not configured.')
+    }
 }
 
 const deals = async (node, ...args) => {
