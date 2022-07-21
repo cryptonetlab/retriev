@@ -354,11 +354,10 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             duration >= min_duration && duration <= max_duration,
             "Duration is out allowed range"
         );
-        uint256 maximum_collateral = slashing_multiplier * msg.value;
+        // uint256 maximum_collateral = slashing_multiplier * msg.value;
         require(
-            msg.value >= min_deal_value &&
-                collateral >= msg.value &&
-                collateral <= maximum_collateral,
+            msg.value >= min_deal_value && collateral >= msg.value,
+            // && collateral <= maximum_collateral
             "Collateral or value out of range"
         );
         require(
@@ -390,7 +389,12 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         // When created the amount of money is owned by sender
         vault[address(this)] += msg.value;
         // Emit event
-        emit DealProposalCreated(index, _providers, _deal_uri, _appeal_addresses);
+        emit DealProposalCreated(
+            index,
+            _providers,
+            _deal_uri,
+            _appeal_addresses
+        );
     }
 
     /*
