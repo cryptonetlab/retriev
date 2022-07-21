@@ -45,7 +45,7 @@ const sendmessage = async (node, ...args) => {
     }
 }
 
-const setupmaxsize = async (node, service) => {
+const setupmaxsize = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     if (argv._ !== undefined && argv._.length === 2 && parseInt(argv._[1]) >= 0) {
         configs.max_size = parseInt(argv._[1])
@@ -58,6 +58,22 @@ const setupmaxsize = async (node, service) => {
     } else {
         console.log("Please provide a maximum size for pinned files.")
         console.log("`Please run setupmaxsize <SIZE>`")
+    }
+}
+
+const setupmaxcollateral = async (node) => {
+    const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
+    if (argv._ !== undefined && argv._.length === 2 && parseInt(argv._[1]) >= 0) {
+        configs.max_collateral_multiplier = parseInt(argv._[1])
+        try {
+            fs.writeFileSync(node.nodePath + "/configs.json", JSON.stringify(configs, null, 4))
+            console.log("Max size policy changed correctly to:", configs.max_collateral_multiplier)
+        } catch (e) {
+            console.log("Can't save file to disk, retry.")
+        }
+    } else {
+        console.log("Please provide a maximum collateral multiplier, default is 1000.")
+        console.log("`Please run setupmaxcollateral <SIZE>`")
     }
 }
 
@@ -259,6 +275,16 @@ const processdeal = (node, deal_index) => {
                         } else {
                             policyMet = true
                         }
+                        // Check if collateral is acceptable
+                        let slashing_multiplier = await contract.slashing_multiplier()
+                        if(configs.max_collateral_multiplier !== undefined){
+                            slashing_multiplier = configs.max_collateral_multiplier
+                        }
+                        const maximum_collateral = parseInt(slashing_multiplier.toString()) * parseInt(proposal.value.toString());
+                        if (parseInt(proposal.collateral.toString()) > maximum_collateral) {
+                            console.log("Collateral is too high, can't accept.")
+                            policyMet = false
+                        }
                         // Check if file size is lower than accepted one
                         if (policyMet && configs.max_size !== undefined && parseInt(configs.max_size) > 0) {
                             if (parseInt(file_stats.Size) > parseInt(configs.max_size)) {
@@ -386,4 +412,4 @@ const daemon = async (node) => {
     })
 }
 
-module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance, subscribe, setupstrategy, getstrategy, setuppinning, setupmaxsize, getmaxsize }
+module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance, subscribe, setupstrategy, getstrategy, setuppinning, setupmaxsize, getmaxsize, setupmaxcollateral }
