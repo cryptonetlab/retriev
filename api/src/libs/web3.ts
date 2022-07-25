@@ -35,16 +35,16 @@ export const parseDeal = async (deal_index) => {
     console.log('[DEALS] Parsing deal #' + deal_index)
     const db = new Database.Mongo();
     const onchain_deal = await instance.contract.deals(deal_index);
-    let owner = 'NOT_ACCEPTED'
+    let provider = 'NOT_ACCEPTED'
     try {
-      owner = await instance.contract.ownerOf(deal_index);
+      provider = await instance.contract.ownerOf(deal_index);
       response(true)
     } catch (e) {
       console.log('[DEALS] -> Deal #', deal_index, 'not accepted yet.')
       response(false)
     }
 
-    console.log('[DEALS] -> Owner is:', owner)
+    console.log('[DEALS] -> Provider is:', provider)
     let deal = {
       index: deal_index,
       timestamp_end: "0",
@@ -56,7 +56,7 @@ export const parseDeal = async (deal_index) => {
       value: onchain_deal.value.toString(),
       collateral: onchain_deal.collateral.toString(),
       canceled: onchain_deal.canceled,
-      provider: owner,
+      provider: provider,
       appeal: {}
     }
     deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
@@ -66,7 +66,7 @@ export const parseDeal = async (deal_index) => {
       await db.insert('deals', deal)
     } else {
       console.log('[DEALS] --> Updating deal')
-      await db.update('deals', { index: deal_index }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: deal.provider, owner: owner } })
+      await db.update('deals', { index: deal_index }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider } })
     }
   })
 }
