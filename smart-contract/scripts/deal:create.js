@@ -14,15 +14,15 @@ async function main() {
 
     const value = "100" // Amount to pay for deal in gwei
     const ipfs_providers = [configs.providers[0].address] // First provider in config file
-    const dedal_uri = 'ipfs://QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG-' + deal_index // Public readme folder
+    const deal_uri = 'ipfs://QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG-' + deal_index // Public readme folder
     const min_duration = await contract.min_duration()
     const duration = min_duration; // Duration of the deal (2 minutes for test)
     const collateral = ethers.utils.parseUnits(value, 'gwei') // Setting 0 if you need minimum one
     const appeal_addresses = [wallet.address]
     try {
-        console.log("Creating new deal with URI: " + dedal_uri)
+        console.log("Creating new deal with URI: " + deal_uri)
         const tx = await contract.createDealProposal(
-            dedal_uri,
+            deal_uri,
             duration,
             collateral,
             ipfs_providers,
