@@ -35,39 +35,38 @@ export const parseDeal = async (deal_index) => {
     console.log('[DEALS] Parsing deal #' + deal_index)
     const db = new Database.Mongo();
     const onchain_deal = await instance.contract.deals(deal_index);
+    let owner = 'NOT_ACCEPTED'
     try {
-      const owner = await instance.contract.ownerOf(deal_index);
-      console.log('[DEALS] -> Owner is:', owner)
-      let deal = {
-        index: deal_index,
-        timestamp_end: "0",
-        timestamp_start: onchain_deal.timestamp_start.toString(),
-        timestamp_request: onchain_deal.timestamp_request.toString(),
-        duration: onchain_deal.duration.toString(),
-        deal_uri: onchain_deal.deal_uri,
-        owner: onchain_deal.owner,
-        value: onchain_deal.value.toString(),
-        collateral: onchain_deal.collateral.toString(),
-        canceled: onchain_deal.canceled,
-        provider: owner,
-        appeal: {}
-      }
-      deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
-      const checkDB = await db.find('deals', { index: deal_index })
-      if (checkDB === null) {
-        console.log('[DEALS] --> Inserting new deal')
-        await db.insert('deals', deal)
-      } else {
-        console.log('[DEALS] --> Updating deal')
-        await db.update('deals', { index: deal_index }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: deal.provider } })
-      }
+      owner = await instance.contract.ownerOf(deal_index);
       response(true)
     } catch (e) {
-      console.log('[DEALS] -> Error while parsing deal #', deal_index)
-      console.log('--')
-      console.log(e)
-      console.log('--')
+      console.log('[DEALS] -> Deal #', deal_index, 'not accepted yet.')
       response(false)
+    }
+
+    console.log('[DEALS] -> Owner is:', owner)
+    let deal = {
+      index: deal_index,
+      timestamp_end: "0",
+      timestamp_start: onchain_deal.timestamp_start.toString(),
+      timestamp_request: onchain_deal.timestamp_request.toString(),
+      duration: onchain_deal.duration.toString(),
+      deal_uri: onchain_deal.deal_uri,
+      owner: onchain_deal.owner,
+      value: onchain_deal.value.toString(),
+      collateral: onchain_deal.collateral.toString(),
+      canceled: onchain_deal.canceled,
+      provider: owner,
+      appeal: {}
+    }
+    deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
+    const checkDB = await db.find('deals', { index: deal_index })
+    if (checkDB === null) {
+      console.log('[DEALS] --> Inserting new deal')
+      await db.insert('deals', deal)
+    } else {
+      console.log('[DEALS] --> Updating deal')
+      await db.update('deals', { index: deal_index }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: deal.provider, owner: owner } })
     }
   })
 }
