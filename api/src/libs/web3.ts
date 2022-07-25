@@ -172,6 +172,11 @@ export const listenEvents = async () => {
       parseDeal(deal_index)
     }
   })
+  instance.contract.on("DealProposalCreated", async (index) => {
+    console.log("[EVENT] Deal proposal created")
+    const deal_index = parseInt(index.toString())
+    parseDeal(deal_index)
+  })
   instance.contract.on("DealProposalCanceled", async (index) => {
     console.log("[EVENT] Deal proposal canceled")
     const deal_index = parseInt(index.toString())
