@@ -6,7 +6,7 @@ const { exec, execSync } = require('child_process')
 const getIP = require('external-ip')()
 const axios = require('axios')
 const argv = require('minimist')(process.argv.slice(2));
-const fileType = require('file-type-cjs');
+const request = require('request');
 
 let mainPath = homedir + '/.pldr'
 if (argv.docker !== undefined) {
@@ -119,7 +119,6 @@ module.exports = class PldrNode {
             })
         }
     }
-
     returnPeers() {
         return this.peers
     }
@@ -352,13 +351,14 @@ module.exports = class PldrNode {
                 // Just for test purposes because deals are done with an invalid CID (Valid+index)
                 const hash = req.params.hash.split('-')[0]
                 console.log("Downloading file from IPFS: " + hash)
-                const file = await axios.post("http://127.0.0.1:5001/api/v0/cat?download=true&arg=/ipfs/" + hash, { responseType: "arraybuffer" })
-                const type = await fileType.fromBuffer(Buffer.from(file.data))
-                console.log('Type is:', type)
-                res.set("Content-Type", type.mime)
-                res.setHeader( 'Content-Disposition', 'attachment; filename=' + hash + '.' + type.ext );
-                clearTimeout(timeout)
-                res.send(file.data)
+                const file = await axios.post("http://127.0.0.1:5001/api/v0/files/stat?arg=/ipfs/" + hash)
+                if (file.data.Hash === hash) {
+                    clearTimeout(timeout)
+                    req.pipe(request("http://127.0.0.1:8080/ipfs/" + hash)).pipe(res);
+                } else {
+                    clearTimeout(timeout)
+                    res.status(404).send({ message: "Can't fetch file from IPFS" })
+                }
             } catch (e) {
                 console.log(e.message)
                 clearTimeout(timeout)

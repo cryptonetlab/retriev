@@ -15,8 +15,8 @@
     "ethers": "^5.6.2",
     "express": "^4.17.3",
     "external-ip": "^2.3.1",
-    "file-type-cjs": "^1.0.7",
     "minimist": "^1.2.6",
+    "request": "^2.88.2",
     "socket.io": "^4.4.1",
     "socket.io-client": "^4.4.1"
   }
