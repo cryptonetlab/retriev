@@ -6,6 +6,8 @@ const { exec, execSync } = require('child_process')
 const getIP = require('external-ip')()
 const axios = require('axios')
 const argv = require('minimist')(process.argv.slice(2));
+const fileType = require('file-type-cjs');
+
 let mainPath = homedir + '/.pldr'
 if (argv.docker !== undefined) {
     mainPath = './pldr'
@@ -15,6 +17,7 @@ if (argv.docker !== undefined) {
 const express = require('express')
 const app = express()
 const http = require('http')
+const cors = require('cors')
 const server = http.createServer(app)
 const { Server } = require("socket.io")
 const bodyParser = require('body-parser')
@@ -25,6 +28,7 @@ const ioServer = new Server(server, {
     }
 })
 app.use(bodyParser.json())
+app.use(cors())
 // Socket.io Client
 const ioClient = require("socket.io-client")
 require('dotenv').config()
@@ -341,18 +345,23 @@ module.exports = class PldrNode {
             }
         })
         app.get('/ipfs/:hash', async function (req, res) {
+            let timeout = setTimeout(function () {
+                res.status(404).send("FILE_NOT_FOUND")
+            }, 30000)
             try {
                 // Just for test purposes because deals are done with an invalid CID (Valid+index)
                 const hash = req.params.hash.split('-')[0]
                 console.log("Downloading file from IPFS: " + hash)
-                const file = await axios.post("http://127.0.0.1:5001/api/v0/get?arg=/ipfs/" + hash, { responseType: "arraybuffer" })
-                res.set("Content-Type", "application/x-tar")
+                const file = await axios.post("http://127.0.0.1:5001/api/v0/cat?download=true&arg=/ipfs/" + hash, { responseType: "arraybuffer" })
+                const type = await fileType.fromBuffer(Buffer.from(file.data))
+                console.log('Type is:', type)
+                res.set("Content-Type", type.mime)
+                res.setHeader( 'Content-Disposition', 'attachment; filename=' + hash + '.' + type.ext );
+                clearTimeout(timeout)
                 res.send(file.data)
-                setTimeout(function () {
-                    res.status(404).send("FILE_NOT_FOUND")
-                }, 30000)
             } catch (e) {
                 console.log(e.message)
+                clearTimeout(timeout)
                 res.status(404).send({ message: "Can't fetch file from IPFS" })
             }
         })
