@@ -32,6 +32,25 @@ body {
   }
 }
 
+@mixin btn-minimal-noHover {
+  background-color: transparent;
+  text-transform: uppercase;
+  padding: 10px 30px;
+  vertical-align: middle;
+  box-sizing: border-box;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.3s;
+  @include font-plex;
+  letter-spacing: 0.04em;
+  font-size: 0.813rem;
+  font-weight: 500;
+  color: var(--tertiary-color-light);
+  border: 1px solid var(--tertiary-color-light);
+  border-radius: 0px !important;
+  transition: all 0.3s;
+}
+
 @mixin btn-minimal {
   background-color: transparent;
   text-transform: uppercase;
@@ -108,7 +127,7 @@ body {
 }
 
 @mixin font-plex {
-  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Mono", monospace !important;
 }
 
 /* ==============> FONTS <============== */
@@ -116,20 +135,23 @@ body {
 
 a {
   color: black;
-  font-family: "JetBrains Mono", monospace;
+  @include font-plex();
 }
 
 a span {
   text-decoration: underline;
 }
 
+b {
+  font-weight: 600;
+}
 .nav-container a {
-  font-family: "JetBrains Mono", monospace;
+  @include font-plex();
   font-size: 1rem;
 }
 
 p.small {
-  font-family: "JetBrains Mono", monospace;
+  @include font-plex();
   font-size: 0.7rem;
 }
 
@@ -161,6 +183,11 @@ h5 {
   color: var(--primary-color);
 }
 
+.title {
+  color: var(--primary-color);
+  font-weight: 400;
+  letter-spacing: 0.03em;
+}
 /* ==============> POSITIONING, MARGIN, PADDING, ETC...<============== */
 
 .bg-color-dark {
@@ -176,11 +203,11 @@ h5 {
 }
 
 .b-top-colored-grey {
-  border-top: 1px solid #CECCC0;
+  border-top: 1px solid #ceccc0;
 }
 
 .b-bottom-colored-grey {
-  border-bottom: 1px solid #CECCC0;
+  border-bottom: 1px solid #ceccc0;
 }
 
 .b-bottom-colored-dark {
@@ -199,6 +226,10 @@ h5 {
   top: calc(0.5rem * 0.5 + 18px);
 }
 
+.bordered-dashed {
+  border: 1px dashed var(--primary-color);
+}
+
 .flex-force {
   display: flex !important;
   align-items: center !important;
@@ -215,29 +246,10 @@ h5 {
   max-height: 100vh;
 }
 
-.box-img {
-  width: 100%;
-  height: 100%;
-  background-image: url(../assets/img/no-avail.png);
-  background-size: 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-  padding:8px 10px;
-  margin:0;
-}
-.box-img img {
-  width: 100%;
-  object-fit: contain;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  max-height: 100%;
-}
-
 .placeholder-input {
   position: absolute;
   top: 8px;
-  right: 15px;
+  right: 30px;
   font-size: 0.9rem;
   color: #7d7c77;
 }
@@ -266,7 +278,16 @@ h5 {
   color: var(--tertiary-color-light);
 }
 
-/* ==============> BUTTONS <============== */
+.no-pointer {
+  pointer-events: none !important;
+}
+
+/* ==============> BUTTONS & FIELDS <============== */
+input,
+.upload .upload-draggable.is-expanded {
+  @include font-plex();
+  border-radius: 0 !important;
+}
 
 .btn-active {
   border: 1px solid var(--secondary-color);
@@ -277,10 +298,36 @@ h5 {
     transition: all 0.3s;
   }
 }
+
 .btn-white {
   @include btn();
   @include btn-white();
 }
+
+.btn-light-icon {
+  background-color: transparent;
+  text-transform: uppercase;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 42px;
+  height: 42px;
+  cursor: pointer;
+  transition: all 0.3s;
+  @include font-plex;
+  font-size: 0.813rem;
+  color: var(--tertiary-color-light);
+  border: 1px solid var(--tertiary-color-light);
+  border-radius: 0px !important;
+  transition: all 0.3s;
+  &:hover {
+    background-color: var(--secondary-color);
+    transition: all 0.3s;
+    color: var(--tertiary-color-light);
+  }
+}
+
 .btn-light {
   @include btn-minimal();
 }
@@ -315,6 +362,10 @@ h5 {
     color: var(--tertiary-color-light);
     transition: all 0.3s;
   }
+}
+
+.btn-minimal-noHover {
+  @include btn-minimal-noHover();
 }
 
 .btn-primary {
@@ -357,7 +408,7 @@ h5 {
   cursor: pointer;
   transition: all 0.3s;
   z-index: 999;
-  font-family: "JetBrains Mono", monospace;
+  @include font-plex();
 }
 
 .btn-sidebar:hover {
@@ -368,15 +419,16 @@ h5 {
 
 .button {
   height: unset !important;
+  border-radius: 0;
 }
 
 button.button.is-rounded.is-dark {
-  font-family: "JetBrains Mono", monospace !important;
+  @include font-plex();
   transition: all 0.3s;
 }
 
 button.button.is-rounded.is-dark:hover {
-  font-family: "JetBrains Mono", monospace;
+  @include font-plex();
   background-color: #ced4da;
   border: 1px solid black;
   color: black;
@@ -549,6 +601,7 @@ button.dropdown-item.is-active {
 
 .card {
   padding: 10px 0;
+  color: var(--primary-color);
   .card-footer:last-child,
   .card-content:last-child,
   .card-header:last-child {
@@ -560,10 +613,16 @@ button.dropdown-item.is-active {
     align-items: center;
     display: flex;
   }
+  a.link-primary {
+    color: var(--secondary-color);
+  }
   .card-header {
     width: 100%;
     justify-content: space-between;
     flex-wrap: wrap;
+    p {
+      color: var(--primary-color);
+    }
     button {
       border-radius: 0;
     }
@@ -603,6 +662,30 @@ img.network-logo {
   }
 }
 
+.mobile-blocker {
+  width: 100%;
+  height: auto;
+  height: 100vh;
+  background-color: #002b4d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  .logo {
+    width: 80px;
+    height: 80px;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+  p {
+    color: var(--tertiary-color-light);
+  }
+}
+
 /* ==============> DEAL CREATION <============== */
 
 .box-deals {
@@ -611,6 +694,26 @@ img.network-logo {
   border: 1px solid #ced4da;
   border-radius: 5px;
   padding: 20px;
+}
+
+.box-img {
+  width: 100%;
+  height: 100%;
+  background-image: url(../assets/img/no-avail.png);
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 8px 10px;
+  margin: 0;
+}
+
+.box-img img {
+  width: 100%;
+  object-fit: contain;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  max-height: 100%;
 }
 
 .custom-card {
@@ -663,8 +766,29 @@ img.network-logo {
   transition: all 0.5s;
 }
 
-/* ==============> LOGS <============== */
+.modal-card {
+  .modal-card-title {
+    @include font-inter();
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+  .modal-card-foot,
+  .modal-card-head {
+    background-color: var(--tertiary-color-light);
+  }
+  p {
+    @include font-plex();
+  }
+}
 
+/* ==============> LOGS & NOTIFICATIONS <============== */
+.modal-card-body {
+  .media {
+    align-items: center;
+  }
+}
 .right-col {
   width: 22rem;
   height: 100vh;
@@ -672,21 +796,48 @@ img.network-logo {
   position: fixed;
   top: 0;
   right: 0;
-  padding: 20px;
-  text-align: justify;
-  word-break: break-all;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10vh 1.2rem;
   font-size: 12px;
-  border-left: 1px solid black;
+  border-left: 1px solid var(--primary-color);
   z-index: 9;
-  background-color: #f3f5f7;
-}
+  background-color: white;
+  a {
+    @include font-plex();
+    font-weight: 700;
+    color: var(--primary-color);
+    text-transform: uppercase;
+  }
+  p.navbar-text {
+    @include font-plex();
+    font-weight: 400;
+    color: var(--primary-color);
+    text-transform: uppercase;
+  }
 
-.move-page {
-  margin: 0;
-  position: absolute;
-  top: 3rem;
-  animation-name: example;
-  animation-duration: 0.5s;
+  /* width */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    box-shadow: none;
+    border-radius: 10px;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 10px;
+  }
+
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+  }
 }
 
 @keyframes example {
@@ -702,16 +853,22 @@ hr {
   background-color: var(--primary-color);
 }
 
-/* ==============> LOGS <============== */
+.Vue-Toastification__toast {
+  @include font-plex();
+  border-radius: 0;
+}
+.Vue-Toastification__toast-body {
+  @include font-plex();
+}
 
 .workingMessage {
   position: absolute;
   top: 0;
   z-index: 9999;
-  background-color: rgba(0, 43, 77, 0.6);
+  background-color: rgba(0, 43, 77, 0.7);
   color: var(--tertiary-color-light);
   font-size: 1.6rem;
-  font-family: "JetBrains Mono", monospace;
+  @include font-plex();
   word-break: break-word;
   line-height: 1;
   height: 100vh;

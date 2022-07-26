@@ -1,11 +1,27 @@
 <template>
   <div>
-    <section class="hero">
+    <!-- MOBILE BLOCKER DAPP -->
+    <div v-if="isMobile" class="mobile-blocker">
+      <div class="logo mb-3">
+        <img src="../assets/img/logo.svg" alt="" />
+      </div>
+      <h2 class="pay-off tertiary-light-text">Retrieval Pinning</h2>
+      <p class="has-text-centered mt-5">
+        For a better experience, use dApp from Desktop.
+      </p>
+    </div>
+    <!-- END MOBILE BLOCKER DAPP -->
+    <section v-if="!isMobile" class="hero" :class="{ 'no-scroll': isWorking }">
+      <!-- NAVBAR SECTION -->
       <Navbar
         :account="account"
         :network="network"
         :accountBalance="accountBalance"
+        :expertMode="expertMode"
+        :logs="logs"
       />
+      <!-- END | NAVBAR SECTION -->
+
       <!-- SHOW CREATION DEAL -->
       <div class="hero-body pt-5">
         <div class="container">
@@ -35,11 +51,11 @@
           </div>
           <!--END | BACK BUTTON AND EXPERT MODE SWITCH -->
 
-          <div class="mt-3" v-if="isUploadingIPFS">
+          <!-- <div class="mt-3" v-if="isUploadingIPFS">
             Uploading file on IPFS, please wait..
-          </div>
+          </div> -->
 
-          <b-field v-if="!fileToUpload.name && !expertMode">
+          <b-field v-if="!fileToUpload.name">
             <b-upload
               v-model="fileToUpload"
               expanded
@@ -55,8 +71,8 @@
             </b-upload>
           </b-field>
           <div
-            class="is-flex is-align-items-start is-justify-content-space-between py-3"
-            v-if="fileToUpload.name && !expertMode"
+            class="bordered-dashed is-flex is-align-items-start is-justify-content-space-between p-3"
+            v-if="fileToUpload.name"
           >
             <div>
               <h5>File name:</h5>
@@ -72,7 +88,7 @@
                 fileToUpload = '';
                 dealUri = '';
               "
-              >Select another file</b-button
+              ><i class="fa-solid fa-circle-xmark"></i> Change file</b-button
             >
           </div>
 
@@ -97,47 +113,59 @@
 
           <div class="mt-6">
             <!-- TITLES TABLE -->
-            <div class="columns" v-if="isDesktop">
-              <div class="column is-full-mobile is-4-tablet is-5-desktop">
+            <div class="columns is-mobile">
+              <div class="column is-3-tablet is-5-desktop">
                 <h5 class="title-table">PROVIDER</h5>
               </div>
-              <div class="column is-full-mobile is-4-tablet is-3-desktop">
+              <div class="column is-3-tablet is-3-desktop pl-0">
                 <h5 class="title-table">ADDRESS</h5>
               </div>
-              <div class="column is-full-mobile is-4-tablet is-1-desktop pl-0">
+              <div
+                class="column is-2-tablet is-1-desktop"
+                :class="{ 'pl-3': isTablet, 'pl-0': isDesktop }"
+              >
                 <h5 class="title-table">MAX SIZE</h5>
               </div>
-              <div class="column is-full-mobile is-4-tablet is-2-desktop pl-0">
+              <div class="column is-2-tablet is-2-desktop pl-0">
                 <h5 class="title-table">WEI/B PER SEC.</h5>
               </div>
-              <div class="column is-full-mobile is-4-tablet is-1-desktop pl-0">
+              <div class="column is-1-tablet is-1-desktop pl-0">
                 <h5 class="title-table">SELECTION</h5>
               </div>
             </div>
             <!-- END TITLES TABLE -->
-            <h5 v-if="!isDesktop" class="title-table">PROVIDER</h5>
             <div
               v-for="provider in providers"
               :value="provider.address"
               :key="provider.address"
               class="custom-card"
             >
-              <div class="columns m-0" v-if="isDesktop">
-                <div class="column is-5">
-                  <p>
+              <div class="columns is-mobile m-0">
+                <div class="column is-3-tablet is-5-desktop">
+                  <p v-if="isDesktop">
                     <b>{{ provider.address }}</b>
                   </p>
+                  <p v-if="!isDesktop">
+                    <b>{{
+                      provider.address.substr(0, 4) +
+                      "..." +
+                      provider.address.substr(-4)
+                    }}</b>
+                  </p>
                 </div>
-                <div class="column is-3">
+                <div class="column is-3-tablet is-3-desktop pl-0">
                   <p>{{ provider.endpoint }}</p>
                 </div>
-                <div class="column is-1">
+                <div
+                  class="column is-2-tablet is-1-desktop"
+                  :class="{ 'pl-3': isTablet }"
+                >
                   <p>{{ provider.maxSize / 1000000 }}MB</p>
                 </div>
-                <div class="column is-2">
+                <div class="column is-2-tablet is-2-desktop">
                   <p>{{ provider.price }}</p>
                 </div>
-                <div class="column is-1 pl-5">
+                <div class="column is-2-tablet is-1-desktop pl-5">
                   <b-checkbox
                     type="is-info"
                     :disabled="isWorking"
@@ -155,7 +183,7 @@
           <div class="columns mt-6">
             <div class="column">
               <div class="mb-5">
-                <h3 class="mb-3">Deal Duration</h3>
+                <h5 class="mb-3">Deal Duration</h5>
                 <div style="position: relative">
                   <b-input
                     v-model="dealDurationDays"
@@ -169,13 +197,15 @@
             </div>
             <div class="column">
               <div class="mb-5">
-                <h3 class="mb-3">
-                  Payment in wei
-                  <i
-                    @click="infoWei = true"
-                    class="fa-solid fa-circle-info pointer"
-                  ></i>
-                </h3>
+                <div class="is-flex is-align-items-center mb-3">
+                  <h5 class="m-0">Payment in wei</h5>
+                  <h3>
+                    <i
+                      @click="infoWei = true"
+                      class="fa-solid fa-circle-info pointer ml-2"
+                    ></i>
+                  </h3>
+                </div>
                 <div style="position: relative">
                   <b-input
                     v-model="dealValue"
@@ -187,33 +217,39 @@
               </div>
 
               <div v-if="expertMode" class="mt-6 mb-6">
-                <h5 class="mb-5">
-                  collateral
-                  <i
-                    @click="infoCollateral = true"
-                    class="fa-solid fa-circle-info pointer"
-                  ></i>
-                </h5>
+                <div class="is-flex is-align-items-center mb-3">
+                  <h5 class="m-0">collateral</h5>
+                  <h3>
+                    <i
+                      @click="infoCollateral = true"
+                      class="fa-solid fa-circle-info pointer ml-2"
+                    ></i>
+                  </h3>
+                </div>
                 <b-field class="px-4">
                   <b-slider
                     :disabled="isWorking"
-                    :min="0"
-                    :max="dealValue * 1000"
+                    :min="parseInt(dealValue)"
+                    :max="dealValue * slashingMultiplier"
                     :step="1"
                     indicator
                     :tooltip="false"
                     type="is-info"
                     v-model="dealCollateral"
                   >
-                    <b-slider-tick v-if="dealValue > 0" :value="dealValue"
+                    <b-slider-tick
+                      v-if="parseInt(dealValue) > 0"
+                      :value="parseInt(dealValue)"
                       >Low</b-slider-tick
                     >
-                    <b-slider-tick v-if="dealValue > 0" :value="dealValue * 500"
+                    <b-slider-tick
+                      v-if="parseInt(dealValue) > 0"
+                      :value="parseInt(dealValue) * (slashingMultiplier / 2)"
                       >Mid</b-slider-tick
                     >
                     <b-slider-tick
                       v-if="dealValue > 0"
-                      :value="dealValue * 1000"
+                      :value="dealValue * slashingMultiplier"
                       >High</b-slider-tick
                     ></b-slider
                   >
@@ -244,6 +280,71 @@
         <p class="text-center">{{ workingMessage }}</p>
       </div>
       <!-- END Working Messages -->
+
+      <!-- Modal Payment in gwei -->
+      <b-modal
+        v-model="infoWei"
+        has-modal-card
+        trap-focus
+        :destroy-on-hide="false"
+        aria-role="dialog"
+        aria-label="Payment in gwei"
+        close-button-aria-label="Close"
+        aria-modal
+      >
+        <template>
+          <div class="modal-card" style="width: auto">
+            <header class="modal-card-head">
+              <h3 class="modal-card-title">Payment in wei</h3>
+            </header>
+            <section class="modal-card-body">
+              <p>Payment is the amount of tokens paid to the provider</p>
+            </section>
+            <footer class="modal-card-foot">
+              <b-button
+                class="btn-secondary"
+                label="Close"
+                @click="infoWei = !infoWei"
+              />
+            </footer>
+          </div>
+        </template>
+      </b-modal>
+      <!-- END Modal Modal Payment in gwei -->
+
+      <!-- Modal Collateral in gwei -->
+      <b-modal
+        v-model="infoCollateral"
+        has-modal-card
+        trap-focus
+        :destroy-on-hide="false"
+        aria-role="dialog"
+        aria-label="Collateral in gwei"
+        close-button-aria-label="Close"
+        aria-modal
+      >
+        <template>
+          <div class="modal-card" style="width: auto">
+            <header class="modal-card-head">
+              <p class="modal-card-title">Collateral in wei</p>
+            </header>
+            <section class="modal-card-body">
+              <p>
+                Collateral is locked down from the provider account. Remeber
+                that collateral needs to be ≥ Payment and ≤ 1000*Payment
+              </p>
+            </section>
+            <footer class="modal-card-foot">
+              <b-button
+                class="btn-secondary"
+                label="Close"
+                @click="infoCollateral = !infoCollateral"
+              />
+            </footer>
+          </div>
+        </template>
+      </b-modal>
+      <!-- END Modal Modal Collateral in gwei -->
     </section>
   </div>
 </template>
@@ -284,7 +385,7 @@ export default {
       dealUri: "",
       dealDuration: 86400,
       dealDurationDays: 1,
-      dealCollateral: "",
+      dealCollateral: 1,
       dealProviders: [],
       dealValue: "",
       abi: ABI,
@@ -293,17 +394,17 @@ export default {
       currentNetwork: { icon: "fa-solid fa-user-secret", text: "Rinkeby" },
       fileToUpload: {},
       isUploadingIPFS: false,
-      slashingMultiplier: 10,
+      slashingMultiplier: 1000,
       appealAddress: "",
       // REFRESH SINGLE DEAL
       selectedDeal: {},
 
       // FOR LAYOUT
       canDoProposal: false,
-      logState: false,
       infoWei: false,
       infoCollateral: false,
       expertMode: false,
+
       // FILTER
       changeNetwork: false,
       filtered: false,
@@ -312,7 +413,6 @@ export default {
       showallDeals: false,
       isOpen: 0,
       searcher: "",
-      searchTimeout: null,
     };
   },
   components: { Navbar },
@@ -326,11 +426,12 @@ export default {
         app.dealDurationDays = 1;
       }
       // TODO: Handle case where providers > 1
-      app.dealValue =
+      app.dealValue = parseInt(
         app.providersPolicy[app.dealProviders[0]].price *
-        app.dealDurationDays *
-        86400 *
-        app.fileToUpload.size;
+          app.dealDurationDays *
+          86400 *
+          app.fileToUpload.size
+      );
       app.dealDuration = parseInt(app.dealDurationDays * 86400);
     },
     fileToUpload() {
@@ -338,11 +439,12 @@ export default {
     },
     async dealValue() {
       const app = this;
-      app.dealCollateral = app.dealValue;
+      app.dealCollateral = parseInt(app.dealValue);
     },
     async dealCollateral() {
       const app = this;
       const maximumCollateral = app.slashingMultiplier * app.dealValue;
+      console.log("max collaterl", maximumCollateral);
       if (parseInt(app.dealCollateral) > parseInt(maximumCollateral)) {
         app.log("Min collateral is " + maximumCollateral + ", please fix it!");
       }
@@ -477,6 +579,147 @@ export default {
       console.log("DEFAULT PROVIDERS:", app.dealProviders);
       app.log("Found " + app.providers.length + " active providers");
     },
+    async uploadFile() {
+      const app = this;
+      if (app.fileToUpload.name && !app.isUploadingIPFS) {
+        // TODO: Handle case where providers > 1
+        if (
+          app.fileToUpload.size <
+          app.providersPolicy[app.dealProviders[0]].maxSize
+        ) {
+          app.isUploadingIPFS = true;
+          app.canDoProposal = true;
+          const formData = new FormData();
+          formData.append("file", app.fileToUpload);
+          console.log("UPLOADED_FILE", app.fileToUpload);
+          app.dealValue =
+            app.providersPolicy[app.dealProviders[0]].price *
+            app.dealDuration *
+            app.fileToUpload.size;
+          axios({
+            method: "post",
+            url: app.infuraURL + "?cid-version=1",
+            data: formData,
+            headers: {
+              "Content-Type": "multipart/form-data;",
+            },
+          }).then(function (response) {
+            app.dealUri = "ipfs://" + response.data.Hash;
+            app.isUploadingIPFS = false;
+          });
+        } else if (!app.expertMode) {
+          // TODO: Change with fancy alert
+          app.alertCustomError("File is too big, provider will not accept the deal!");
+          app.fileToUpload = "";
+          app.canDoProposal = false;
+        }
+      }
+    },
+    async createDealProposal() {
+      const app = this;
+      if (!app.isWorking) {
+        if (
+          parseInt(app.dealDuration) >= parseInt(app.minDuration) &&
+          parseInt(app.dealDuration) <= parseInt(app.maxDuration) &&
+          app.dealUri.length > 0 &&
+          app.dealProviders.length > 0
+        ) {
+          const maximumCollateral = app.slashingMultiplier * app.dealValue;
+          if (
+            parseInt(app.dealCollateral) <= parseInt(maximumCollateral) &&
+            parseInt(app.dealCollateral) >= parseInt(app.dealValue)
+          ) {
+            app.isWorking = true;
+            app.workingMessage = "Please confirm action with metamask..";
+            try {
+              const contract = new app.web3.eth.Contract(app.abi, app.contract);
+              const receipt = await contract.methods
+                .createDealProposal(
+                  app.dealUri,
+                  app.dealDuration,
+                  app.dealCollateral.toString(),
+                  app.dealProviders,
+                  [app.account]
+                )
+                .send({
+                  value: app.dealValue.toString(),
+                  from: app.account,
+                })
+                .on("transactionHash", (tx) => {
+                  app.workingMessage =
+                    "Found pending transaction at " +
+                    tx.substr(0, 4) +
+                    "..." +
+                    tx.substr(-4);
+                  app.log(
+                    "Found pending transaction at " +
+                      tx.substr(0, 4) +
+                      "..." +
+                      tx.substr(-4)
+                  );
+                  this.$toast.warning("Found pending transaction at: " + tx, {
+                    position: "top-right",
+                    timeout: 5000,
+                    closeOnClick: true,
+                    pauseOnFocusLoss: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    draggablePercent: 0.6,
+                    showCloseButtonOnHover: true,
+                    hideProgressBar: true,
+                    closeButton: "button",
+                    icon: "fa-solid fa-arrow-right-arrow-left",
+                    rtl: false,
+                  });
+                });
+              console.log("BLOCKCHAIN_RECEIPT ", receipt);
+              app.log(
+                "Transaction success at: ",
+                receipt.blockHash.substr(0, 4) +
+                  "..." +
+                  receipt.blockHash.substr(-4)
+              );
+              setTimeout(async function () {
+                window.location.href = "/";
+              }, 2000);
+              app.workingMessage =
+                "Transaction success at: " +
+                receipt.blockHash.substr(0, 4) +
+                "..." +
+                receipt.blockHash.substr(-4);
+              this.$toast("Transaction success at: " + receipt.blockHash, {
+                position: "top-right",
+                timeout: 5000,
+                closeOnClick: true,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: true,
+                draggablePercent: 0.6,
+                showCloseButtonOnHover: true,
+                hideProgressBar: true,
+                closeButton: "button",
+                icon: "fa-solid fa-arrow-right-arrow-left",
+                rtl: false,
+              });
+            } catch (e) {
+              app.isWorking = false;
+              app.alertCustomError(e.message);
+            }
+          } else {
+            app.alertCustomError(
+              "Max collateral is " +
+                maximumCollateral +
+                " while minimum is same of value!"
+            );
+          }
+        } else {
+          app.alertCustomError("Please fill all fields!");
+        }
+      } else {
+        console.log("App busy, retry.");
+      }
+    },
+    // NOTIFICATIONS & ALERTS
     showToast(message) {
       const app = this;
       if (!app.isToasting) {
@@ -523,128 +766,17 @@ export default {
         }, 6200);
       }
     },
-    async uploadFile() {
-      const app = this;
-      if (app.fileToUpload.name && !app.isUploadingIPFS) {
-        // TODO: Handle case where providers > 1
-        if (
-          app.fileToUpload.size <
-          app.providersPolicy[app.dealProviders[0]].maxSize
-        ) {
-          app.isUploadingIPFS = true;
-          app.canDoProposal = true;
-          const formData = new FormData();
-          formData.append("file", app.fileToUpload);
-          console.log("UPLOADED_FILE", app.fileToUpload);
-          app.dealValue =
-            app.providersPolicy[app.dealProviders[0]].price *
-            app.dealDuration *
-            app.fileToUpload.size;
-          axios({
-            method: "post",
-            url: app.infuraURL + "?cid-version=1",
-            data: formData,
-            headers: {
-              "Content-Type": "multipart/form-data;",
-            },
-          }).then(function (response) {
-            app.dealUri = "ipfs://" + response.data.Hash;
-            app.isUploadingIPFS = false;
-          });
-        } else if (!app.expertMode) {
-          // TODO: Change with fancy alert
-          alert("File is too big, provider will not accept the deal!");
-          app.fileToUpload = "";
-          app.canDoProposal = false;
-        }
-      }
-    },
-    async createDealProposal() {
-      const app = this;
-      if (!app.isWorking) {
-        if (
-          parseInt(app.dealDuration) >= parseInt(app.minDuration) &&
-          parseInt(app.dealDuration) <= parseInt(app.maxDuration) &&
-          app.dealUri.length > 0 &&
-          app.dealProviders.length > 0
-        ) {
-          const maximumCollateral = app.slashingMultiplier * app.dealValue;
-          if (
-            parseInt(app.dealCollateral) <= parseInt(maximumCollateral) &&
-            parseInt(app.dealCollateral) >= parseInt(app.dealValue)
-          ) {
-            app.isWorking = true;
-            app.workingMessage = "Please confirm action with metamask..";
-            try {
-              const contract = new app.web3.eth.Contract(app.abi, app.contract);
-              const receipt = await contract.methods
-                .createDealProposal(
-                  app.dealUri,
-                  app.dealDuration,
-                  app.dealCollateral.toString(),
-                  app.dealProviders,
-                  [app.account]
-                )
-                .send({
-                  value: app.dealValue.toString(),
-                  from: app.account,
-                })
-                .on("transactionHash", (tx) => {
-                  app.workingMessage = "Found pending transaction at " + tx;
-                  app.log("Found pending transaction at: ", tx);
-                  this.$toast.warning("Found pending transaction at: " + tx, {
-                    position: "top-right",
-                    timeout: 5000,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: true,
-                    hideProgressBar: true,
-                    closeButton: "button",
-                    icon: "fa-solid fa-arrow-right-arrow-left",
-                    rtl: false,
-                  });
-                });
-              console.log("BLOCKCHAIN_RECEIPT ", receipt);
-              app.log("Transaction success at: ", receipt.blockHash);
-              setTimeout(async function () {
-                window.location.href = "/";
-              }, 2000);
-              app.workingMessage =
-                "Transaction success at: " + receipt.blockHash;
-              this.$toast("Transaction success at: " + receipt.blockHash, {
-                position: "top-right",
-                timeout: 5000,
-                closeOnClick: true,
-                pauseOnFocusLoss: true,
-                pauseOnHover: true,
-                draggable: true,
-                draggablePercent: 0.6,
-                showCloseButtonOnHover: true,
-                hideProgressBar: true,
-                closeButton: "button",
-                icon: "fa-solid fa-arrow-right-arrow-left",
-                rtl: false,
-              });
-            } catch (e) {
-              app.isWorking = false;
-              alert(e.message);
-            }
-          } else {
-            alert(
-              "Max collateral is " +
-                maximumCollateral +
-                " while minimum is same of value!"
-            );
-          }
-        } else {
-          alert("Please fill all fields!");
-        }
-      } else {
-        console.log("App busy, retry.");
-      }
+    alertCustomError(message) {
+      this.$buefy.dialog.alert({
+        title: "Error",
+        message: message,
+        type: "is-danger",
+        hasIcon: true,
+        icon: "times-circle",
+        iconPack: "fa",
+        ariaRole: "alertdialog",
+        ariaModal: true,
+      });
     },
   },
 };
