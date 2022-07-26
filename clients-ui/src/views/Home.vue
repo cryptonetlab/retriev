@@ -508,7 +508,6 @@
                         </div>
                       </div>
                       <!-- END DEAL SPECIFICATIONS -->
-                      
                     </b-collapse>
                     <!-- END | SINGLE DEAL -->
                   </div>
