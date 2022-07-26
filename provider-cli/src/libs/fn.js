@@ -271,28 +271,53 @@ const processdeal = (node, deal_index) => {
                             console.log('Deal value is:', proposal.value.toString())
                             if (parseInt(proposal.value.toString()) >= expected_price) {
                                 policyMet = true
+                            } else {
+                                const message = JSON.stringify({
+                                    deal_index: deal_index,
+                                    owner: proposal.owner,
+                                    action: "DEAL_UNDERPRICED",
+                                    deal_uri: proposal.deal_uri,
+                                    timestamp: new Date().getTime()
+                                })
+                                await node.broadcast(message, "message")
                             }
                         } else {
                             policyMet = true
                         }
                         // Check if collateral is acceptable
                         let slashing_multiplier = await contract.slashing_multiplier()
-                        if(configs.max_collateral_multiplier !== undefined){
+                        if (configs.max_collateral_multiplier !== undefined) {
                             slashing_multiplier = configs.max_collateral_multiplier
                         }
                         const maximum_collateral = parseInt(slashing_multiplier.toString()) * parseInt(proposal.value.toString());
                         if (parseInt(proposal.collateral.toString()) > maximum_collateral) {
                             console.log("Collateral is too high, can't accept.")
+                            const message = JSON.stringify({
+                                deal_index: deal_index,
+                                owner: proposal.owner,
+                                action: "COLLATERAL_TOO_BIG",
+                                deal_uri: proposal.deal_uri,
+                                timestamp: new Date().getTime()
+                            })
+                            await node.broadcast(message, "message")
                             policyMet = false
                         }
                         // Check if file size is lower than accepted one
                         if (policyMet && configs.max_size !== undefined && parseInt(configs.max_size) > 0) {
                             if (parseInt(file_stats.Size) > parseInt(configs.max_size)) {
+                                const message = JSON.stringify({
+                                    deal_index: deal_index,
+                                    owner: proposal.owner,
+                                    action: "FILE_TOO_LARGE",
+                                    deal_uri: proposal.deal_uri,
+                                    timestamp: new Date().getTime()
+                                })
+                                await node.broadcast(message, "message")
                                 console.log("File is too large, can't accept.")
                                 policyMet = false
                             }
                         }
-                    } else if (proposalCache.indexOf(deal_index) === -1) {
+                    } else {
                         const message = JSON.stringify({
                             deal_index: deal_index,
                             owner: proposal.owner,
@@ -301,8 +326,10 @@ const processdeal = (node, deal_index) => {
                             timestamp: new Date().getTime()
                         })
                         await node.broadcast(message, "message")
-                        console.log('Adding deal in cache for future retrieval')
-                        proposalCache.push(deal_index)
+                        if (proposalCache.indexOf(deal_index) === -1) {
+                            console.log('Adding deal in cache for future retrieval')
+                            proposalCache.push(deal_index)
+                        }
                     }
                     if (policyMet) {
                         const deposited = await contract.vault(wallet.address)
