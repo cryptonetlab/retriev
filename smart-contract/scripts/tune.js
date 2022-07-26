@@ -12,7 +12,7 @@ async function main() {
 
     const tune = {
         committee_divider: { v256: 0, v8: 4, v32: 0 },
-        slashing_multiplier: { v256: 10, v8: 0, v32: 0 },
+        slashing_multiplier: { v256: 1000, v8: 0, v32: 0 },
         proposal_timeout: { v256: 0, v8: 0, v32: 86000 },
         round_duration: { v256: 0, v8: 0, v32: 300 },
         min_duration: { v256: 0, v8: 0, v32: 86400 },
