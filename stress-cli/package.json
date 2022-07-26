@@ -5,9 +5,9 @@
     "main": "src/stress.js",
     "bin": "src/stress.js",
     "scripts": {
-        "test:identity": "node src/stress.js --debug --name=stressdev --port=8000 getidentity",
+        "test:identity": "node --no-warnings src/stress.js --debug --name=stressdev --port=8000 getidentity",
         "test:deals": "node --no-warnings src/stress.js --debug --name=stressdev --port=8000 deals 1000",
-        "test:appeals": "node src/stress.js --debug --name=stressdev --port=8000 appeals",
+        "test:appeals": "node --no-warnings src/stress.js --debug --name=stressdev --port=8000 appeals 5",
         "compile": "pkg . --out-path bin",
         "start": "./bin/pldr-provider-linux --debug --name=stress --port=8000"
     },

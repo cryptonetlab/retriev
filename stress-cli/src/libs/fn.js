@@ -2,6 +2,7 @@ const argv = require('minimist')(process.argv.slice(2));
 const crypto = require('crypto');
 const _ = require('lodash')
 const { Web3Storage, File } = require('web3.storage')
+const axios = require('axios')
 
 const ipfs = (node, ...args) => {
     node.runIpfsNativeCommand(args.join(' '))
@@ -77,6 +78,31 @@ function createDeal(node, nonce) {
     })
 }
 
+function makeAppeal(node, deal_index) {
+    return new Promise(async response => {
+        const { contract, wallet, ethers } = await node.contract()
+        console.log("🚩 Making appeal to deal #" + deal_index)
+        const can_create_appeal = await contract.canAddressAppeal(deal_index, wallet.address)
+        if (can_create_appeal) {
+            try {
+                const fee = await contract.returnAppealFee(deal_index)
+                console.log("Fee for appeal is:", ethers.utils.formatEther(fee.toString()))
+                const tx = await contract.createAppeal(deal_index, { value: fee })
+                console.log('⌛ Pending transaction at: ' + tx.hash)
+                await tx.wait()
+                console.log('🎉 Appeal created at ' + tx.hash + '!')
+                response(true)
+            } catch (e) {
+                console.log("💀 Can't create appeal for this deal.")
+                response(false)
+            }
+        } else {
+            console.log("💀 Can't create appeals for this deal.")
+            response(false)
+        }
+    })
+}
+
 const deals = async (node) => {
     if (argv._.length === 2 && argv._[1] !== undefined && parseInt(argv._[1]) > 0) {
         const ndeals = argv._[1]
@@ -90,4 +116,29 @@ const deals = async (node) => {
     }
 }
 
-module.exports = { getidentity, ipfs, deals }
+const appeals = async (node) => {
+    if (argv._.length === 2 && argv._[1] !== undefined && parseInt(argv._[1]) > 0) {
+        const nappeals = argv._[1]
+        let appealsdone = 0
+        const { wallet } = await node.contract()
+        console.log('Searching deals for address:', wallet.address)
+        const deals = await axios.get(process.env.API_URL + "/deals/" + wallet.address)
+        if (deals.data.length >= nappeals) {
+            for (let i = 0; i <= deals.data.length; i++) {
+                if (appealsdone < nappeals) {
+                    let done = await makeAppeal(node, deals.data[i].index)
+                    if (done) {
+                        appealsdone++
+                    }
+                    console.log('--')
+                }
+            }
+        } else {
+            console.log("Don't have enough deals to create so much appeals, you have " + deals.data.length + " deals.")
+        }
+    } else {
+        console.log("Please provide an amount of appeals to create.")
+    }
+}
+
+module.exports = { getidentity, ipfs, deals, appeals }
