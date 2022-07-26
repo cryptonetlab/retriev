@@ -71,7 +71,7 @@
             </b-upload>
           </b-field>
           <div
-            class="bordered-dashed is-flex is-align-items-start is-justify-content-space-between p-3"
+            class="bordered-dashed is-flex is-flex-wrap-wrap is-align-items-start is-justify-content-space-between p-3"
             v-if="fileToUpload.name"
           >
             <div>
@@ -92,7 +92,7 @@
             >
           </div>
 
-          <div v-if="expertMode" class="columns mt-6">
+          <div v-if="expertMode" class="columns is-mobile mt-6">
             <div class="column">
               <h5 class="mb-3">Appeal Address</h5>
               <b-input
@@ -180,7 +180,7 @@
             </div>
           </div>
 
-          <div class="columns mt-6">
+          <div class="columns is-mobile mt-6">
             <div class="column">
               <div class="mb-5">
                 <h5 class="mb-3">Deal Duration</h5>

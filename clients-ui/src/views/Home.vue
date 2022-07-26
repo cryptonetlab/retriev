@@ -40,7 +40,7 @@
 
                   <!-- ACTION BAR (button create deal - searchbar - filters) -->
                   <div class="columns is-mobile is-multiline is-vcentered mb-5">
-                    <div class="column is-full-mobile is-4-tablet is-5-desktop">
+                    <div class="column is-4-mobile is-4-tablet is-5-desktop">
                       <a href="/#/create" class="btn-secondary">
                         <i class="fa-solid fa-file-medical mr-3"></i>create new
                         deal
@@ -48,7 +48,7 @@
                     </div>
 
                     <!-- SEARCH FUNCTION -->
-                    <div class="column is-full-mobile is-4-tablet is-5-desktop">
+                    <div class="column is-4-mobile is-4-tablet is-5-desktop">
                       <div class="field">
                         <p class="control has-icons-left has-icons-right">
                           <input
@@ -67,7 +67,7 @@
 
                     <!-- FILTER FUNCTIONS -->
                     <div
-                      class="column is-full-mobile is-4-tablet is-2-desktop"
+                      class="column is-4-mobile is-4-tablet is-2-desktop"
                       :class="{ 'has-text-right': !isMobile }"
                     >
                       <div class="custom_dropdown me-10-desktop">
@@ -144,21 +144,21 @@
                   <div class="mb-5" v-if="deals.length > 0">
                     <!-- TITLES TABLE -->
                     <div
-                      class="columns is-mobile is-multiline is-vcentered"
+                      class="columns is-mobile is-multiline is-vcentered hide"
                       v-if="!isMobile"
                     >
                       <div
-                        class="column is-full-mobile is-2-tablet is-6-desktop is-6-widescreen is-6-fullhd"
+                        class="column is-4-mobile is-2-tablet is-6-desktop is-6-widescreen is-6-fullhd"
                       >
                         <h5 class="title-table">DEAL NAME</h5>
                       </div>
                       <div
-                        class="column is-full-mobile is-6-tablet is-4-desktop is-4-widescreen is-4-fullhd"
+                        class="column is-4-mobile is-6-tablet is-4-desktop is-4-widescreen is-4-fullhd"
                       >
                         <h5 class="title-table ml-5">ACTIONS</h5>
                       </div>
                       <div
-                        class="column is-full-mobile is-2-tablet is-2-desktop is-2-widescreen is-2-fullhd"
+                        class="column is-4-mobile is-2-tablet is-2-desktop is-2-widescreen is-2-fullhd"
                       >
                         <h5
                           class="title-table"

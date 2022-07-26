@@ -15,7 +15,7 @@
               </div></a
             >
           </div>
-          <div class="column is-12-mobile is-9-tablet is-8-desktop">
+          <div class="column is-10-mobile is-9-tablet is-8-desktop">
             <div
               class="is-flex is-align-items-center"
               :class="{ 'is-justify-content-flex-end': !isMobile }"
