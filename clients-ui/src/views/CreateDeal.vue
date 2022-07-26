@@ -387,7 +387,7 @@ export default {
       dealDurationDays: 1,
       dealCollateral: 1,
       dealProviders: [],
-      dealValue: "",
+      dealValue: 0,
       abi: ABI,
       balance: 0,
       infuraURL: "https://ipfs.infura.io:5001/api/v0/add",
@@ -426,12 +426,14 @@ export default {
         app.dealDurationDays = 1;
       }
       // TODO: Handle case where providers > 1
-      app.dealValue = parseInt(
-        app.providersPolicy[app.dealProviders[0]].price *
-          app.dealDurationDays *
-          86400 *
-          app.fileToUpload.size
-      );
+      if (app.fileToUpload.size !== undefined) {
+        app.dealValue = parseInt(
+          parseInt(app.providersPolicy[app.dealProviders[0]].price) *
+            parseInt(app.dealDurationDays) *
+            86400 *
+            parseInt(app.fileToUpload.size)
+        );
+      }
       app.dealDuration = parseInt(app.dealDurationDays * 86400);
     },
     fileToUpload() {
@@ -609,7 +611,9 @@ export default {
           });
         } else if (!app.expertMode) {
           // TODO: Change with fancy alert
-          app.alertCustomError("File is too big, provider will not accept the deal!");
+          app.alertCustomError(
+            "File is too big, provider will not accept the deal!"
+          );
           app.fileToUpload = "";
           app.canDoProposal = false;
         }
