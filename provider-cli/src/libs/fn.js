@@ -273,7 +273,7 @@ const processdeal = (node, deal_index) => {
                                 policyMet = true
                             } else {
                                 const message = JSON.stringify({
-                                    deal_index: deal_index,
+                                    deal_index: deal_index.toString(),
                                     owner: proposal.owner,
                                     action: "DEAL_UNDERPRICED",
                                     deal_uri: proposal.deal_uri,
@@ -293,7 +293,7 @@ const processdeal = (node, deal_index) => {
                         if (parseInt(proposal.collateral.toString()) > maximum_collateral) {
                             console.log("Collateral is too high, can't accept.")
                             const message = JSON.stringify({
-                                deal_index: deal_index,
+                                deal_index: deal_index.toString(),
                                 owner: proposal.owner,
                                 action: "COLLATERAL_TOO_BIG",
                                 deal_uri: proposal.deal_uri,
@@ -306,7 +306,7 @@ const processdeal = (node, deal_index) => {
                         if (policyMet && configs.max_size !== undefined && parseInt(configs.max_size) > 0) {
                             if (parseInt(file_stats.Size) > parseInt(configs.max_size)) {
                                 const message = JSON.stringify({
-                                    deal_index: deal_index,
+                                    deal_index: deal_index.toString(),
                                     owner: proposal.owner,
                                     action: "FILE_TOO_LARGE",
                                     deal_uri: proposal.deal_uri,
@@ -319,7 +319,7 @@ const processdeal = (node, deal_index) => {
                         }
                     } else {
                         const message = JSON.stringify({
-                            deal_index: deal_index,
+                            deal_index: deal_index.toString(),
                             owner: proposal.owner,
                             action: "UNRETRIEVALABLE",
                             deal_uri: proposal.deal_uri,
@@ -357,7 +357,7 @@ const processdeal = (node, deal_index) => {
                             const balance2 = await contract.vault(wallet.address)
                             console.log("Balance after accept is:", ethers.utils.formatEther(balance2.toString()))
                             const message = JSON.stringify({
-                                deal_index: deal_index,
+                                deal_index: deal_index.toString(),
                                 action: "ACCEPTED",
                                 owner: proposal.owner,
                                 deal_uri: proposal.deal_uri,
