@@ -812,9 +812,8 @@ img.network-logo {
   }
   p.navbar-text {
     @include font-plex();
-    font-weight: 400;
+    font-weight: 500;
     color: var(--primary-color);
-    text-transform: uppercase;
   }
 
   /* width */

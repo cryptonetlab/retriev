@@ -316,6 +316,7 @@
                         <!-- END DEAL ACTION BUTTONS -->
                       </template>
 
+                      <!-- DEAL SPECIFICATIONS -->
                       <div class="card-content">
                         <div class="content">
                           <div class="columns is-mobile">
@@ -506,6 +507,8 @@
                           </div>
                         </div>
                       </div>
+                      <!-- END DEAL SPECIFICATIONS -->
+                      
                     </b-collapse>
                     <!-- END | SINGLE DEAL -->
                   </div>
@@ -988,6 +991,104 @@ export default {
         app.workingMessage = "";
       }
     },
+    async downloadFile(uri) {
+      const app = this;
+      app.isWorking = true;
+      app.workingMessage = "Try to download your file. Please Wait...";
+      console.log("try download start");
+      try {
+        console.log("Downloading file from:", uri);
+        const downloaded = await axios.get(uri);
+        console.log(downloaded);
+        window.open(uri, "_blank");
+        app.isWorking = false;
+        app.workingMessage = "";
+      } catch (e) {
+        console.log("RETRIEVE_ERROR", e);
+        app.alertCustomError("Can't retrieve file!");
+        app.isWorking = false;
+        app.workingMessage = "";
+      }
+    },
+    secondsToDhms(seconds) {
+      seconds = Number(seconds);
+      var d = Math.floor(seconds / (3600 * 24));
+      var h = Math.floor((seconds % (3600 * 24)) / 3600);
+      var m = Math.floor((seconds % 3600) / 60);
+      var s = Math.floor(seconds % 60);
+
+      var dDisplay = d > 0 ? d + (d == 1 ? " day, " : " days, ") : "";
+      var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
+      var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
+      var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+      return dDisplay + hDisplay + mDisplay + sDisplay;
+    },
+    returnDate(s) {
+      const date = new Date(s * 1000).toUTCString();
+      return date.split("GMT")[0].trim();
+    },
+
+    // NOTIFICATION AND ALERT
+    showToast(message) {
+      const app = this;
+      if (!app.isToasting) {
+        app.isToasting = true;
+        app.$toast(message, {
+          position: "top-right",
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: true,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: "fa-solid fa-check",
+          rtl: false,
+        });
+        setTimeout(function () {
+          app.isToasting = false;
+        }, 6200);
+      }
+    },
+    showErrorToast(message) {
+      const app = this;
+      if (!app.isToasting) {
+        app.isToasting = true;
+        app.$toast.error(message, {
+          position: "top-right",
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: true,
+          hideProgressBar: true,
+          closeButton: "button",
+          icon: true,
+          rtl: false,
+        });
+        setTimeout(function () {
+          app.isToasting = false;
+        }, 6200);
+      }
+    },
+    alertCustomError(message) {
+      this.$buefy.dialog.alert({
+        title: "Error",
+        message: message,
+        type: "is-danger",
+        hasIcon: true,
+        icon: "times-circle",
+        iconPack: "fa",
+        ariaRole: "alertdialog",
+        ariaModal: true,
+      });
+    },
+
+    // FILTERS
     async expiredDeals() {
       const app = this;
       app.log("Checking expired deals...");
@@ -1076,101 +1177,6 @@ export default {
           );
         }
       }
-    },
-    async downloadFile(uri) {
-      const app = this;
-      app.isWorking = true;
-      app.workingMessage = "Try to download your file. Please Wait...";
-      console.log("try download start");
-      try {
-        console.log("Downloading file from:", uri);
-        const downloaded = await axios.get(uri);
-        console.log(downloaded);
-        window.open(uri, "_blank");
-        app.isWorking = false;
-        app.workingMessage = "";
-      } catch (e) {
-        console.log("RETRIEVE_ERROR", e);
-        app.alertCustomError("Can't retrieve file!");
-        app.isWorking = false;
-        app.workingMessage = "";
-      }
-    },
-    secondsToDhms(seconds) {
-      seconds = Number(seconds);
-      var d = Math.floor(seconds / (3600 * 24));
-      var h = Math.floor((seconds % (3600 * 24)) / 3600);
-      var m = Math.floor((seconds % 3600) / 60);
-      var s = Math.floor(seconds % 60);
-
-      var dDisplay = d > 0 ? d + (d == 1 ? " day, " : " days, ") : "";
-      var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
-      var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
-      var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
-      return dDisplay + hDisplay + mDisplay + sDisplay;
-    },
-    returnDate(s) {
-      const date = new Date(s * 1000).toUTCString();
-      return date.split("GMT")[0].trim();
-    },
-    // NOTIFICATION AND ALERT
-    showToast(message) {
-      const app = this;
-      if (!app.isToasting) {
-        app.isToasting = true;
-        app.$toast(message, {
-          position: "top-right",
-          timeout: 5000,
-          closeOnClick: true,
-          pauseOnFocusLoss: true,
-          pauseOnHover: true,
-          draggable: true,
-          draggablePercent: 0.6,
-          showCloseButtonOnHover: true,
-          hideProgressBar: true,
-          closeButton: "button",
-          icon: "fa-solid fa-check",
-          rtl: false,
-        });
-        setTimeout(function () {
-          app.isToasting = false;
-        }, 6200);
-      }
-    },
-    showErrorToast(message) {
-      const app = this;
-      if (!app.isToasting) {
-        app.isToasting = true;
-        app.$toast.error(message, {
-          position: "top-right",
-          timeout: 5000,
-          closeOnClick: true,
-          pauseOnFocusLoss: true,
-          pauseOnHover: true,
-          draggable: true,
-          draggablePercent: 0.6,
-          showCloseButtonOnHover: true,
-          hideProgressBar: true,
-          closeButton: "button",
-          icon: true,
-          rtl: false,
-        });
-        setTimeout(function () {
-          app.isToasting = false;
-        }, 6200);
-      }
-    },
-    alertCustomError(message) {
-      this.$buefy.dialog.alert({
-        title: "Error",
-        message: message,
-        type: "is-danger",
-        hasIcon: true,
-        icon: "times-circle",
-        iconPack: "fa",
-        ariaRole: "alertdialog",
-        ariaModal: true,
-      });
     },
   },
   computed: {
