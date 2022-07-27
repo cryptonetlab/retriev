@@ -236,6 +236,9 @@ h5 {
 
 .bordered-dashed {
   border: 1px dashed var(--primary-color);
+  p {
+    @include font-inter();
+  }
 }
 
 .flex-force {
@@ -638,6 +641,7 @@ button.dropdown-item.is-active {
 }
 
 .card {
+  box-shadow: none !important;
   span {
     @include font-inter();
   }

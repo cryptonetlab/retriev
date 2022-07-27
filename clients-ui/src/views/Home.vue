@@ -305,7 +305,7 @@
                             </div>
                             <!-- END BADGES -->
                             <div class="divider ml-3 mr-3"></div>
-                            <a
+                            <div
                               class="card-header-icon mr-3 p-3"
                               style="width: 35px"
                             >
@@ -317,7 +317,7 @@
                                 v-if="props.open"
                                 class="fa-solid fa-chevron-down"
                               ></i>
-                            </a>
+                            </div>
                           </div>
                         </div>
                         <!-- END DEAL ACTION BUTTONS -->
@@ -347,7 +347,6 @@
                                         '/ipfs/' +
                                         deal.deal_uri.replace('ipfs://', '')
                                       "
-                              
                                       >{{ deal.deal_uri }}</a
                                     >
                                   </p>
@@ -428,6 +427,11 @@
                                   </p>
                                 </div>
                                 <div
+                                  v-if="
+                                    parseInt(deal.timestamp_end) -
+                                      new Date().getTime() / 1000 >
+                                      0 && deal.appeal.active !== true
+                                  "
                                   class="b-bottom-colored-grey"
                                   :class="{
                                     'pb-3 pt-3': isDesktop,
@@ -496,11 +500,14 @@
                                       parseInt(deal.appeal.round) < 99
                                     "
                                   >
-                                    <i
-                                      class="fa-solid fa-hourglass-half fa-fade mr-2"
-                                    ></i>
-                                    Processing round {{ deal.appeal.round }},
-                                    slashes are {{ deal.appeal.slashes }}.
+                                    <p>
+                                      <b>Reqeuest Appeal: </b>
+                                      <i
+                                        class="fa-solid fa-hourglass-half fa-fade mr-2"
+                                      ></i
+                                      >Processing round {{ deal.appeal.round }},
+                                      slashes are {{ deal.appeal.slashes }}.
+                                    </p>
                                   </div>
                                 </div>
                               </div>
@@ -901,7 +908,9 @@ export default {
         } else {
           app.isWorking = false;
           app.workingMessage = "";
-          app.alertCustomError("You can't create appeal, max appeal for this file is reached");
+          app.alertCustomError(
+            "You can't create appeal, max appeal for this file is reached"
+          );
         }
       } else {
         app.isWorking = false;
