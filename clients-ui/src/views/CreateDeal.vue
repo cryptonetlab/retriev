@@ -26,7 +26,7 @@
       <div class="hero-body pt-5">
         <div class="container">
           <!-- TITLE -->
-          <div class="b-bottom-colored-dark m-0 pb-3 mb-5">
+          <div class="b-bottom-colored-dark m-0 pb-3 mb-6">
             <h2 class="title is-3 m-0">NEW DEAL PROPOSAL</h2>
           </div>
           <!-- END TITLE -->
@@ -114,23 +114,21 @@
           <div class="mt-6">
             <!-- TITLES TABLE -->
             <div class="columns is-mobile">
-              <div class="column is-3-tablet is-5-desktop">
+              <div class="column is-3-tablet is-5-desktop" 
+                :class="{ 'pl-3': isTablet }">
                 <h5 class="title-table">PROVIDER</h5>
               </div>
-              <div class="column is-3-tablet is-3-desktop pl-0">
+              <div class="column is-3-tablet is-3-desktop px-0">
                 <h5 class="title-table">ADDRESS</h5>
               </div>
               <div
-                class="column is-2-tablet is-1-desktop"
-                :class="{ 'pl-3': isTablet, 'pl-0': isDesktop }"
+                class="column is-2-tablet is-1-desktop pl-0"
+                :class="{ 'pr-0': isDesktop }"
               >
                 <h5 class="title-table">MAX SIZE</h5>
               </div>
               <div class="column is-2-tablet is-2-desktop pl-0">
                 <h5 class="title-table">WEI/B PER SEC.</h5>
-              </div>
-              <div class="column is-1-tablet is-1-desktop pl-0">
-                <h5 class="title-table">SELECTION</h5>
               </div>
             </div>
             <!-- END TITLES TABLE -->
@@ -153,19 +151,20 @@
                     }}</b>
                   </p>
                 </div>
-                <div class="column is-3-tablet is-3-desktop pl-0">
+                
+                <div class="column is-3-tablet is-3-desktop  b-left-colored-grey b-right-colored-grey pl-3">
                   <p>{{ provider.endpoint }}</p>
                 </div>
                 <div
-                  class="column is-2-tablet is-1-desktop"
+                  class="column is-2-tablet is-1-desktop b-right-colored-grey"
                   :class="{ 'pl-3': isTablet }"
                 >
                   <p>{{ provider.maxSize / 1000000 }}MB</p>
                 </div>
-                <div class="column is-2-tablet is-2-desktop">
+                <div class="column is-2-tablet is-2-desktop b-right-colored-grey">
                   <p>{{ provider.price }}</p>
                 </div>
-                <div class="column is-2-tablet is-1-desktop pl-5">
+                <div class="column is-2-tablet is-1-desktop has-text-centered pl-5">
                   <b-checkbox
                     type="is-info"
                     :disabled="isWorking"
@@ -176,7 +175,6 @@
                   </b-checkbox>
                 </div>
               </div>
-              <div class="is-flex is-align-items-center"></div>
             </div>
           </div>
 

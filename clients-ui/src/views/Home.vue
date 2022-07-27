@@ -33,7 +33,7 @@
                 <!-- Show all created deals -->
                 <div>
                   <!-- TITLE -->
-                  <div class="b-bottom-colored-dark m-0 pb-3 mb-5">
+                  <div class="b-bottom-colored-dark m-0 pb-3 mb-6">
                     <h2 class="title is-3 m-0">MANAGE DEALS</h2>
                   </div>
                   <!-- END TITLE -->
@@ -148,9 +148,9 @@
                       v-if="!isMobile"
                     >
                       <div
-                        class="column is-4-mobile is-2-tablet is-6-desktop is-6-widescreen is-6-fullhd"
+                        class="column is-4-mobile is-2-tablet is-5-desktop is-6-widescreen is-6-fullhd"
                       >
-                        <h5 class="title-table">DEAL NAME</h5>
+                        <h5 class="title-table ml-5">DEAL NAME</h5>
                       </div>
                       <div
                         class="column is-4-mobile is-6-tablet is-4-desktop is-4-widescreen is-4-fullhd"
@@ -188,14 +188,14 @@
                           :aria-controls="'contentIdForA11y3' + deal.index"
                           :aria-expanded="props.open"
                         >
-                          <p class="card-header-title">
+                          <h4 class="card-header-title">
                             Deal ID: #{{ deal.index }}
-                          </p>
+                          </h4>
                           <div
                             class="is-flex is-align-items-center is-justify-content-center is-flex-wrap-wrap"
                           >
                             <b-button
-                              @click="createAppeal(deal.index)"
+                              @click="createAppeal(deal)"
                               class="btn-tertiary btn-active"
                               :disabled="
                                 (deal.appeal.active === undefined &&
@@ -206,7 +206,8 @@
                                   parseInt(deal.appeal.round) !== 99 &&
                                   new Date().getTime() >
                                     parseInt(deal.timestamp_end * 1000)) ||
-                                parseInt(deal.timestamp_start * 1000) === 0
+                                parseInt(deal.timestamp_start * 1000) === 0 ||
+                                deal.appeal.active === true
                               "
                             >
                               <i class="fa-solid fa-bell mr-3"></i>REQUEST
@@ -260,7 +261,7 @@
                               v-if="
                                 parseInt(deal.timestamp_end) -
                                   new Date().getTime() / 1000 >
-                                0
+                                  0 && deal.appeal.active !== true
                               "
                               class="badge badge-success"
                             >
@@ -293,15 +294,21 @@
                             <div
                               v-if="
                                 deal.appeal.round !== undefined &&
-                                parseInt(deal.appeal.round) < 99
+                                parseInt(deal.appeal.round) < 99 &&
+                                parseInt(deal.timestamp_end) -
+                                  new Date().getTime() / 1000 >
+                                  0
                               "
-                              class="badge badge-slashed"
+                              class="badge badge-requested"
                             >
-                              <span>Slahed</span>
+                              <span>Appeal</span>
                             </div>
                             <!-- END BADGES -->
                             <div class="divider ml-3 mr-3"></div>
-                            <a class="card-header-icon mr-3">
+                            <a
+                              class="card-header-icon mr-3 p-3"
+                              style="width: 35px"
+                            >
                               <i
                                 v-if="!props.open"
                                 class="fa-solid fa-chevron-right"
@@ -340,7 +347,7 @@
                                         '/ipfs/' +
                                         deal.deal_uri.replace('ipfs://', '')
                                       "
-                                      style="font-size: 11px"
+                              
                                       >{{ deal.deal_uri }}</a
                                     >
                                   </p>
@@ -478,16 +485,23 @@
                                     @click="cancelDealProposal(deal.index)"
                                     >🗑️ cancel deal proposal</a
                                   >
-                                  <a
-                                    href="#"
+                                  <div
+                                    class="b-bottom-colored-grey"
+                                    :class="{
+                                      'pb-3 pt-3': isDesktop,
+                                      'pb-1 pt-1': isTablet,
+                                    }"
                                     v-if="
                                       deal.appeal.round !== undefined &&
                                       parseInt(deal.appeal.round) < 99
                                     "
-                                    >⌛ Processing round
-                                    {{ deal.appeal.round }}, slashes are
-                                    {{ deal.appeal.slashes }}.</a
                                   >
+                                    <i
+                                      class="fa-solid fa-hourglass-half fa-fade mr-2"
+                                    ></i>
+                                    Processing round {{ deal.appeal.round }},
+                                    slashes are {{ deal.appeal.slashes }}.
+                                  </div>
                                 </div>
                               </div>
                             </div>
@@ -811,58 +825,90 @@ export default {
         }
       }
     },
-    async createAppeal(index) {
+    async createAppeal(deal) {
       const app = this;
-      if (!app.isWorking) {
+      const index = deal.index;
+      console.log("Try create appeal of", index);
+      const contract = new app.web3.eth.Contract(app.abi, app.contract);
+      const max_appeals = await contract.methods.max_appeals().call();
+      const n_appeals = await contract.methods.tot_appeals(index).call();
+      console.log("Max appeal is;", max_appeals);
+      console.log("n appeals is:", n_appeals);
+      if (!app.isWorking && n_appeals < max_appeals) {
         app.isWorking = true;
-        app.workingMessage = "Please confirm action with metamask..";
-        try {
-          const contract = new app.web3.eth.Contract(app.abi, app.contract);
-          const fee = await contract.methods.returnAppealFee(index).call();
-          app.log("Fee needed for appeal is: " + fee);
-          await contract.methods
-            .createAppeal(index)
-            .send({
-              value: fee,
-              from: app.account,
-            })
-            .on("transactionHash", (tx) => {
-              app.workingMessage = "Found pending transaction at " + tx;
-              this.$toast.warning("Found pending transaction at:" + tx, {
-                position: "top-right",
-                timeout: 5000,
-                closeOnClick: true,
-                pauseOnFocusLoss: true,
-                pauseOnHover: true,
-                draggable: true,
-                draggablePercent: 0.6,
-                showCloseButtonOnHover: true,
-                hideProgressBar: true,
-                closeButton: "button",
-                icon: "fa-solid fa-arrow-right-arrow-left",
-                rtl: false,
+        app.workingMessage = "Creating Appeal...";
+        const active_appeal = await contract.methods
+          .active_appeals(deal.deal_uri)
+          .call();
+        const round = await contract.methods.getRound(active_appeal).call();
+        console.log("active appeal is:", active_appeal);
+        console.log("round is:", round);
+        if (parseInt(round) === 99 || parseInt(round) === 0) {
+          app.workingMessage = "Please confirm action with metamask..";
+          try {
+            const fee = await contract.methods.returnAppealFee(index).call();
+            app.log("Fee needed for appeal is: " + fee);
+            await contract.methods
+              .createAppeal(index)
+              .send({
+                value: fee,
+                from: app.account,
+              })
+              .on("transactionHash", (tx) => {
+                app.workingMessage =
+                  "Found pending transaction at " +
+                  tx.substr(0, 4) +
+                  "..." +
+                  tx.substr(-4);
+                this.$toast.warning("Found pending transaction at:" + tx, {
+                  position: "top-right",
+                  timeout: 5000,
+                  closeOnClick: true,
+                  pauseOnFocusLoss: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  draggablePercent: 0.6,
+                  showCloseButtonOnHover: true,
+                  hideProgressBar: true,
+                  closeButton: "button",
+                  icon: "fa-solid fa-arrow-right-arrow-left",
+                  rtl: false,
+                });
+                app.log(app.workingMessage);
               });
-              app.log(app.workingMessage);
+            this.$toast("Appeal created!", {
+              position: "top-right",
+              timeout: 5000,
+              closeOnClick: true,
+              pauseOnFocusLoss: true,
+              pauseOnHover: true,
+              draggable: true,
+              draggablePercent: 0.6,
+              showCloseButtonOnHover: true,
+              hideProgressBar: true,
+              closeButton: "button",
+              icon: "fa-solid fa-check",
+              rtl: false,
             });
-          this.$toast("Appeal created!", {
-            position: "top-right",
-            timeout: 5000,
-            closeOnClick: true,
-            pauseOnFocusLoss: true,
-            pauseOnHover: true,
-            draggable: true,
-            draggablePercent: 0.6,
-            showCloseButtonOnHover: true,
-            hideProgressBar: true,
-            closeButton: "button",
-            icon: "fa-solid fa-check",
-            rtl: false,
-          });
-          app.loadState();
-        } catch (e) {
+            app.isWorking = false;
+            app.workingMessage = "";
+            app.loadState();
+          } catch (e) {
+            app.isWorking = false;
+            app.workingMessage = "";
+            app.alertCustomError(e.message);
+          }
+        } else {
           app.isWorking = false;
-          app.alertCustomError(e.message);
+          app.workingMessage = "";
+          app.alertCustomError("You can't create appeal, max appeal for this file is reached");
         }
+      } else {
+        app.isWorking = false;
+        app.workingMessage = "";
+        app.alertCustomError(
+          "You can't create appeal, max appeal for this file is reached"
+        );
       }
     },
     async withdraw() {
@@ -1187,7 +1233,7 @@ export default {
             deal.deal_uri.toLowerCase().includes(this.searcher.toLowerCase())
           );
         } else {
-          return deal;
+          return Object.keys(deal).sort(); // Do your custom sorting here
         }
       });
     },
@@ -1198,62 +1244,4 @@ export default {
 };
 </script>
 
-<style>
-/* .btn {
-  display: inline-block;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #050505;
-  text-align: center;
-  text-decoration: none;
-  vertical-align: middle;
-  cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none;
-  background-color: transparent;
-  border: 1px solid #050505;
-  padding: 0.375rem 0.75rem;
-  font-size: 1rem;
-  border-radius: 0.25rem;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.btn:hover {
-  background-color: #050505;
-  color: #ffffff;
-}
-
-input {
-  font-size: 1.5rem;
-  border-radius: 5px;
-  margin: 5px 0;
-}
-
-input:focus {
-  outline: rgba(0, 0, 0, 0.5) solid 2px;
-  -moz-box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.8);
-  -webkit-box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.8);
-  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.8);
-}
-
-.m-top-1 {
-  margin-top: 1em;
-}
-
-.mint-wrapper {
-  padding: 30px;
-  text-align: center;
-}
-
-p {
-  margin: 0;
-}
-
-p.small {
-  font-size: 0.9rem;
-  font-style: italic;
-  color: #7d7d7d;
-} */
-</style>
+<style></style>

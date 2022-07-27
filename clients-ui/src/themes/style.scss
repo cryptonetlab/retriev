@@ -1,7 +1,7 @@
 /* ==============> FONTS <============== */
 :root {
   --primary-color: #002b4d;
-  --secondary-color: #186ceb;
+  --secondary-color: #1569e8;
   --secondary-color-light: #cce7ff;
   --secondary-color-highcontrast: #f1f9ff;
   --tertiary-color: #edd2be;
@@ -20,7 +20,7 @@ body {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 3px 30px;
+  padding: 5px 10px;
   border-radius: 34px;
   width: 100px;
   span {
@@ -123,7 +123,7 @@ body {
 }
 
 @mixin font-inter {
-  font-family: "Inter", sans-serif;
+  font-family: "Inter", sans-serif !important;
 }
 
 @mixin font-plex {
@@ -134,7 +134,7 @@ body {
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 a {
-  color: black;
+  color: var(--primary-color);
   @include font-plex();
 }
 
@@ -206,6 +206,14 @@ h5 {
   border-top: 1px solid #ceccc0;
 }
 
+.b-left-colored-grey {
+  border-left: 1px solid #ceccc0;
+}
+
+.b-right-colored-grey {
+  border-right: 1px solid #ceccc0;
+}
+
 .b-bottom-colored-grey {
   border-bottom: 1px solid #ceccc0;
 }
@@ -252,6 +260,7 @@ h5 {
   right: 30px;
   font-size: 0.9rem;
   color: #7d7c77;
+  @include font-inter();
 }
 
 .position-bottom-right {
@@ -287,6 +296,12 @@ input,
 .upload .upload-draggable.is-expanded {
   @include font-plex();
   border-radius: 0 !important;
+}
+
+.b-checkbox.checkbox input[type="checkbox"] + .check,
+.b-slider .b-slider-thumb-wrapper .b-slider-thumb,
+.b-slider .b-slider-track {
+  border-radius: 0;
 }
 
 .btn-active {
@@ -543,6 +558,24 @@ button.dropdown-item.is-active {
   background-color: var(--primary-color);
   color: var(--tertiary-color-light);
 }
+
+.switch input[type="checkbox"] + .check {
+  border-radius: 0;
+  &::before {
+    border-radius: 0;
+  }
+}
+.switch.has-left-label .control-label {
+  @include font-inter;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.688rem;
+  line-height: 200%;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--primary-color);
+}
+
 /* ==============> DASHBOARD <============== */
 
 .header {
@@ -557,6 +590,11 @@ button.dropdown-item.is-active {
   p,
   i {
     color: #cc3d3d;
+  }
+  p,
+  b {
+    @include font-inter();
+    font-size: 0.875rem;
   }
 }
 
@@ -600,6 +638,21 @@ button.dropdown-item.is-active {
 }
 
 .card {
+  span {
+    @include font-inter();
+  }
+  h4 {
+    color: var(--primary-color);
+    @include font-inter();
+    font-weight: 400;
+    font-size: 1.125rem;
+  }
+  p,
+  b {
+    color: var(--primary-color);
+    @include font-inter();
+    font-size: 0.814rem;
+  }
   padding: 10px 0;
   color: var(--primary-color);
   .card-footer:last-child,
@@ -614,15 +667,14 @@ button.dropdown-item.is-active {
     display: flex;
   }
   a.link-primary {
+    @include font-inter();
     color: var(--secondary-color);
   }
   .card-header {
     width: 100%;
     justify-content: space-between;
     flex-wrap: wrap;
-    p {
-      color: var(--primary-color);
-    }
+
     button {
       border-radius: 0;
     }
@@ -703,7 +755,7 @@ img.network-logo {
   background-size: 100%;
   background-repeat: no-repeat;
   background-position: center;
-  padding: 8px 10px;
+  padding: 0px 10px;
   margin: 0;
 }
 
@@ -726,12 +778,13 @@ img.network-logo {
   color: #4a4a4a;
   max-width: 100%;
   position: relative;
-  padding: 20px 10px;
+  padding: 10px 0px;
   &:hover {
     background-color: var(--secondary-color-light);
   }
-  p {
-    font-family: "Inter";
+  p,
+  b {
+    @include font-inter();
     color: var(--primary-color);
     font-size: 0.9rem;
   }
@@ -806,15 +859,16 @@ img.network-logo {
   background-color: white;
   a {
     @include font-plex();
-    font-weight: 700;
+    font-weight: 400;
+    font-size: 0.813rem;
     color: var(--primary-color);
     text-transform: uppercase;
   }
   p.navbar-text {
-    @include font-plex();
-    font-weight: 700;
+    @include font-inter();
+    font-weight: 600;
     color: var(--primary-color);
-    font-size: 0.9rem;
+    font-size: 0.875rem;
   }
 
   /* width */
