@@ -45,6 +45,22 @@ const sendmessage = async (node, ...args) => {
     }
 }
 
+const pin = async (node) => {
+    const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
+    if (argv._ !== undefined && argv._.length === 2 && (argv._[1] === 'true' || argv._[1] === 'false')) {
+        configs.pin = argv._[1] === 'true' ? true : false
+        try {
+            fs.writeFileSync(node.nodePath + "/configs.json", JSON.stringify(configs, null, 4))
+            console.log("Max size policy changed correctly to:", configs.pin)
+        } catch (e) {
+            console.log("Can't save file to disk, retry.")
+        }
+    } else {
+        console.log("Please provide a status for automatic pinning.")
+        console.log("`Please run pin <TRUE> or <FALSE>`")
+    }
+}
+
 const setupmaxsize = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     if (argv._ !== undefined && argv._.length === 2 && parseInt(argv._[1]) >= 0) {
@@ -75,10 +91,6 @@ const setupmaxcollateral = async (node) => {
         console.log("Please provide a maximum collateral multiplier, default is 1000.")
         console.log("`Please run setupmaxcollateral <SIZE>`")
     }
-}
-
-const setuppinning = async (node, service) => {
-    // TODO: Update internal pinning service to save deals
 }
 
 const setupstrategy = async (node) => {
@@ -206,6 +218,13 @@ const deals = async (node, ...args) => {
                     console.log("Please provide DEAL_ID first.")
                 }
                 break;
+                case "process":
+                    if (args[2] !== undefined) {
+                        processdeal(node, args[2])
+                    } else {
+                        console.log("Please provide DEAL_ID first.")
+                    }
+                    break;
             default:
                 console.log("Subcommand not found.")
                 break;
@@ -363,6 +382,11 @@ const processdeal = (node, deal_index) => {
                                 deal_uri: proposal.deal_uri,
                                 txid: tx.hash
                             })
+                            // Check if pinning mode is active
+                            if (configs.pin !== undefined && configs.pin === true) {
+                                const pinned = await ipfsApi("post", "/pin/add?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/") + '&recursive=true')
+                                console.log('Pinning status is:', pinned)
+                            }
                             await node.broadcast(message, "message")
                             // Be sure deal is not in cache anymore
                             let temp = []
@@ -439,4 +463,4 @@ const daemon = async (node) => {
     })
 }
 
-module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance, subscribe, setupstrategy, getstrategy, setuppinning, setupmaxsize, getmaxsize, setupmaxcollateral }
+module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance, subscribe, setupstrategy, getstrategy, setupmaxsize, getmaxsize, setupmaxcollateral, pin }

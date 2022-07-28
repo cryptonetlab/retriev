@@ -74,7 +74,8 @@ module.exports = class PldrNode {
                 contract_address: process.env.CONTRACT_ADDRESS,
                 price_strategy: 0,
                 max_size: 20000000,
-                api_url: process.env.API_URL
+                api_url: process.env.API_URL,
+                pin: true
             }
             fs.writeFileSync(this.nodePath + '/configs.json', JSON.stringify(this.configs, null, 4))
         } else {
