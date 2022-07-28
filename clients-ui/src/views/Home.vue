@@ -170,367 +170,371 @@
                     </div>
                     <!-- END TITLES TABLE -->
 
-                    <!-- SINGLE DEAL -->
-                    <b-collapse
+                    <div
+                      class="custom-card"
                       v-for="(deal, index) in filteredList"
                       :key="deal.index"
-                      :open="isOpen == deal.index"
-                      @open="isOpen = deal.index"
-                      class="card"
-                      animation="slide"
-                      :aria-id="'contentIdForA11y3' + deal.index"
+                      :class="{ 'custom-card-hover': index !== isOpening }"
                     >
-                      <template #trigger="props">
-                        <!-- DEAL ACTION BUTTONS -->
+                      <div class="card-header">
+                        <h4 class="card-header-title">
+                          Deal ID: #{{ deal.index }}
+                        </h4>
+
                         <div
-                          class="card-header"
-                          role="button"
-                          :aria-controls="'contentIdForA11y3' + deal.index"
-                          :aria-expanded="props.open"
+                          class="is-flex is-align-items-center is-justify-content-center is-flex-wrap-wrap"
                         >
-                          <h4 class="card-header-title">
-                            Deal ID: #{{ deal.index }}
-                          </h4>
-                          <div
-                            class="is-flex is-align-items-center is-justify-content-center is-flex-wrap-wrap"
+                          <b-button
+                            @click="createAppeal(deal)"
+                            class="btn-tertiary btn-active"
+                            :disabled="
+                              (deal.appeal.active === undefined &&
+                                parseInt(deal.timestamp_start) > 0 &&
+                                new Date().getTime() >
+                                  parseInt(deal.timestamp_end * 1000)) ||
+                              (deal.appeal.active !== undefined &&
+                                parseInt(deal.appeal.round) !== 99 &&
+                                new Date().getTime() >
+                                  parseInt(deal.timestamp_end * 1000)) ||
+                              parseInt(deal.timestamp_start * 1000) === 0 ||
+                              deal.appeal.active === true
+                            "
+                          >
+                            <i class="fa-solid fa-bell mr-3"></i>REQUEST APPEAL
+                          </b-button>
+                          <div class="divider ml-4 mr-4"></div>
+                          <b-button
+                            @click="
+                              downloadFile(
+                                providerEndpoints[deal.provider] +
+                                  '/ipfs/' +
+                                  deal.deal_uri.replace('ipfs://', '')
+                              )
+                            "
+                            :disabled="
+                              new Date().getTime() >
+                                parseInt(deal.timestamp_end * 1000) ||
+                              parseInt(deal.timestamp_start * 1000) === 0
+                            "
+                            class="btn-icon"
+                          >
+                            <i class="fa-solid fa-download"></i>
+                          </b-button>
+                          <div class="divider ml-4 mr-4"></div>
+                          <a
+                            :class="{
+                              'no-pointer':
+                                parseInt(deal.timestamp_start * 1000) === 0,
+                            }"
+                            :href="opensea + '/' + contract + '/' + deal.index"
+                            target="_blank"
                           >
                             <b-button
-                              @click="createAppeal(deal)"
-                              class="btn-tertiary btn-active"
                               :disabled="
-                                (deal.appeal.active === undefined &&
-                                  parseInt(deal.timestamp_start) > 0 &&
-                                  new Date().getTime() >
-                                    parseInt(deal.timestamp_end * 1000)) ||
-                                (deal.appeal.active !== undefined &&
-                                  parseInt(deal.appeal.round) !== 99 &&
-                                  new Date().getTime() >
-                                    parseInt(deal.timestamp_end * 1000)) ||
-                                parseInt(deal.timestamp_start * 1000) === 0 ||
-                                deal.appeal.active === true
-                              "
-                            >
-                              <i class="fa-solid fa-bell mr-3"></i>REQUEST
-                              APPEAL
-                            </b-button>
-                            <div class="divider ml-4 mr-4"></div>
-                            <b-button
-                              @click="
-                                downloadFile(
-                                  providerEndpoints[deal.provider] +
-                                    '/ipfs/' +
-                                    deal.deal_uri.replace('ipfs://', '')
-                                )
-                              "
-                              :disabled="
-                                new Date().getTime() >
-                                  parseInt(deal.timestamp_end * 1000) ||
                                 parseInt(deal.timestamp_start * 1000) === 0
                               "
                               class="btn-icon"
                             >
-                              <i class="fa-solid fa-download"></i>
+                              <i class="fa-solid fa-file-contract"></i>
                             </b-button>
-                            <div class="divider ml-4 mr-4"></div>
-                            <a
-                              :class="{
-                                'no-pointer':
-                                  parseInt(deal.timestamp_start * 1000) === 0,
-                              }"
-                              :href="
-                                opensea + '/' + contract + '/' + deal.index
-                              "
-                              target="_blank"
-                            >
-                              <b-button
-                                :disabled="
-                                  parseInt(deal.timestamp_start * 1000) === 0
-                                "
-                                class="btn-icon"
-                              >
-                                <i class="fa-solid fa-file-contract"></i>
-                              </b-button>
-                            </a>
-                            <div class="divider ml-4 mr-4"></div>
-                            <a class="btn-icon" @click="refreshDeal(index)">
-                              <i class="fa-solid fa-arrow-rotate-right"></i>
-                            </a>
-                            <div class="divider ml-4 mr-4"></div>
-                            <!-- BADGES -->
-                            <div
-                              v-if="
-                                parseInt(deal.timestamp_end) -
-                                  new Date().getTime() / 1000 >
-                                  0 && deal.appeal.active !== true
-                              "
-                              class="badge badge-success"
-                            >
-                              <span>Active</span>
-                            </div>
-                            <div
-                              v-if="
-                                parseInt(deal.timestamp_end) -
-                                  new Date().getTime() / 1000 <
-                                  0 &&
-                                !deal.canceled &&
-                                deal.timestamp_start > 0
-                              "
-                              class="badge badge-ended"
-                            >
-                              <span>Ended</span>
-                            </div>
-                            <div v-if="deal.canceled" class="badge badge-ended">
-                              <span>Canceled</span>
-                            </div>
-                            <div
-                              v-if="
-                                deal.timestamp_start !== undefined &&
-                                parseInt(deal.timestamp_start) === 0
-                              "
-                              class="badge badge-pending"
-                            >
-                              <span>Pending</span>
-                            </div>
-                            <div
-                              v-if="
-                                deal.appeal.round !== undefined &&
-                                parseInt(deal.appeal.round) < 99 &&
-                                parseInt(deal.timestamp_end) -
-                                  new Date().getTime() / 1000 >
-                                  0
-                              "
-                              class="badge badge-requested"
-                            >
-                              <span>Appeal</span>
-                            </div>
-                            <!-- END BADGES -->
-                            <div class="divider ml-3 mr-3"></div>
-                            <div
-                              class="card-header-icon mr-3 p-3"
-                              style="width: 35px"
-                            >
-                              <i
-                                v-if="!props.open"
-                                class="fa-solid fa-chevron-right"
-                              ></i>
-                              <i
-                                v-if="props.open"
-                                class="fa-solid fa-chevron-down"
-                              ></i>
-                            </div>
+                          </a>
+                          <div class="divider ml-4 mr-4"></div>
+                          <a class="btn-icon" @click="refreshDeal(index)">
+                            <i class="fa-solid fa-arrow-rotate-right"></i>
+                          </a>
+                          <div class="divider ml-4 mr-4"></div>
+                          <!-- BADGES -->
+                          <div
+                            v-if="
+                              parseInt(deal.timestamp_end) -
+                                new Date().getTime() / 1000 >
+                                0 && deal.appeal.active !== true
+                            "
+                            class="badge badge-success"
+                          >
+                            <span>Active</span>
+                          </div>
+                          <div
+                            v-if="
+                              parseInt(deal.timestamp_end) -
+                                new Date().getTime() / 1000 <
+                                0 &&
+                              !deal.canceled &&
+                              deal.timestamp_start > 0
+                            "
+                            class="badge badge-ended"
+                          >
+                            <span>Ended</span>
+                          </div>
+                          <div v-if="deal.canceled" class="badge badge-ended">
+                            <span>Canceled</span>
+                          </div>
+                          <div
+                            v-if="
+                              deal.timestamp_start !== undefined &&
+                              parseInt(deal.timestamp_start) === 0
+                            "
+                            class="badge badge-pending"
+                          >
+                            <span>Pending</span>
+                          </div>
+                          <div
+                            v-if="
+                              deal.appeal.round !== undefined &&
+                              parseInt(deal.appeal.round) < 99 &&
+                              parseInt(deal.timestamp_end) -
+                                new Date().getTime() / 1000 >
+                                0
+                            "
+                            class="badge badge-requested"
+                          >
+                            <span>Appeal</span>
+                          </div>
+                          <!-- END BADGES -->
+                          <div class="divider ml-3 mr-3"></div>
+                          <div
+                            @click="openDeal(index)"
+                            class="card-header-icon mr-3 p-3"
+                            style="width: 35px"
+                          >
+                            <i
+                              v-if="index !== isOpening"
+                              class="fa-solid fa-chevron-right"
+                            ></i>
+                            <i
+                              v-if="index === isOpening"
+                              class="fa-solid fa-chevron-down"
+                            ></i>
                           </div>
                         </div>
-                        <!-- END DEAL ACTION BUTTONS -->
-                      </template>
-
+                      </div>
                       <!-- DEAL SPECIFICATIONS -->
-                      <div class="card-content">
-                        <div class="content">
-                          <div class="columns is-mobile">
-                            <div
-                              class="column is-three-quarter-tablet is-half-desktop"
-                            >
-                              <div>
+                      <Transition
+                        name="custom-fade"
+                        enter-active-class="fade-in-top"
+                        leave-active-class="fade-out-top"
+                      >
+                        <div class="" v-show="index === isOpening">
+                          <div class="card-content">
+                            <div class="content">
+                              <div class="columns is-mobile">
                                 <div
-                                  class="b-top-colored-grey b-bottom-colored-grey"
-                                  :class="{
-                                    'pb-3 pt-3': isDesktop,
-                                    'pb-1 pt-1': isTablet,
-                                  }"
+                                  class="column is-three-quarter-tablet is-half-desktop"
                                 >
-                                  <p>
-                                    <b>Deal URI: </b>
-                                    <a
-                                      class="link-primary"
-                                      :href="
+                                  <div>
+                                    <div
+                                      class="b-top-colored-grey b-bottom-colored-grey"
+                                      :class="{
+                                        'pb-3 pt-3': isDesktop,
+                                        'pb-1 pt-1': isTablet,
+                                      }"
+                                    >
+                                      <p>
+                                        <b>Deal URI: </b>
+                                        <a
+                                          class="link-primary"
+                                          :href="
+                                            providerEndpoints[deal.provider] +
+                                            '/ipfs/' +
+                                            deal.deal_uri.replace('ipfs://', '')
+                                          "
+                                          >{{ deal.deal_uri }}</a
+                                        >
+                                      </p>
+                                    </div>
+                                    <div
+                                      class="b-bottom-colored-grey"
+                                      :class="{
+                                        'pb-3 pt-3': isDesktop,
+                                        'pb-1 pt-1': isTablet,
+                                      }"
+                                    >
+                                      <p><b>Value:</b> {{ deal.value }}</p>
+                                    </div>
+                                    <div
+                                      class="b-bottom-colored-grey"
+                                      :class="{
+                                        'pb-3 pt-3': isDesktop,
+                                        'pb-1 pt-1': isTablet,
+                                      }"
+                                    >
+                                      <p>
+                                        <b>Collateral:</b> {{ deal.collateral }}
+                                      </p>
+                                    </div>
+                                    <div
+                                      class="b-bottom-colored-grey"
+                                      :class="{
+                                        'pb-3 pt-3': isDesktop,
+                                        'pb-1 pt-1': isTablet,
+                                      }"
+                                    >
+                                      <p>
+                                        <b>Canceled:</b> {{ deal.canceled }}
+                                      </p>
+                                    </div>
+                                    <div
+                                      class="b-bottom-colored-grey"
+                                      :class="{
+                                        'pb-3 pt-3': isDesktop,
+                                        'pb-1 pt-1': isTablet,
+                                      }"
+                                    >
+                                      <p>
+                                        <b>Provider:</b>
+                                        <span
+                                          v-if="
+                                            deal.provider !== 'NOT_ACCEPTED'
+                                          "
+                                        >
+                                          {{ deal.provider }}</span
+                                        >
+                                        <span
+                                          v-if="
+                                            deal.provider === 'NOT_ACCEPTED'
+                                          "
+                                        >
+                                          Pending Approval</span
+                                        >
+                                      </p>
+                                    </div>
+                                    <div
+                                      class="b-bottom-colored-grey"
+                                      :class="{
+                                        'pb-3 pt-3': isDesktop,
+                                        'pb-1 pt-1': isTablet,
+                                      }"
+                                    >
+                                      <p>
+                                        <b>Timestamp request:</b>
+                                        {{ returnDate(deal.timestamp_request) }}
+                                      </p>
+                                    </div>
+                                    <div
+                                      class="b-bottom-colored-grey"
+                                      :class="{
+                                        'pb-3 pt-3': isDesktop,
+                                        'pb-1 pt-1': isTablet,
+                                      }"
+                                      v-if="
+                                        parseInt(deal.timestamp_start) !== 0
+                                      "
+                                    >
+                                      <p>
+                                        <b>Timestamp start:</b>
+                                        {{ returnDate(deal.timestamp_start)
+                                        }}<br />
+                                      </p>
+                                    </div>
+                                    <div
+                                      v-if="
+                                        parseInt(deal.timestamp_end) -
+                                          new Date().getTime() / 1000 >
+                                          0 && deal.appeal.active !== true
+                                      "
+                                      class="b-bottom-colored-grey"
+                                      :class="{
+                                        'pb-3 pt-3': isDesktop,
+                                        'pb-1 pt-1': isTablet,
+                                      }"
+                                    >
+                                      <p>
+                                        <b>Timestamp end:</b>
+                                        {{ returnDate(deal.timestamp_end)
+                                        }}<br />
+                                      </p>
+                                    </div>
+                                    <div
+                                      v-if="
+                                        parseInt(deal.timestamp_end) -
+                                          new Date().getTime() / 1000 >
+                                        0
+                                      "
+                                      class="b-bottom-colored-grey"
+                                      :class="{
+                                        'pb-3 pt-3': isDesktop,
+                                        'pb-1 pt-1': isTablet,
+                                      }"
+                                    >
+                                      <p>
+                                        <b>Time remaining:</b>
+                                        {{
+                                          secondsToDhms(
+                                            parseInt(deal.timestamp_end) -
+                                              new Date().getTime() / 1000
+                                          )
+                                        }}<br />
+                                      </p>
+                                    </div>
+                                    <div
+                                      v-if="
+                                        parseInt(deal.timestamp_end) -
+                                          new Date().getTime() / 1000 <
+                                          0 &&
+                                        parseInt(deal.timestamp_start) !== 0
+                                      "
+                                      class="b-bottom-colored-grey"
+                                      :class="{
+                                        'pb-3 pt-3': isDesktop,
+                                        'pb-1 pt-1': isTablet,
+                                      }"
+                                    >
+                                      <p><b>Time remaining:</b> deal ended</p>
+                                    </div>
+                                    <div v-if="!isWorking">
+                                      <a
+                                        href="#"
+                                        v-if="
+                                          deal.active === true &&
+                                          parseInt(deal.timestamp_start) === 0
+                                        "
+                                        @click="cancelDealProposal(deal.index)"
+                                        >🗑️ cancel deal proposal</a
+                                      >
+                                      <div
+                                        class="b-bottom-colored-grey"
+                                        :class="{
+                                          'pb-3 pt-3': isDesktop,
+                                          'pb-1 pt-1': isTablet,
+                                        }"
+                                        v-if="
+                                          deal.appeal.round !== undefined &&
+                                          parseInt(deal.appeal.round) < 99
+                                        "
+                                      >
+                                        <p>
+                                          <b>Reqeuest Appeal: </b>
+                                          <i
+                                            class="fa-solid fa-hourglass-half fa-fade mr-2"
+                                          ></i
+                                          >Processing round
+                                          {{ deal.appeal.round }}, slashes are
+                                          {{ deal.appeal.slashes }}.
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div
+                                  class="column is-one-quarter-tablet is-half-desktop"
+                                >
+                                  <div v-if="deal.deal_uri" class="box-img">
+                                    <img
+                                      :src="
                                         providerEndpoints[deal.provider] +
                                         '/ipfs/' +
                                         deal.deal_uri.replace('ipfs://', '')
                                       "
-                                      >{{ deal.deal_uri }}</a
-                                    >
-                                  </p>
-                                </div>
-                                <div
-                                  class="b-bottom-colored-grey"
-                                  :class="{
-                                    'pb-3 pt-3': isDesktop,
-                                    'pb-1 pt-1': isTablet,
-                                  }"
-                                >
-                                  <p><b>Value:</b> {{ deal.value }}</p>
-                                </div>
-                                <div
-                                  class="b-bottom-colored-grey"
-                                  :class="{
-                                    'pb-3 pt-3': isDesktop,
-                                    'pb-1 pt-1': isTablet,
-                                  }"
-                                >
-                                  <p>
-                                    <b>Collateral:</b> {{ deal.collateral }}
-                                  </p>
-                                </div>
-                                <div
-                                  class="b-bottom-colored-grey"
-                                  :class="{
-                                    'pb-3 pt-3': isDesktop,
-                                    'pb-1 pt-1': isTablet,
-                                  }"
-                                >
-                                  <p><b>Canceled:</b> {{ deal.canceled }}</p>
-                                </div>
-                                <div
-                                  class="b-bottom-colored-grey"
-                                  :class="{
-                                    'pb-3 pt-3': isDesktop,
-                                    'pb-1 pt-1': isTablet,
-                                  }"
-                                >
-                                  <p>
-                                    <b>Provider:</b>
-                                    <span
-                                      v-if="deal.provider !== 'NOT_ACCEPTED'"
-                                    >
-                                      {{ deal.provider }}</span
-                                    >
-                                    <span
-                                      v-if="deal.provider === 'NOT_ACCEPTED'"
-                                    >
-                                      Pending Approval</span
-                                    >
-                                  </p>
-                                </div>
-                                <div
-                                  class="b-bottom-colored-grey"
-                                  :class="{
-                                    'pb-3 pt-3': isDesktop,
-                                    'pb-1 pt-1': isTablet,
-                                  }"
-                                >
-                                  <p>
-                                    <b>Timestamp request:</b>
-                                    {{ returnDate(deal.timestamp_request) }}
-                                  </p>
-                                </div>
-                                <div
-                                  class="b-bottom-colored-grey"
-                                  :class="{
-                                    'pb-3 pt-3': isDesktop,
-                                    'pb-1 pt-1': isTablet,
-                                  }"
-                                  v-if="parseInt(deal.timestamp_start) !== 0"
-                                >
-                                  <p>
-                                    <b>Timestamp start:</b>
-                                    {{ returnDate(deal.timestamp_start) }}<br />
-                                  </p>
-                                </div>
-                                <div
-                                  v-if="
-                                    parseInt(deal.timestamp_end) -
-                                      new Date().getTime() / 1000 >
-                                      0 && deal.appeal.active !== true
-                                  "
-                                  class="b-bottom-colored-grey"
-                                  :class="{
-                                    'pb-3 pt-3': isDesktop,
-                                    'pb-1 pt-1': isTablet,
-                                  }"
-                                >
-                                  <p>
-                                    <b>Timestamp end:</b>
-                                    {{ returnDate(deal.timestamp_end) }}<br />
-                                  </p>
-                                </div>
-                                <div
-                                  v-if="
-                                    parseInt(deal.timestamp_end) -
-                                      new Date().getTime() / 1000 >
-                                    0
-                                  "
-                                  class="b-bottom-colored-grey"
-                                  :class="{
-                                    'pb-3 pt-3': isDesktop,
-                                    'pb-1 pt-1': isTablet,
-                                  }"
-                                >
-                                  <p>
-                                    <b>Time remaining:</b>
-                                    {{
-                                      secondsToDhms(
-                                        parseInt(deal.timestamp_end) -
-                                          new Date().getTime() / 1000
-                                      )
-                                    }}<br />
-                                  </p>
-                                </div>
-                                <div
-                                  v-if="
-                                    parseInt(deal.timestamp_end) -
-                                      new Date().getTime() / 1000 <
-                                      0 && parseInt(deal.timestamp_start) !== 0
-                                  "
-                                  class="b-bottom-colored-grey"
-                                  :class="{
-                                    'pb-3 pt-3': isDesktop,
-                                    'pb-1 pt-1': isTablet,
-                                  }"
-                                >
-                                  <p><b>Time remaining:</b> deal ended</p>
-                                </div>
-                                <div v-if="!isWorking">
-                                  <a
-                                    href="#"
-                                    v-if="
-                                      deal.active === true &&
-                                      parseInt(deal.timestamp_start) === 0
-                                    "
-                                    @click="cancelDealProposal(deal.index)"
-                                    >🗑️ cancel deal proposal</a
-                                  >
-                                  <div
-                                    class="b-bottom-colored-grey"
-                                    :class="{
-                                      'pb-3 pt-3': isDesktop,
-                                      'pb-1 pt-1': isTablet,
-                                    }"
-                                    v-if="
-                                      deal.appeal.round !== undefined &&
-                                      parseInt(deal.appeal.round) < 99
-                                    "
-                                  >
-                                    <p>
-                                      <b>Reqeuest Appeal: </b>
-                                      <i
-                                        class="fa-solid fa-hourglass-half fa-fade mr-2"
-                                      ></i
-                                      >Processing round {{ deal.appeal.round }},
-                                      slashes are {{ deal.appeal.slashes }}.
-                                    </p>
+                                    />
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div
-                              class="column is-one-quarter-tablet is-half-desktop"
-                            >
-                              <div v-if="deal.deal_uri" class="box-img">
-                                <img
-                                  :src="
-                                    providerEndpoints[deal.provider] +
-                                    '/ipfs/' +
-                                    deal.deal_uri.replace('ipfs://', '')
-                                  "
-                                />
-                              </div>
-                            </div>
                           </div>
                         </div>
-                      </div>
+                      </Transition>
                       <!-- END DEAL SPECIFICATIONS -->
-                    </b-collapse>
-                    <!-- END | SINGLE DEAL -->
+                    </div>
                   </div>
 
                   <!-- NO DEALS -->
@@ -633,13 +637,13 @@ export default {
       selectedDeal: {},
       // FOR LAYOUT
       expertMode: false,
+      isOpening: -1,
       // FILTER
       changeNetwork: false,
       filtered: false,
       activeDeal: true,
       endedDeal: false,
       showallDeals: false,
-      isOpen: 0,
       searcher: "",
       searchTimeout: null,
       // JUST FOR TEST
@@ -1026,23 +1030,21 @@ export default {
       const app = this;
       console.log("Refreshing deal", app.deals[index]);
       if (!app.isWorking) {
-        app.isWorking = true;
-        app.log("Updating deal please wait..");
-        app.workingMessage = "Updating deal please wait..";
         try {
           let refreshed = await axios.get(
             process.env.VUE_APP_API_URL + "/parse/" + app.deals[index].index
           );
           console.log("refreshed", refreshed.data);
           app.deals[index] = refreshed.data;
-          app.workingMessage = "";
+          this.$buefy.toast.open({
+            duration: 5000,
+            message: `Deal information refreshed`,
+            position: "is-bottom-right",
+            type: "is-warning",
+          });
         } catch (e) {
-          app.isWorking = false;
-          app.workingMessage = "";
           app.alertCustomError(e.message);
         }
-        app.isWorking = false;
-        app.workingMessage = "";
       }
     },
     async downloadFile(uri) {
@@ -1230,6 +1232,16 @@ export default {
             "Can't fetch deals from blockchain, please retry!"
           );
         }
+      }
+    },
+
+    openDeal(index) {
+      const app = this;
+      if (app.isOpening === index) {
+        app.isOpening = -1;
+      } else {
+        app.isOpening = index;
+        app.refreshDeal(index);
       }
     },
   },

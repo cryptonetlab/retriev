@@ -55,6 +55,7 @@
             Uploading file on IPFS, please wait..
           </div> -->
 
+          <!-- Upload file -->
           <b-field v-if="!fileToUpload.name">
             <b-upload
               v-model="fileToUpload"
@@ -85,37 +86,46 @@
               class="btn-secondary"
               style="float: right"
               @click="
-                fileToUpload = '';
+                fileToUpload = {};
                 dealUri = '';
               "
               ><i class="fa-solid fa-circle-xmark"></i> Change file</b-button
             >
           </div>
+          <!-- END | Upload File -->
 
+          <!-- Appeal address & Deal URI -->
           <div v-if="expertMode" class="columns is-mobile mt-6">
             <div class="column">
               <h5 class="mb-3">Appeal Address</h5>
-              <b-input
-                :disabled="isWorking"
-                v-model="appealAddress"
-                placeholder="ex: your ETH address"
-              ></b-input>
+              <b-field type="is-info">
+                <b-input
+                  :disabled="isWorking"
+                  v-model="appealAddress"
+                  placeholder="ex: your ETH address"
+                ></b-input>
+              </b-field>
             </div>
             <div class="column">
               <h5 class="mb-3">Deal URI</h5>
-              <b-input
-                :disabled="isWorking"
-                v-model="dealUri"
-                placeholder="ex: ipfs://CID"
-              ></b-input>
+              <b-field type="is-info">
+                <b-input
+                  :disabled="isWorking"
+                  v-model="dealUri"
+                  placeholder="ex: ipfs://CID"
+                ></b-input>
+              </b-field>
             </div>
           </div>
+          <!-- END | Appeal address & Deal URI -->
 
-          <div class="mt-6">
+          <div v-if="providers.length > 0" class="mt-6">
             <!-- TITLES TABLE -->
             <div class="columns is-mobile">
-              <div class="column is-3-tablet is-5-desktop" 
-                :class="{ 'pl-3': isTablet }">
+              <div
+                class="column is-3-tablet is-5-desktop"
+                :class="{ 'pl-3': isTablet }"
+              >
                 <h5 class="title-table">PROVIDER</h5>
               </div>
               <div class="column is-3-tablet is-3-desktop px-0">
@@ -136,7 +146,7 @@
               v-for="provider in providers"
               :value="provider.address"
               :key="provider.address"
-              class="custom-card"
+              class="custom-card custom-card-hover"
             >
               <div class="columns is-mobile m-0">
                 <div class="column is-3-tablet is-5-desktop">
@@ -151,8 +161,10 @@
                     }}</b>
                   </p>
                 </div>
-                
-                <div class="column is-3-tablet is-3-desktop  b-left-colored-grey b-right-colored-grey pl-3">
+
+                <div
+                  class="column is-3-tablet is-3-desktop b-left-colored-grey b-right-colored-grey pl-3"
+                >
                   <p>{{ provider.endpoint }}</p>
                 </div>
                 <div
@@ -161,10 +173,14 @@
                 >
                   <p>{{ provider.maxSize / 1000000 }}MB</p>
                 </div>
-                <div class="column is-2-tablet is-2-desktop b-right-colored-grey">
+                <div
+                  class="column is-2-tablet is-2-desktop b-right-colored-grey"
+                >
                   <p>{{ provider.price }}</p>
                 </div>
-                <div class="column is-2-tablet is-1-desktop has-text-centered pl-5">
+                <div
+                  class="column is-2-tablet is-1-desktop has-text-centered pl-5"
+                >
                   <b-checkbox
                     type="is-info"
                     :disabled="isWorking"
@@ -179,22 +195,71 @@
           </div>
 
           <div class="columns is-mobile mt-6">
-            <div class="column">
-              <div class="mb-5">
+            <!-- Deal Duration input fields -->
+            <div class="column is-half">
+              <div class="mb-5" v-if="expertMode">
                 <h5 class="mb-3">Deal Duration</h5>
                 <div style="position: relative">
-                  <b-input
-                    v-model="dealDurationDays"
-                    :disabled="isWorking"
-                    placeholder="days"
-                    type="number"
-                  ></b-input>
+                  <b-field type="is-info">
+                    <b-input
+                      v-model="dealDurationDays"
+                      :disabled="isWorking"
+                      placeholder="days"
+                      type="number"
+                    ></b-input>
+                  </b-field>
                   <div class="placeholder-input">days</div>
                 </div>
               </div>
+
+              <div v-if="!expertMode">
+                <div class="mb-4">
+                  <h5>Deal Duration</h5>
+                  <p>Select a duration for your deal.</p>
+                  <h5 class="mt-3">
+                    <i class="fa-solid fa-circle-info mr-2"></i> Duration
+                    selected is:
+                    <span v-if="dealDurationDays === 7">1 Week</span
+                    ><span v-if="dealDurationDays === 31">1 Month</span
+                    ><span v-if="dealDurationDays === 365">1 Year</span>
+                  </h5>
+                </div>
+
+                <b-field>
+                  <b-radio-button
+                    v-model="dealDurationDays"
+                    :disabled="isWorking"
+                    :native-value="7"
+                    type="is-info is-light is-outlined"
+                  >
+                    <span>Week</span>
+                  </b-radio-button>
+
+                  <b-radio-button
+                    v-model="dealDurationDays"
+                    :disabled="isWorking"
+                    :native-value="31"
+                    type="is-info is-light is-outlined"
+                  >
+                    <span>Month</span>
+                  </b-radio-button>
+
+                  <b-radio-button
+                    v-model="dealDurationDays"
+                    :disabled="isWorking"
+                    :native-value="365"
+                    type="is-info is-light is-outlined"
+                  >
+                    <span>Year</span>
+                  </b-radio-button>
+                </b-field>
+              </div>
             </div>
-            <div class="column">
-              <div class="mb-5">
+            <!-- END | Deal Duration input fields -->
+
+            <div class="column is-half">
+              <!-- Payment input fields -->
+              <div class="mb-5" v-if="expertMode">
                 <div class="is-flex is-align-items-center mb-3">
                   <h5 class="m-0">Payment in wei</h5>
                   <h3>
@@ -205,15 +270,83 @@
                   </h3>
                 </div>
                 <div style="position: relative">
-                  <b-input
-                    v-model="dealValue"
-                    :disabled="isWorking"
-                    placeholder="Payment in wei"
-                  ></b-input>
+                  <b-field type="is-info">
+                    <b-input
+                      type="number"
+                      v-model="dealValue"
+                      :disabled="isWorking"
+                      placeholder="Payment in wei"
+                    ></b-input>
+                  </b-field>
                   <div class="placeholder-input">wei</div>
                 </div>
+                <!-- ALERT BANNER PAYMENT -->
+                <div
+                  v-if="dealValue < baseDealValue"
+                  class="alert-banner p-3 mt-3 mb-3"
+                >
+                  <p>
+                    <i class="fa-solid fa-circle-exclamation mr-3"></i>
+                    <b
+                      >Value is below minimum price, provider may not accept the
+                      deal.
+                    </b>
+                  </p>
+                </div>
+                <!-- ALERT BANNER PAYMENT -->
               </div>
 
+              <div v-if="!expertMode">
+                <div class="mb-4">
+                  <h5>Payment in wei</h5>
+                  <p>
+                    Select payment for your deal. The higher the value selected
+                    the greater the likelihood that it will be approved by the
+                    selected Provider
+                  </p>
+                  <h5 class="mt-3">
+                    <i class="fa-solid fa-circle-info mr-2"></i>You are paying:
+                    {{ dealValue }}
+                  </h5>
+                </div>
+                <div class="is-flex is-align-items-center">
+                  <b-button
+                    class="btn-transparent"
+                    :type="{ 'is-info': selectedPriority === 1 }"
+                    @click="calculateDealValue(1)"
+                    >Low</b-button
+                  >
+                  <b-button
+                    class="btn-transparent"
+                    :type="{ 'is-info': selectedPriority === 2 }"
+                    @click="calculateDealValue(2)"
+                    >Medium</b-button
+                  >
+                  <b-button
+                    class="btn-transparent"
+                    :type="{ 'is-info': selectedPriority === 5 }"
+                    @click="calculateDealValue(5)"
+                    >High</b-button
+                  >
+                </div>
+                <!-- ALERT BANNER PAYMENT -->
+                <div
+                  v-if="dealValue < baseDealValue"
+                  class="alert-banner p-3 mt-3 mb-3"
+                >
+                  <p>
+                    <i class="fa-solid fa-circle-exclamation mr-3"></i>
+                    <b
+                      >Value is below minimum price, provider may not accept the
+                      deal.
+                    </b>
+                  </p>
+                </div>
+                <!-- ALERT BANNER PAYMENT -->
+              </div>
+              <!-- END | Payment input fields -->
+
+              <!-- Collateral size slider -->
               <div v-if="expertMode" class="mt-6 mb-6">
                 <div class="is-flex is-align-items-center mb-3">
                   <h5 class="m-0">collateral</h5>
@@ -227,7 +360,7 @@
                 <b-field class="px-4">
                   <b-slider
                     :disabled="isWorking"
-                    :min="parseInt(dealValue)"
+                    :min="0"
                     :max="dealValue * slashingMultiplier"
                     :step="1"
                     indicator
@@ -252,7 +385,19 @@
                     ></b-slider
                   >
                 </b-field>
+                <!-- ALERT BANNER COLLATERAL -->
+                <div v-if="dealCollateralLow" class="alert-banner p-3 mt-6">
+                  <p>
+                    <i class="fa-solid fa-circle-exclamation mr-3"></i>
+                    <b
+                      >Collateral is less than the Deal value. Keep attention
+                      storage is at your own risk.
+                    </b>
+                  </p>
+                </div>
+                <!-- ALERT BANNER COLLATERAL -->
               </div>
+              <!-- END | Collateral size slider -->
 
               <div
                 class="btn-secondary mt-6"
@@ -264,6 +409,7 @@
               </div>
             </div>
           </div>
+          <!-- END | Deal Duration & Deal Value input fields -->
           <div v-if="isWorking">{{ workingMessage }}</div>
         </div>
       </div>
@@ -278,6 +424,16 @@
         <p class="text-center">{{ workingMessage }}</p>
       </div>
       <!-- END Working Messages -->
+
+      <!-- Loading PROVIDERS  -->
+      <div
+        class="workingMessage is-flex is-flex-direction-row is-flex-wrap-wrap is-align-items-center is-justify-content-center"
+        v-if="providers.length <= 0"
+      >
+        <i class="fas fa-spinner fa-pulse mr-5"></i>
+        <p class="text-center">Loading Providers, please wait...</p>
+      </div>
+      <!-- END | Loading PROVIDERS -->
 
       <!-- Modal Payment in gwei -->
       <b-modal
@@ -381,11 +537,14 @@ export default {
       providersPolicy: {},
       logs: "",
       dealUri: "",
-      dealDuration: 86400,
-      dealDurationDays: 1,
-      dealCollateral: 1,
+      dealDuration: 86400 * 7,
+      dealDurationDays: 7,
+      dealCollateral: 0,
+      dealCollateralLow: 0,
       dealProviders: [],
       dealValue: 0,
+      baseDealValue: 0,
+      selectedPriority: 1,
       abi: ABI,
       balance: 0,
       infuraURL: "https://ipfs.infura.io:5001/api/v0/add",
@@ -417,6 +576,7 @@ export default {
   watch: {
     dealDurationDays() {
       const app = this;
+      // Duration day limit max and min on input
       if (app.dealDurationDays > 365) {
         app.dealDurationDays = 365;
       }
@@ -431,6 +591,8 @@ export default {
             86400 *
             parseInt(app.fileToUpload.size)
         );
+        app.baseDealValue = app.dealValue;
+        app.dealValue = app.dealValue * app.selectedPriority;
       }
       app.dealDuration = parseInt(app.dealDurationDays * 86400);
     },
@@ -439,12 +601,35 @@ export default {
     },
     async dealValue() {
       const app = this;
-      app.dealCollateral = parseInt(app.dealValue);
+      // dealValue limit min on input
+      if (app.dealValue < 0) {
+        app.dealValue = 0;
+        console.log("im under zero", app.dealValue);
+      } else if (app.dealValue === "") {
+        app.dealValue = 0;
+      }
+      if (app.expertMode) {
+        if (app.dealCollateral < parseInt(app.dealValue)) {
+          app.dealCollateralLow = true;
+        } else {
+          app.dealCollateralLow = false;
+        }
+      } else {
+        app.dealCollateral = parseInt(app.dealValue);
+      }
     },
     async dealCollateral() {
       const app = this;
-      const maximumCollateral = app.slashingMultiplier * app.dealValue;
-      console.log("max collaterl", maximumCollateral);
+      const collateralDeal =
+        parseInt(app.dealCollateral) - parseInt(app.dealValue);
+      if (collateralDeal > 1) {
+        app.dealCollateralLow = false;
+      } else {
+        app.dealCollateralLow = true;
+      }
+      const maximumCollateral =
+        parseInt(app.slashingMultiplier) * parseInt(app.dealValue);
+      console.log("max collateral", maximumCollateral);
       if (parseInt(app.dealCollateral) > parseInt(maximumCollateral)) {
         app.log("Min collateral is " + maximumCollateral + ", please fix it!");
       }
@@ -592,10 +777,19 @@ export default {
           const formData = new FormData();
           formData.append("file", app.fileToUpload);
           console.log("UPLOADED_FILE", app.fileToUpload);
+          console.log("Size of FILE is: ", app.fileToUpload.size);
+          console.log(
+            "provider policy price is: ",
+            app.providersPolicy[app.dealProviders[0]].price
+          );
+          console.log("Deal duration is: ", app.dealDuration);
           app.dealValue =
             app.providersPolicy[app.dealProviders[0]].price *
             app.dealDuration *
             app.fileToUpload.size;
+          app.baseDealValue = app.dealValue;
+          app.dealValue = app.dealValue * app.selectedPriority;
+          console.log("changed Deal value, now is: ", app.dealValue);
           axios({
             method: "post",
             url: app.infuraURL + "?cid-version=1",
@@ -627,10 +821,7 @@ export default {
           app.dealProviders.length > 0
         ) {
           const maximumCollateral = app.slashingMultiplier * app.dealValue;
-          if (
-            parseInt(app.dealCollateral) <= parseInt(maximumCollateral) &&
-            parseInt(app.dealCollateral) >= parseInt(app.dealValue)
-          ) {
+          if (parseInt(app.dealCollateral) <= parseInt(maximumCollateral)) {
             app.isWorking = true;
             app.workingMessage = "Please confirm action with metamask..";
             try {
@@ -779,6 +970,11 @@ export default {
         ariaRole: "alertdialog",
         ariaModal: true,
       });
+    },
+    calculateDealValue(priority) {
+      const app = this;
+      app.selectedPriority = priority;
+      app.dealValue = app.baseDealValue * priority;
     },
   },
 };
