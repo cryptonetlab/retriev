@@ -356,8 +356,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         );
         // uint256 maximum_collateral = slashing_multiplier * msg.value;
         require(
-            msg.value >= min_deal_value && collateral >= msg.value,
-            // && collateral <= maximum_collateral
+            msg.value >= min_deal_value,
+            // && collateral >= msg.value && collateral <= maximum_collateral 
             "Collateral or value out of range"
         );
         require(
