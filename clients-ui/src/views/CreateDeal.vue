@@ -205,7 +205,10 @@
                       v-model="dealDurationDays"
                       :disabled="isWorking"
                       placeholder="days"
+                      :min="7"
+                      :max="365"
                       type="number"
+                      id="dealDurationDays"
                     ></b-input>
                   </b-field>
                   <div class="placeholder-input">days</div>
@@ -275,6 +278,7 @@
                       type="number"
                       v-model="dealValue"
                       :disabled="isWorking"
+                      :min="0"
                       placeholder="Payment in wei"
                     ></b-input>
                   </b-field>
@@ -580,8 +584,9 @@ export default {
       if (app.dealDurationDays > 365) {
         app.dealDurationDays = 365;
       }
-      if (app.dealDurationDays < 0) {
-        app.dealDurationDays = 1;
+
+      if (app.dealDurationDays === "") {
+        app.dealDurationDays = 7;
       }
       // TODO: Handle case where providers > 1
       if (app.fileToUpload.size !== undefined) {
@@ -604,7 +609,6 @@ export default {
       // dealValue limit min on input
       if (app.dealValue < 0) {
         app.dealValue = 0;
-        console.log("im under zero", app.dealValue);
       } else if (app.dealValue === "") {
         app.dealValue = 0;
       }
