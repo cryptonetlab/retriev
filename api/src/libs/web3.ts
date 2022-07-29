@@ -115,11 +115,15 @@ export const parseAppeal = async (deal_index) => {
             round: 0,
             active: onchain_appeal.active,
             slashes: onchain_appeal.slashes.toString(),
-            origin_timestamp: onchain_appeal.origin_timestamp.toString()
+            origin_timestamp: onchain_appeal.origin_timestamp.toString(),
+            slashed: false
           }
           const round = await instance.contract.getRound(active_appeal);
           console.log("[APPEALS] --> Round is:", round.toString())
-          appeal.round = round.toString();
+          appeal.round = parseInt(round.toString());
+          if (appeal.round === 12 && parseInt(appeal.slashes) === 12) {
+            appeal.slashed = true
+          }
           const checkDB = await db.find('deals', { index: deal_index })
           if (checkDB !== null) {
             console.log('[APPEALS] ---> Saving appeal details to db')
