@@ -252,7 +252,11 @@
                             v-if="
                               parseInt(deal.timestamp_end) -
                                 new Date().getTime() / 1000 >
-                                0 && deal.appeal.active !== true
+                                0 ||
+                              (parseInt(deal.timestamp_end) -
+                                new Date().getTime() / 1000 >
+                                0 &&
+                                deal.appeal.round === 99)
                             "
                             class="badge badge-success"
                           >
@@ -772,7 +776,13 @@ export default {
         }
         app.log("Found " + app.deals.length + " deals.");
         console.log(app.deals);
-        this.activeDeals();
+
+        // Checking proposal timeout
+        let proposalTimeout = await contract.methods.proposal_timeout().call();
+        app.proposalTimeout = proposalTimeout;
+        console.log("Proposal Timeout", app.proposalTimeout);
+
+        app.activeDeals();
       } catch (e) {
         app.alertCustomError(
           "Can't fetch deals from blockchain, please retry!"
@@ -783,11 +793,6 @@ export default {
       app.maxDuration = await contract.methods.max_duration().call();
       app.log("Min duration is: " + app.minDuration);
       app.log("Max duration is: " + app.maxDuration);
-
-      // Checking proposal timeout
-      let proposalTimeout = await contract.methods.proposal_timeout().call();
-      app.proposalTimeout = proposalTimeout;
-      console.log("Proposal Timeout", app.proposalTimeout);
 
       app.loading = false;
       // Connecting to p2p network
@@ -1257,7 +1262,14 @@ export default {
             } else {
               deal.expired = false;
             }
-
+            console.log(
+              "test filter",
+              parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0
+            );
+            console.log(
+              "test filter expiration",
+              parseInt(deal.timestamp_start) === 0 && !deal.expired
+            );
             if (keys.indexOf(parseInt(deal.index)) === -1) {
               if (
                 parseInt(deal.timestamp_end) - new Date().getTime() / 1000 >
