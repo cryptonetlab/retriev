@@ -7,6 +7,7 @@
   --tertiary-color: #edd2be;
   --tertiary-color-light: #fef3ec;
   --light-color: white;
+  --error-color: #cc3d3d;
 }
 
 /* ==============> MIXINS AND GENERAL STYLE <============== */
@@ -386,6 +387,21 @@ input,
   @include btn-minimal-noHover();
 }
 
+.btn-withdraw {
+  transition: background-color 0.3s ease-out;
+  &:hover {
+    padding: 10px 17px;
+    transition: background-color 0.3s ease-out;
+  }
+  &:hover span {
+    display: none;
+  }
+  &:hover::before {
+    content: "withdraw";
+    font-size: 0.825rem;
+  }
+}
+
 .btn-primary {
   @include btn;
   @include btn-light;
@@ -640,6 +656,13 @@ button.dropdown-item.is-active {
   }
 }
 
+.badge-expired {
+  background: var(--error-color);
+  span {
+    color: white;
+  }
+}
+
 .card-header {
   box-shadow: none !important;
 }
@@ -848,7 +871,8 @@ img.network-logo {
   }
 }
 
-.control.has-icons-right .input, .control.has-icons-right .select select {
+.control.has-icons-right .input,
+.control.has-icons-right .select select {
   padding-right: 5px;
 }
 /* ==============> LOGS & NOTIFICATIONS <============== */
@@ -1197,8 +1221,6 @@ hr {
     opacity: 1;
   }
 }
-
-
 
 .fade-out-top {
   -webkit-animation: fade-out-top 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;

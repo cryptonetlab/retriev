@@ -22,6 +22,10 @@
           :expertMode="expertMode"
           :logs="logs"
           :loading="loading"
+          :balance="balance"
+          :isWorking="isWorking"
+          :workingMessage="workingMessage"
+          @withdraw="withdraw()"
         />
         <!-- END | NAVBAR SECTION -->
 
@@ -272,7 +276,8 @@
                           <div
                             v-if="
                               deal.timestamp_start !== undefined &&
-                              parseInt(deal.timestamp_start) === 0
+                              parseInt(deal.timestamp_start) === 0 &&
+                              !deal.expired
                             "
                             class="badge badge-pending"
                           >
@@ -289,6 +294,26 @@
                             class="badge badge-requested"
                           >
                             <span>Appeal</span>
+                          </div>
+                          <div
+                            v-if="
+                              deal.appeal.round !== undefined &&
+                              deal.slashed !== undefined &&
+                              deal.slashed === true
+                            "
+                            class="badge badge-slashed"
+                          >
+                            <span>Slashed</span>
+                          </div>
+                          <div
+                            v-if="
+                              deal.timestamp_start !== undefined &&
+                              parseInt(deal.timestamp_start) === 0 &&
+                              deal.expired
+                            "
+                            class="badge badge-expired"
+                          >
+                            <span>Expired</span>
                           </div>
                           <!-- END BADGES -->
                           <div class="divider ml-3 mr-3"></div>
@@ -617,6 +642,7 @@ export default {
       workingMessage: "",
       minDuration: 3600,
       maxDuration: 42000,
+      proposalTimeout: 0,
       deals: [],
       providers: [],
       providerEndpoints: {},
@@ -645,10 +671,6 @@ export default {
       endedDeal: false,
       showallDeals: false,
       searcher: "",
-      searchTimeout: null,
-      // JUST FOR TEST
-      hardcodedPrice: 5,
-      checkboxGroup: ["Flint"],
     };
   },
 
@@ -761,6 +783,12 @@ export default {
       app.maxDuration = await contract.methods.max_duration().call();
       app.log("Min duration is: " + app.minDuration);
       app.log("Max duration is: " + app.maxDuration);
+
+      // Checking proposal timeout
+      let proposalTimeout = await contract.methods.proposal_timeout().call();
+      app.proposalTimeout = proposalTimeout;
+      console.log("Proposal Timeout", app.proposalTimeout);
+
       app.loading = false;
       // Connecting to p2p network
       app.providers = [];
@@ -812,6 +840,7 @@ export default {
       }
       app.log("Found " + app.providers.length + " active providers");
     },
+
     async cancelDealProposal(index) {
       const app = this;
       if (!app.isWorking) {
@@ -836,6 +865,7 @@ export default {
         }
       }
     },
+
     async createAppeal(deal) {
       const app = this;
       const index = deal.index;
@@ -924,6 +954,7 @@ export default {
         );
       }
     },
+
     async withdraw() {
       const app = this;
       if (!app.isWorking) {
@@ -945,6 +976,9 @@ export default {
               });
             app.alertCustomError("Withdraw done!");
             app.loadState();
+          } else {
+            app.isWorking = false;
+            app.alertCustomError("You have nothing to withdraw");
           }
         } catch (e) {
           app.isWorking = false;
@@ -952,6 +986,7 @@ export default {
         }
       }
     },
+
     connectSocket(endpoint) {
       const app = this;
       app.log("Connecting to socket: " + endpoint);
@@ -970,6 +1005,7 @@ export default {
         }
       });
     },
+
     parseMessage(message) {
       const app = this;
       try {
@@ -1038,15 +1074,18 @@ export default {
           app.deals[index] = refreshed.data;
           this.$buefy.toast.open({
             duration: 5000,
-            message: `Deal information refreshed`,
+            message:
+              `Deal ID #` + app.deals[index].index + ` information refreshed`,
             position: "is-bottom-right",
             type: "is-warning",
           });
+          app.$forceUpdate();
         } catch (e) {
           app.alertCustomError(e.message);
         }
       }
     },
+
     async downloadFile(uri) {
       const app = this;
       app.isWorking = true;
@@ -1066,6 +1105,7 @@ export default {
         app.workingMessage = "";
       }
     },
+
     secondsToDhms(seconds) {
       seconds = Number(seconds);
       var d = Math.floor(seconds / (3600 * 24));
@@ -1079,6 +1119,7 @@ export default {
       var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
       return dDisplay + hDisplay + mDisplay + sDisplay;
     },
+
     returnDate(s) {
       const date = new Date(s * 1000).toUTCString();
       return date.split("GMT")[0].trim();
@@ -1160,11 +1201,22 @@ export default {
           let keys = [];
           for (let k in deals.data) {
             let deal = deals.data[k];
+            const expires_at =
+              (parseInt(deal.timestamp_request) +
+                parseInt(app.proposalTimeout)) *
+              1000;
+
+            if (new Date().getTime() > expires_at) {
+              deal.expired = true;
+            } else {
+              deal.expired = false;
+            }
             if (keys.indexOf(parseInt(deal.index)) === -1) {
               if (
-                parseInt(deal.timestamp_end) - new Date().getTime() / 1000 <
+                (parseInt(deal.timestamp_end) - new Date().getTime() / 1000 <
                   0 &&
-                parseInt(deal.timestamp_start) > 0
+                  parseInt(deal.timestamp_start) > 0) ||
+                deal.expired === true
               ) {
                 keys.push(parseInt(deal.index));
                 app.deals.push(deal);
@@ -1179,6 +1231,7 @@ export default {
         }
       }
     },
+
     async activeDeals() {
       const app = this;
       console.log("Checking active deals...");
@@ -1194,11 +1247,22 @@ export default {
           let keys = [];
           for (let k in deals.data) {
             let deal = deals.data[k];
+            const expires_at =
+              (parseInt(deal.timestamp_request) +
+                parseInt(app.proposalTimeout)) *
+              1000;
+
+            if (new Date().getTime() > expires_at) {
+              deal.expired = true;
+            } else {
+              deal.expired = false;
+            }
+
             if (keys.indexOf(parseInt(deal.index)) === -1) {
               if (
                 parseInt(deal.timestamp_end) - new Date().getTime() / 1000 >
                   0 ||
-                parseInt(deal.timestamp_start) === 0
+                (parseInt(deal.timestamp_start) === 0 && !deal.expired)
               ) {
                 keys.push(parseInt(deal.index));
                 app.deals.push(deal);
@@ -1224,6 +1288,25 @@ export default {
           let deals = await axios.get(
             process.env.VUE_APP_API_URL + "/deals/" + app.account
           );
+          let keys = [];
+          for (let k in deals.data) {
+            let deal = deals.data[k];
+            const expires_at =
+              (parseInt(deal.timestamp_request) +
+                parseInt(app.proposalTimeout)) *
+              1000;
+
+            if (new Date().getTime() > expires_at) {
+              deal.expired = true;
+            } else {
+              deal.expired = false;
+            }
+
+            if (keys.indexOf(parseInt(deal.index)) === -1) {
+              keys.push(parseInt(deal.index));
+              app.deals.push(deal);
+            }
+          }
           app.deals = deals.data;
           app.isWorking = false;
           console.log("All Deals", app.deals);

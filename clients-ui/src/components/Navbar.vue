@@ -26,12 +26,13 @@
                 <span v-if="parseInt(network) === 1">Ethereum</span>
               </div>
               <div
-                v-if="accountBalance"
-                class="btn-minimal-noHover ml-2"
-                style="cursor: default"
+                v-if="balance.length > 0"
+                class="btn-light btn-withdraw ml-2"
+                @click="$emit('withdraw')"
               >
-                {{ accountBalance.substr(0, 4) }}
-                <span style="text-transform: lowercase">r</span>ETH
+                <span>{{ balance.substr(0, 4) }}</span>
+                <span style="text-transform: lowercase">r</span>
+                <span>ETH</span>
               </div>
               <div
                 class="btn-minimal-noHover"
@@ -124,11 +125,26 @@
       enter-active-class="slide-in-right"
       leave-active-class="slide-out-right"
     >
-      <div v-if="logState" @mouseleave="closeLogs()" class="right-col" style="padding: 0.5rem 1.5rem">
+      <div
+        v-if="logState"
+        @mouseleave="closeLogs()"
+        class="right-col"
+        style="padding: 0.5rem 1.5rem"
+      >
         <p v-html="logs"></p>
       </div>
     </Transition>
     <!-- END - Application Logs -->
+
+    <!-- Working Messages -->
+    <div
+      class="workingMessage is-flex is-flex-direction-row is-flex-wrap-wrap is-align-items-center is-justify-content-center"
+      v-if="isWithdraw"
+    >
+      <i class="fas fa-spinner fa-pulse mr-5"></i>
+      <p class="text-center">{{ withdrawMessage }}</p>
+    </div>
+    <!-- END Working Messages -->
   </div>
 </template>
 
@@ -137,7 +153,14 @@ import checkViewport from "@/mixins/checkViewport";
 
 export default {
   mixins: [checkViewport],
-  props: ["account", "accountBalance", "network", "expertMode", "logs"],
+  props: [
+    "account",
+    "accountBalance",
+    "network",
+    "expertMode",
+    "logs",
+    "balance",
+  ],
   data() {
     return {
       // LAYOUT
@@ -145,6 +168,8 @@ export default {
       childData: "",
       logState: false,
       hideForNow: true,
+      isWithdraw: false,
+      withdrawMessage: false,
     };
   },
   methods: {
@@ -155,6 +180,18 @@ export default {
     closeLogs() {
       const app = this;
       app.logState = false;
+    },
+    alertCustomError(message) {
+      this.$buefy.dialog.alert({
+        title: "Error",
+        message: message,
+        type: "is-danger",
+        hasIcon: true,
+        icon: "times-circle",
+        iconPack: "fa",
+        ariaRole: "alertdialog",
+        ariaModal: true,
+      });
     },
   },
 };
