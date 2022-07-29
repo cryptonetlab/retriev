@@ -273,11 +273,11 @@ const processdeal = (node, deal_index) => {
                 const proposal = await contract.deals(deal_index)
                 const proposal_timeout = await contract.proposal_timeout()
                 // Check if deal was accepted or expired
-                const expires_at = parseInt(proposal.timestamp_request.toString() + parseInt(proposal_timeout.toString())) * 1000
+                const expires_at = (parseInt(proposal.timestamp_request.toString()) + parseInt(proposal_timeout.toString())) * 1000
                 const accepted = parseInt(proposal.timestamp_start.toString()) > 0
                 console.log("Deal expires at:", expires_at)
                 console.log("Deal accepted?", accepted)
-                if (expires_at > new Date().getTime() && !accepted) {
+                if (new Date().getTime() < expires_at && !accepted) {
                     let policyMet = false
                     // Retrive the file from IPFS
                     console.log("Retrieving file stats from:", proposal.deal_uri)
