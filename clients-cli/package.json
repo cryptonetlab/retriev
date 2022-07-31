@@ -1,14 +1,13 @@
 {
-    "name": "pldr-stresstest",
+    "name": "pldr-client",
     "version": "0.0.1",
     "description": "",
-    "main": "src/stress.js",
-    "bin": "src/stress.js",
+    "main": "src/client.js",
+    "bin": "src/client.js",
     "scripts": {
-        "test:identity": "node --no-warnings src/stress.js --debug --name=stressdev --port=8000 getidentity",
-        "test:deals": "node --no-warnings src/stress.js --debug --name=stressdev --port=8000 deals 1000",
-        "test:appeals": "node --no-warnings src/stress.js --debug --name=stressdev --port=8000 appeals 5",
-        "compile": "pkg . --out-path bin"
+        "test:identity": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 getidentity",
+        "compile": "pkg . --out-path bin",
+        "start": "./bin/pldr-client-linux --debug --name=client --port=8000"
     },
     "keywords": [],
     "author": "",
