@@ -8,6 +8,7 @@
   --tertiary-color-light: #fef3ec;
   --light-color: white;
   --error-color: #cc3d3d;
+  --disabled-color: #ceccc0;
 }
 
 /* ==============> MIXINS AND GENERAL STYLE <============== */
@@ -189,7 +190,7 @@ h5 {
   font-weight: 400;
   letter-spacing: 0.03em;
 }
-/* ==============> POSITIONING, MARGIN, PADDING, ETC...<============== */
+/* ==============> POSITIONING, BORDERS, MARGIN, PADDING, ETC...<============== */
 
 .bg-color-dark {
   background-color: var(--primary-color) !important;
@@ -204,19 +205,19 @@ h5 {
 }
 
 .b-top-colored-grey {
-  border-top: 1px solid #ceccc0;
+  border-top: 1px solid var(--disabled-color);
 }
 
 .b-left-colored-grey {
-  border-left: 1px solid #ceccc0;
+  border-left: 1px solid var(--disabled-color);
 }
 
 .b-right-colored-grey {
-  border-right: 1px solid #ceccc0;
+  border-right: 1px solid var(--disabled-color);
 }
 
 .b-bottom-colored-grey {
-  border-bottom: 1px solid #ceccc0;
+  border-bottom: 1px solid var(--disabled-color);
 }
 
 .b-bottom-colored-dark {
@@ -242,6 +243,11 @@ h5 {
   }
 }
 
+.fixed-width {
+  width: auto;
+  min-width: 100px;
+}
+
 .flex-force {
   display: flex !important;
   align-items: center !important;
@@ -260,7 +266,7 @@ h5 {
 
 .placeholder-input {
   position: absolute;
-  top: 8px;
+  top: 10px;
   right: 30px;
   font-size: 0.9rem;
   color: #7d7c77;
@@ -296,6 +302,13 @@ h5 {
 }
 
 /* ==============> BUTTONS & FIELDS <============== */
+a.dropdown-item.is-active,
+.dropdown .dropdown-menu .has-link a.is-active,
+button.dropdown-item.is-active {
+  background-color: var(--primary-color);
+  color: var(--tertiary-color-light);
+}
+
 input,
 .upload .upload-draggable.is-expanded {
   @include font-plex();
@@ -410,6 +423,13 @@ input,
 .btn-secondary {
   @include btn;
   @include btn-dark;
+  &:disabled {
+    background-color: var(--disabled-color);
+    color: #fff;
+    &:hover {
+      box-shadow: 6px 6px 0px 1px var(--disabled-color);
+    }
+  }
 }
 
 .btn-tertiary {
@@ -467,6 +487,11 @@ button.button.is-rounded.is-dark:hover {
   border: 1px solid black;
   color: black;
   transition: all 0.3s;
+}
+
+.control.has-icons-left .icon,
+.control.has-icons-right .icon {
+  height: 100%;
 }
 
 .custom_dropdown {
@@ -566,24 +591,13 @@ button.button.is-rounded.is-dark:hover {
   }
 }
 
-.control.has-icons-left .icon,
-.control.has-icons-right .icon {
-  height: 100%;
-}
-
-a.dropdown-item.is-active,
-.dropdown .dropdown-menu .has-link a.is-active,
-button.dropdown-item.is-active {
-  background-color: var(--primary-color);
-  color: var(--tertiary-color-light);
-}
-
 .switch input[type="checkbox"] + .check {
   border-radius: 0;
   &::before {
     border-radius: 0;
   }
 }
+
 .switch.has-left-label .control-label {
   @include font-inter;
   font-style: normal;
@@ -808,15 +822,11 @@ img.network-logo {
 .custom-card {
   background-color: white;
   border-radius: 0.25rem;
-  -webkit-box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 10%),
-    0 0px 0 1px rgb(10 10 10 / 2%);
-  box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 10%),
-    0 0px 0 1px rgb(10 10 10 / 2%);
   color: #4a4a4a;
   max-width: 100%;
   position: relative;
   padding: 10px 0px;
-
+  border-bottom: 1px solid #ced4da;
   p,
   b {
     @include font-inter();
