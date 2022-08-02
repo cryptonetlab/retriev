@@ -25,7 +25,9 @@
           :balance="balance"
           :isWorking="isWorking"
           :workingMessage="workingMessage"
+          :navSpec="navSpec"
           @withdraw="withdraw()"
+          @closeSpec="closeSpec()"
         />
         <!-- END | NAVBAR SECTION -->
 
@@ -120,7 +122,7 @@
                                   (showallDeals = false),
                                   (endedDeal = false),
                                   (filtered = false),
-                                  activeDeals()
+                                  loadState()
                               "
                             >
                               Active
@@ -181,7 +183,11 @@
                       :class="{ 'custom-card-hover': index !== isOpening }"
                     >
                       <div class="card-header">
-                        <h4 class="card-header-title">
+                        <h4
+                          class="card-header-title"
+                          @click="openDeal(index)"
+                          style="cursor: pointer"
+                        >
                           Deal ID: #{{ deal.index }}
                         </h4>
 
@@ -192,16 +198,8 @@
                             @click="createAppeal(deal)"
                             class="btn-tertiary btn-active"
                             :disabled="
-                              (deal.appeal.active === undefined &&
-                                parseInt(deal.timestamp_start) > 0 &&
-                                new Date().getTime() >
-                                  parseInt(deal.timestamp_end * 1000)) ||
-                              (deal.appeal.active !== undefined &&
-                                parseInt(deal.appeal.round) !== 99 &&
-                                new Date().getTime() >
-                                  parseInt(deal.timestamp_end * 1000)) ||
-                              parseInt(deal.timestamp_start * 1000) === 0 ||
-                              deal.appeal.active === true
+                              !deal.canAppeal ||
+                              downloads[deal.deal_uri] === true
                             "
                           >
                             <i class="fa-solid fa-bell mr-3"></i>REQUEST APPEAL
@@ -250,13 +248,17 @@
                           <!-- BADGES -->
                           <div
                             v-if="
-                              parseInt(deal.timestamp_end) -
-                                new Date().getTime() / 1000 >
-                                0 ||
                               (parseInt(deal.timestamp_end) -
                                 new Date().getTime() / 1000 >
                                 0 &&
-                                deal.appeal.round === 99)
+                                deal.appeal.round === undefined) ||
+                              (parseInt(deal.timestamp_end) -
+                                new Date().getTime() / 1000 >
+                                0 &&
+                                deal.appeal.round !== undefined &&
+                                deal.appeal.round === 99 &&
+                                deal.appeal.slashed !== undefined &&
+                                deal.appeal.slashed === false)
                             "
                             class="badge badge-success"
                           >
@@ -361,6 +363,7 @@
                                       <p>
                                         <b>Deal URI: </b>
                                         <a
+                                          style="word-wrap: break-word"
                                           class="link-primary"
                                           :href="
                                             providerEndpoints[deal.provider] +
@@ -372,24 +375,24 @@
                                       </p>
                                     </div>
                                     <div
-                                      class="b-bottom-colored-grey"
+                                      class="is-flex is-justify-content-space-between is-align-items-center b-bottom-colored-grey"
                                       :class="{
-                                        'pb-3 pt-3': isDesktop,
                                         'pb-1 pt-1': isTablet,
                                       }"
                                     >
-                                      <p><b>Value:</b> {{ deal.value }}</p>
-                                    </div>
-                                    <div
-                                      class="b-bottom-colored-grey"
-                                      :class="{
-                                        'pb-3 pt-3': isDesktop,
-                                        'pb-1 pt-1': isTablet,
-                                      }"
-                                    >
-                                      <p>
-                                        <b>Collateral:</b> {{ deal.collateral }}
-                                      </p>
+                                      <div style="width: 100%">
+                                        <p><b>Value:</b> {{ deal.value }}</p>
+                                      </div>
+                                      <div class="divider"></div>
+                                      <div
+                                        class="has-text-right"
+                                        style="width: 100%"
+                                      >
+                                        <p>
+                                          <b>Collateral:</b>
+                                          {{ deal.collateral }}
+                                        </p>
+                                      </div>
                                     </div>
                                     <div
                                       class="b-bottom-colored-grey"
@@ -459,7 +462,7 @@
                                       v-if="
                                         parseInt(deal.timestamp_end) -
                                           new Date().getTime() / 1000 >
-                                          0 && deal.appeal.active !== true
+                                        0
                                       "
                                       class="b-bottom-colored-grey"
                                       :class="{
@@ -520,34 +523,23 @@
                                         @click="cancelDealProposal(deal.index)"
                                         >🗑️ cancel deal proposal</a
                                       >
-                                      <div
-                                        class="b-bottom-colored-grey"
-                                        :class="{
-                                          'pb-3 pt-3': isDesktop,
-                                          'pb-1 pt-1': isTablet,
-                                        }"
-                                        v-if="
-                                          deal.appeal.round !== undefined &&
-                                          parseInt(deal.appeal.round) < 99
-                                        "
-                                      >
-                                        <p>
-                                          <b>Reqeuest Appeal: </b>
-                                          <i
-                                            class="fa-solid fa-hourglass-half fa-fade mr-2"
-                                          ></i
-                                          >Processing round
-                                          {{ deal.appeal.round }}, slashes are
-                                          {{ deal.appeal.slashes }}.
-                                        </p>
-                                      </div>
                                     </div>
                                   </div>
                                 </div>
                                 <div
                                   class="column is-one-quarter-tablet is-half-desktop"
                                 >
-                                  <div v-if="deal.deal_uri" class="box-img">
+                                  <div
+                                    v-if="!downloads[deal.deal_uri]"
+                                    class="box-img"
+                                    style="
+                                      background-image: url(../assets/img/no-avail.png);
+                                    "
+                                  ></div>
+                                  <div
+                                    v-if="downloads[deal.deal_uri]"
+                                    class="box-img"
+                                  >
                                     <img
                                       :src="
                                         providerEndpoints[deal.provider] +
@@ -555,6 +547,51 @@
                                         deal.deal_uri.replace('ipfs://', '')
                                       "
                                     />
+                                  </div>
+
+                                  <div
+                                    class="pl-3 mt-5"
+                                    v-if="
+                                      deal.appeal.round !== undefined &&
+                                      parseInt(deal.appeal.round) < 99
+                                    "
+                                  >
+                                    <div
+                                      class="container-appeal b-bottom-colored-grey bg-pink-dark px-2"
+                                      :class="{
+                                        'pb-3 pt-3': isDesktop,
+                                        'pb-1 pt-1': isTablet,
+                                      }"
+                                    >
+                                      <p><b>Appeal Stautus</b></p>
+                                    </div>
+                                    <div
+                                      class="b-bottom-colored-grey bg-pink-light px-2"
+                                      :class="{
+                                        'pb-3 pt-3': isDesktop,
+                                        'pb-1 pt-1': isTablet,
+                                      }"
+                                    >
+                                      <p>
+                                        <b>Round: </b>
+                                        {{ deal.appeal.round }}/12
+                                        <i
+                                          class="fa-solid fa-hourglass-half fa-fade ml-2"
+                                        ></i>
+                                      </p>
+                                    </div>
+                                    <div
+                                      class="b-bottom-colored-grey bg-pink-light px-2"
+                                      :class="{
+                                        'pb-3 pt-3': isDesktop,
+                                        'pb-1 pt-1': isTablet,
+                                      }"
+                                    >
+                                      <p>
+                                        <b>Slashes: </b>
+                                        {{ deal.appeal.slashes }}
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -647,6 +684,7 @@ export default {
       minDuration: 3600,
       maxDuration: 42000,
       proposalTimeout: 0,
+      downloads: {},
       deals: [],
       providers: [],
       providerEndpoints: {},
@@ -668,6 +706,7 @@ export default {
       // FOR LAYOUT
       expertMode: false,
       isOpening: -1,
+      navSpec: false,
       // FILTER
       changeNetwork: false,
       filtered: false,
@@ -759,6 +798,12 @@ export default {
       app.slashingMultiplier = parseInt(
         await contract.methods.slashing_multiplier().call()
       );
+
+      // Checking proposal timeout
+      let proposalTimeout = await contract.methods.proposal_timeout().call();
+      app.proposalTimeout = proposalTimeout;
+      console.log("Proposal Timeout", app.proposalTimeout);
+
       try {
         app.isWorking = true;
         app.workingMessage = "Fetching your deals, please wait...";
@@ -767,22 +812,61 @@ export default {
         );
         app.isWorking = false;
         let keys = [];
+        let appealsByUri = {};
         for (let k in deals.data) {
           let deal = deals.data[k];
           if (keys.indexOf(parseInt(deal.index)) === -1) {
             keys.push(parseInt(deal.index));
-            app.deals.push(deal);
+            app.downloads[deal.deal_uri] = false;
+            // Check if deal can appeal or not
+            deal.canAppeal = true;
+            // Check if appeal ended
+            if (
+              deal.appeal !== undefined &&
+              deal.appeal.round !== undefined &&
+              parseInt(deal.appeal.round) < 99
+            ) {
+              deal.canAppeal = false;
+              appealsByUri[deal.deal_uri] = deal.appeal;
+            }
+            // Check if deal ended
+            if (deal.timestamp_end * 1000 < new Date().getTime()) {
+              deal.canAppeal = false;
+            }
+            // Check if appeal doesn't exists
+            if (deal.appeal === undefined || Object.keys(deal.appeal) === 0) {
+              deal.canAppeal = true;
+            }
+            if (appealsByUri[deal.deal_uri] !== undefined) {
+              deal.canAppeal = false;
+            }
+            // Set expiration timestamp
+            const expires_at =
+              (parseInt(deal.timestamp_request) +
+                parseInt(app.proposalTimeout)) *
+              1000;
+            // Check if expired
+            if (new Date().getTime() > expires_at) {
+              deal.expired = true;
+            } else {
+              deal.expired = false;
+            }
+            // Getting active deals
+            if (
+              parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0 ||
+              (parseInt(deal.timestamp_start) === 0 && !deal.expired)
+            ) {
+              keys.push(parseInt(deal.index));
+              app.deals.push(deal);
+            }
+            console.log("Can deal appeal?", deal.canAppeal);
           }
         }
-        app.log("Found " + app.deals.length + " deals.");
-        console.log(app.deals);
+        app.$forceUpdate();
+        // app.log("Found #" + app.deals.length + " deals.");
+        // console.log("deals", app.deals);
 
-        // Checking proposal timeout
-        let proposalTimeout = await contract.methods.proposal_timeout().call();
-        app.proposalTimeout = proposalTimeout;
-        console.log("Proposal Timeout", app.proposalTimeout);
-
-        app.activeDeals();
+        // app.activeDeals();
       } catch (e) {
         app.alertCustomError(
           "Can't fetch deals from blockchain, please retry!"
@@ -878,9 +962,9 @@ export default {
       const contract = new app.web3.eth.Contract(app.abi, app.contract);
       const max_appeals = await contract.methods.max_appeals().call();
       const n_appeals = await contract.methods.tot_appeals(index).call();
-      console.log("Max appeal is;", max_appeals);
-      console.log("n appeals is:", n_appeals);
-      if (!app.isWorking && n_appeals < max_appeals) {
+      console.log("Max appeal is;", parseInt(max_appeals));
+      console.log("n appeals is:", parseInt(n_appeals));
+      if (!app.isWorking && parseInt(n_appeals) < parseInt(max_appeals)) {
         app.isWorking = true;
         app.workingMessage = "Creating Appeal...";
         const active_appeal = await contract.methods
@@ -948,7 +1032,7 @@ export default {
           app.isWorking = false;
           app.workingMessage = "";
           app.alertCustomError(
-            "You can't create appeal, max appeal for this file is reached"
+            "You can't create appeal, there's an active appeal for this URI yet."
           );
         }
       } else {
@@ -1189,12 +1273,11 @@ export default {
         ariaModal: true,
       });
     },
-
     // FILTERS
     async expiredDeals() {
       const app = this;
-      app.log("Checking expired deals...");
-      console.log("Checking expired deals...");
+      console.log("Checking all deals...");
+      app.log("Checking all deals...");
       if (!app.isWorking) {
         app.isWorking = true;
         app.deals = [];
@@ -1202,8 +1285,8 @@ export default {
           let deals = await axios.get(
             process.env.VUE_APP_API_URL + "/deals/" + app.account
           );
-          app.isWorking = false;
           let keys = [];
+          let appealsByUri = {};
           for (let k in deals.data) {
             let deal = deals.data[k];
             const expires_at =
@@ -1216,72 +1299,44 @@ export default {
             } else {
               deal.expired = false;
             }
-            if (keys.indexOf(parseInt(deal.index)) === -1) {
-              if (
-                (parseInt(deal.timestamp_end) - new Date().getTime() / 1000 <
-                  0 &&
-                  parseInt(deal.timestamp_start) > 0) ||
-                deal.expired === true
-              ) {
-                keys.push(parseInt(deal.index));
-                app.deals.push(deal);
-              }
+
+            deal.canAppeal = true;
+            // Check if appeal ended
+            if (
+              deal.appeal !== undefined &&
+              deal.appeal.round !== undefined &&
+              parseInt(deal.appeal.round) < 99
+            ) {
+              deal.canAppeal = false;
+              appealsByUri[deal.deal_uri] = deal.appeal;
             }
-          }
-          console.log(app.deals);
-        } catch (e) {
-          app.alertCustomError(
-            "Can't fetch deals from blockchain, please retry!"
-          );
-        }
-      }
-    },
-
-    async activeDeals() {
-      const app = this;
-      console.log("Checking active deals...");
-      app.log("Checking active deals...");
-      if (!app.isWorking) {
-        app.isWorking = true;
-        app.deals = [];
-        try {
-          let deals = await axios.get(
-            process.env.VUE_APP_API_URL + "/deals/" + app.account
-          );
-          app.isWorking = false;
-          let keys = [];
-          for (let k in deals.data) {
-            let deal = deals.data[k];
-            const expires_at =
-              (parseInt(deal.timestamp_request) +
-                parseInt(app.proposalTimeout)) *
-              1000;
-
-            if (new Date().getTime() > expires_at) {
-              deal.expired = true;
+            // Check if deal ended
+            if (deal.timestamp_end * 1000 < new Date().getTime()) {
+              deal.canAppeal = false;
+              deal.dealisEnded = true;
             } else {
-              deal.expired = false;
+              deal.dealisEnded = false;
+            }
+            // Check if appeal doesn't exists
+            if (deal.appeal === undefined || Object.keys(deal.appeal) === 0) {
+              deal.canAppeal = true;
+            }
+            if (appealsByUri[deal.deal_uri] !== undefined) {
+              deal.canAppeal = false;
             }
             console.log(
-              "test filter",
-              parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0
-            );
-            console.log(
-              "test filter expiration",
-              parseInt(deal.timestamp_start) === 0 && !deal.expired
+              "checking time",
+              parseInt(deal.timestamp_end * 1000) < new Date().getTime()
             );
             if (keys.indexOf(parseInt(deal.index)) === -1) {
-              if (
-                parseInt(deal.timestamp_end) - new Date().getTime() / 1000 >
-                  0 ||
-                (parseInt(deal.timestamp_start) === 0 && !deal.expired)
-              ) {
+              if (deal.dealisEnded === true || (deal.dealisEnded === true && deal.expired === true)) {
                 keys.push(parseInt(deal.index));
                 app.deals.push(deal);
               }
             }
           }
-          console.log(app.deals);
+          app.isWorking = false;
+          console.log("Expired Deals", app.deals);
         } catch (e) {
           app.alertCustomError(
             "Can't fetch deals from blockchain, please retry!"
@@ -1301,6 +1356,7 @@ export default {
             process.env.VUE_APP_API_URL + "/deals/" + app.account
           );
           let keys = [];
+          let appealsByUri = {};
           for (let k in deals.data) {
             let deal = deals.data[k];
             const expires_at =
@@ -1314,12 +1370,33 @@ export default {
               deal.expired = false;
             }
 
+            deal.canAppeal = true;
+            // Check if appeal ended
+            if (
+              deal.appeal !== undefined &&
+              deal.appeal.round !== undefined &&
+              parseInt(deal.appeal.round) < 99
+            ) {
+              deal.canAppeal = false;
+              appealsByUri[deal.deal_uri] = deal.appeal;
+            }
+            // Check if deal ended
+            if (deal.timestamp_end * 1000 < new Date().getTime()) {
+              deal.canAppeal = false;
+            }
+            // Check if appeal doesn't exists
+            if (deal.appeal === undefined || Object.keys(deal.appeal) === 0) {
+              deal.canAppeal = true;
+            }
+            if (appealsByUri[deal.deal_uri] !== undefined) {
+              deal.canAppeal = false;
+            }
+
             if (keys.indexOf(parseInt(deal.index)) === -1) {
               keys.push(parseInt(deal.index));
               app.deals.push(deal);
             }
           }
-          app.deals = deals.data;
           app.isWorking = false;
           console.log("All Deals", app.deals);
         } catch (e) {
@@ -1329,15 +1406,32 @@ export default {
         }
       }
     },
-
-    openDeal(index) {
+    async openDeal(index) {
       const app = this;
       if (app.isOpening === index) {
         app.isOpening = -1;
       } else {
+        console.log("Opening deal", app.deals[index]);
+        const uri =
+          app.providerEndpoints[app.deals[index].provider] +
+          "/ipfs/" +
+          app.deals[index].deal_uri.replace("ipfs://", "");
+        try {
+          console.log("Downloading file from:", uri);
+          const downloaded = await axios.get(uri);
+          if (downloaded.data !== undefined) {
+            app.downloads[app.deals[index].deal_uri] = true;
+          }
+        } catch (e) {
+          console.log("Error while downloading from:", uri);
+        }
         app.isOpening = index;
         app.refreshDeal(index);
       }
+    },
+    closeSpec() {
+      const app = this;
+      app.navSpec = !app.navSpec;
     },
   },
   computed: {

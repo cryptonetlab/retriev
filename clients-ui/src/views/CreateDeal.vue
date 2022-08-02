@@ -23,7 +23,9 @@
         :balance="balance"
         :isWorking="isWorking"
         :workingMessage="workingMessage"
+        :navSpec="navSpec"
         @withdraw="withdraw()"
+        @closeSpec="closeSpec()"
       />
       <!-- END | NAVBAR SECTION -->
 
@@ -594,11 +596,19 @@
             <!-- END | Dealinput fields -->
 
             <div class="column is-half">
-              <b-field>
-                <b-checkbox v-model="termsOfService" type="is-info">
-                  I agree whit refree specification
-                </b-checkbox>
-              </b-field>
+              <div class="is-flex is-align-items-center mb-5">
+                <b-field class="mb-0">
+                  <b-checkbox v-model="termsOfService" type="is-info">
+                    I agree to the referee net # 1 terms and conditions
+                  </b-checkbox>
+                </b-field>
+                <i
+                  class="fa-solid fa-circle-info"
+                  @click="closeSpec()"
+                  style="cursor: pointer; margin-top: -5px"
+                ></i>
+              </div>
+
               <b-button
                 class="btn-secondary"
                 :disabled="termsOfService !== undefined && !termsOfService"
@@ -696,6 +706,7 @@ export default {
       // FOR LAYOUT
       canDoProposal: false,
       expertMode: false,
+      navSpec: false,
 
       // FILTER
       changeNetwork: false,
@@ -768,6 +779,10 @@ export default {
       if (parseInt(app.dealCollateral) > parseInt(maximumCollateral)) {
         app.log("Min collateral is " + maximumCollateral + ", please fix it!");
       }
+    },
+    closeSpec() {
+      const app = this;
+      app.navSpec = false;
     },
   },
   mounted() {
@@ -1142,6 +1157,11 @@ export default {
           app.alertCustomError(e.message);
         }
       }
+    },
+
+    closeSpec() {
+      const app = this;
+      app.navSpec = !app.navSpec;
     },
   },
 };

@@ -5,17 +5,20 @@
         <div
           class="columns is-mobile is-multiline is-vcentered is-justify-content-space-between"
         >
-          <div class="column is-2-mobile is-3-tablet is-4-desktop">
+          <div class="column is-2-mobile is-1-tablet is-3-desktop">
             <a href="/">
               <div class="is-flex is-align-items-center">
                 <img src="../assets/img/logo.svg" alt="" />
-                <h2 v-if="!isMobile" class="pay-off tertiary-light-text ml-4">
+                <h2
+                  v-if="!isMobile && !isTablet"
+                  class="pay-off tertiary-light-text ml-4"
+                >
                   Retrieval Pinning
                 </h2>
               </div></a
             >
           </div>
-          <div class="column is-10-mobile is-9-tablet is-8-desktop">
+          <div class="column is-10-mobile is-11-tablet is-9-desktop">
             <div
               class="is-flex is-align-items-center"
               :class="{ 'is-justify-content-flex-end': !isMobile }"
@@ -24,6 +27,9 @@
                 <i class="fa-brands fa-ethereum mr-2"></i
                 ><span v-if="parseInt(network) === 4">Rinkeby</span>
                 <span v-if="parseInt(network) === 1">Ethereum</span>
+              </div>
+              <div class="btn-light ml-2" @click="$emit('closeSpec')">
+                Referee Net #1
               </div>
               <div
                 v-if="balance.length > 0"
@@ -45,11 +51,16 @@
               <div class="ml-2">
                 <div>
                   <!-- Nav Button show/hide -->
-                  <div @click="navState = !navState" class="btn-light-icon">
+                  <div
+                    @click="navState = !navState"
+                    @mouseleave="closeSpec()"
+                    class="btn-light-icon"
+                  >
                     <i class="fa-solid fa-ellipsis"></i>
                   </div>
                   <!--End | Nav Button show/hide -->
 
+                  <!-- NAVBAR -->
                   <Transition
                     enter-active-class="slide-in-right"
                     leave-active-class="slide-out-right"
@@ -90,6 +101,55 @@
                       </div>
                     </div>
                   </Transition>
+                  <!-- END NAVBAR -->
+
+                  <!-- REFEREE SPECIFICATION -->
+                  <Transition
+                    enter-active-class="slide-in-right"
+                    leave-active-class="slide-out-right"
+                  >
+                    <div
+                      v-if="navSpec"
+                      @mouseleave="$emit('closeSpec')"
+                      class="right-col"
+                    >
+                      <div class="nav-container px-5">
+                        <div class="referee-icon">
+                        </div>
+                        <div class="mt-5">
+                          <h3>Referee Net #1</h3>
+                          <div class="mt-6">
+                            <h5 class="pb-2 b-bottom-colored-dark">
+                              Referee IDs
+                              <i class="fa-solid fa-wallet ml-3"></i>
+                            </h5>
+                            <p class="mt-3">
+                              0x6909...eAdv<br />
+                              0x1106...0Beoz<br />
+                              0x429r...bmAKg
+                            </p>
+                          </div>
+                        </div>
+                        <div class="mt-5">
+                          <h5 class="pb-2 b-bottom-colored-dark">
+                            TERMS OF SERVICE
+                          </h5>
+                          <p class="mt-3"><b>Deal proposal time out: </b>24h</p>
+                          <p class="mt-5"><b># Round: </b>12</p>
+                          <p><b>Round duration: </b>1h</p>
+                          <p><b>Slashing condition: </b>100%</p>
+                          <p class="mt-5"><b>Max appeals: </b>5</p>
+                          <p><b>Appeal cost: </b>0.2 x payment</p>
+                          <p class="mt-5"><b>Provider slash: </b></p>
+                          <p>- Payment completely refunded</p>
+                          <p>
+                            - Collateral goes into protoco vault
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </Transition>
+                  <!-- END REFEREE SPECIFICATION -->
                 </div>
 
                 <!-- END - Navbar -->
@@ -160,6 +220,7 @@ export default {
     "expertMode",
     "logs",
     "balance",
+    "navSpec",
   ],
   data() {
     return {
@@ -181,6 +242,7 @@ export default {
       const app = this;
       app.logState = false;
     },
+
     alertCustomError(message) {
       this.$buefy.dialog.alert({
         title: "Error",
