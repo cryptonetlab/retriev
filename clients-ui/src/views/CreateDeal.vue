@@ -207,88 +207,79 @@
           <div class="columns is-mobile mt-6">
             <!-- Deal input fields -->
             <div class="column is-half">
-              <div class="mb-5" v-if="expertMode">
+              <div class="mb-5">
                 <div class="is-flex is-align-items-center mb-3">
                   <b-tooltip
+                    position="is-right"
                     type="is-info"
-                    label="Type a duration for your deal."
+                    label="Type or select a duration for your deal."
                     multilined
                   >
                     <i class="fa-solid fa-circle-info"></i>
                   </b-tooltip>
-                  <h5 class="ml-3">
-                    Deal Duration is:
-                    <span>{{ parseInt(dealDurationDays) }} days</span>
-                  </h5>
+                  <h5 class="ml-3">Deal Duration</h5>
                 </div>
-                <div style="position: relative">
-                  <b-field type="is-info">
-                    <b-input
-                      v-model="dealDurationDays"
-                      :disabled="isWorking"
-                      placeholder="days"
-                      :min="7"
-                      :max="365"
-                      type="number"
-                      id="dealDurationDays"
-                    ></b-input>
-                  </b-field>
-                  <div class="placeholder-input">days</div>
-                </div>
-              </div>
-
-              <div class="mb-5" v-if="!expertMode">
-                <div class="mb-4">
-                  <div class="is-flex is-align-items-center">
-                    <b-tooltip
-                      type="is-info"
-                      label="Select a duration for your deal."
-                      multilined
-                    >
-                      <i class="fa-solid fa-circle-info"></i>
-                    </b-tooltip>
-                    <h5 class="ml-3">
-                      Deal Duration is:
-                      <span>{{ dealDurationDays }} days</span>
-                    </h5>
+                <div v-if="expertMode">
+                  <div style="position: relative">
+                    <b-field type="is-info">
+                      <b-input
+                        v-model="dealDurationDays"
+                        :disabled="isWorking"
+                        placeholder="days"
+                        :min="7"
+                        :max="365"
+                        type="number"
+                        id="dealDurationDays"
+                      ></b-input>
+                    </b-field>
+                    <div class="placeholder-input">days</div>
                   </div>
                 </div>
 
-                <b-field>
-                  <b-radio-button
-                    class="fixed-width"
-                    v-model="dealDurationDays"
-                    :disabled="isWorking"
-                    :native-value="7"
-                    type="is-info is-light is-outlined"
-                  >
-                    <span>Week</span>
-                  </b-radio-button>
+                <div v-if="!expertMode">
+                  <b-field>
+                    <b-radio-button
+                      class="fixed-width"
+                      v-model="dealDurationDays"
+                      :disabled="isWorking"
+                      :native-value="7"
+                      type="is-info is-light is-outlined"
+                    >
+                      <span>Week</span>
+                    </b-radio-button>
 
-                  <b-radio-button
-                    class="fixed-width"
-                    v-model="dealDurationDays"
-                    :disabled="isWorking"
-                    :native-value="31"
-                    type="is-info is-light is-outlined"
-                  >
-                    <span>Month</span>
-                  </b-radio-button>
+                    <b-radio-button
+                      class="fixed-width"
+                      v-model="dealDurationDays"
+                      :disabled="isWorking"
+                      :native-value="31"
+                      type="is-info is-light is-outlined"
+                    >
+                      <span>Month</span>
+                    </b-radio-button>
 
-                  <b-radio-button
-                    class="fixed-width"
-                    v-model="dealDurationDays"
-                    :disabled="isWorking"
-                    :native-value="365"
-                    type="is-info is-light is-outlined"
-                  >
-                    <span>Year</span>
-                  </b-radio-button>
-                </b-field>
+                    <b-radio-button
+                      class="fixed-width"
+                      v-model="dealDurationDays"
+                      :disabled="isWorking"
+                      :native-value="365"
+                      type="is-info is-light is-outlined"
+                    >
+                      <span>Year</span>
+                    </b-radio-button>
+                  </b-field>
+                </div>
+                <p class="pt-3 grey-color recap-deal">
+                  Deal Duration is:
+                  <b>{{ dealDurationDays }} days</b>
+                </p>
               </div>
+            </div>
+            <!-- END | Dealinput fields -->
 
+            <div class="column is-half">
               <!-- Payment input fields -->
-              <div class="mb-5" v-if="expertMode">
+              <div class="mb-6">
                 <div class="is-flex is-align-items-center mb-3">
                   <b-tooltip
                     type="is-info"
@@ -299,98 +290,85 @@
                   >
                     <i class="fa-solid fa-circle-info"></i>
                   </b-tooltip>
-                  <h5 class="ml-3">
-                    You are paying:
-                    <span>{{ dealValue }} WEI</span>
-                  </h5>
+                  <h5 class="ml-3">Deal Cost</h5>
                 </div>
-                <div style="position: relative">
-                  <b-field type="is-info">
-                    <b-input
-                      type="number"
-                      v-model="dealValue"
-                      :disabled="isWorking"
-                      :min="0"
-                      placeholder="Payment in wei"
-                    ></b-input>
-                  </b-field>
-                  <div class="placeholder-input">wei</div>
+                <div v-if="expertMode">
+                  <div style="position: relative">
+                    <b-field type="is-info">
+                      <b-input
+                        type="number"
+                        v-model="dealValue"
+                        :disabled="isWorking"
+                        :min="0"
+                        placeholder="Payment in wei"
+                      ></b-input>
+                    </b-field>
+                    <div class="placeholder-input">wei</div>
+                  </div>
+                  <!-- ALERT BANNER PAYMENT -->
+                  <div
+                    v-if="dealValue < baseDealValue"
+                    class="alert-banner p-3 mt-3 mb-3"
+                  >
+                    <p>
+                      <i class="fa-solid fa-circle-exclamation mr-3"></i>
+                      <b
+                        >Value is below minimum price, provider may not accept
+                        the deal.
+                      </b>
+                    </p>
+                  </div>
+                  <!-- ALERT BANNER PAYMENT -->
                 </div>
-                <!-- ALERT BANNER PAYMENT -->
-                <div
-                  v-if="dealValue < baseDealValue"
-                  class="alert-banner p-3 mt-3 mb-3"
-                >
-                  <p>
-                    <i class="fa-solid fa-circle-exclamation mr-3"></i>
-                    <b
-                      >Value is below minimum price, provider may not accept the
-                      deal.
-                    </b>
-                  </p>
+
+                <div v-if="!expertMode">
+                  <div class="is-flex is-align-items-center">
+                    <b-button
+                      class="btn-transparent fixed-width mr-4"
+                      :type="{ 'is-info': selectedPriority === 0 }"
+                      @click="calculateDealValue(0)"
+                      >Free</b-button
+                    >
+                    <b-button
+                      class="btn-transparent fixed-width mr-4"
+                      :type="{ 'is-info': selectedPriority === 1 }"
+                      @click="calculateDealValue(1)"
+                      >Low</b-button
+                    >
+                    <b-button
+                      class="btn-transparent fixed-width mr-4"
+                      :type="{ 'is-info': selectedPriority === 2 }"
+                      @click="calculateDealValue(2)"
+                      >Medium</b-button
+                    >
+                    <b-button
+                      class="btn-transparent fixed-width"
+                      :type="{ 'is-info': selectedPriority === 5 }"
+                      @click="calculateDealValue(5)"
+                      >High</b-button
+                    >
+                  </div>
+                  <!-- ALERT BANNER PAYMENT -->
+                  <div
+                    v-if="dealValue < baseDealValue"
+                    class="alert-banner p-3 mt-3 mb-3"
+                  >
+                    <p>
+                      <i class="fa-solid fa-circle-exclamation mr-3"></i>
+                      <b
+                        >Value is below minimum price, provider may not accept
+                        the deal.
+                      </b>
+                    </p>
+                  </div>
+                  <!-- ALERT BANNER PAYMENT -->
                 </div>
-                <!-- ALERT BANNER PAYMENT -->
+                <p class="mt-3 grey-color recap-deal">
+                  You are paying:
+                  <b>{{ dealValue }} WEI</b>
+                </p>
               </div>
 
-              <div class="mb-5" v-if="!expertMode">
-                <div class="mb-4">
-                  <div class="is-flex is-align-items-center">
-                    <b-tooltip
-                      type="is-info"
-                      label="Select payment for your deal. The higher the value selected
-                    the greater the likelihood that it will be approved by the
-                    selected Provider"
-                      multilined
-                    >
-                      <i class="fa-solid fa-circle-info"></i>
-                    </b-tooltip>
-                    <h5 class="ml-3">
-                      You are paying:
-                      <span>{{ dealValue }} WEI</span>
-                    </h5>
-                  </div>
-                </div>
-                <div class="is-flex is-align-items-center">
-                  <b-button
-                    class="btn-transparent fixed-width"
-                    :type="{ 'is-info': selectedPriority === 0 }"
-                    @click="calculateDealValue(0)"
-                    >Free</b-button
-                  >
-                  <b-button
-                    class="btn-transparent fixed-width"
-                    :type="{ 'is-info': selectedPriority === 1 }"
-                    @click="calculateDealValue(1)"
-                    >Low</b-button
-                  >
-                  <b-button
-                    class="btn-transparent fixed-width"
-                    :type="{ 'is-info': selectedPriority === 2 }"
-                    @click="calculateDealValue(2)"
-                    >Medium</b-button
-                  >
-                  <b-button
-                    class="btn-transparent fixed-width"
-                    :type="{ 'is-info': selectedPriority === 5 }"
-                    @click="calculateDealValue(5)"
-                    >High</b-button
-                  >
-                </div>
-                <!-- ALERT BANNER PAYMENT -->
-                <div
-                  v-if="dealValue < baseDealValue"
-                  class="alert-banner p-3 mt-3 mb-3"
-                >
-                  <p>
-                    <i class="fa-solid fa-circle-exclamation mr-3"></i>
-                    <b
-                      >Value is below minimum price, provider may not accept the
-                      deal.
-                    </b>
-                  </p>
-                </div>
-                <!-- ALERT BANNER PAYMENT -->
-              </div>
               <!-- END | Payment input fields -->
 
               <!-- Collateral Input -->
@@ -446,7 +424,7 @@
               </div> -->
               <!-- END | Collateral Input Slider -->
 
-              <div class="mt-5" v-if="!expertMode">
+              <div class="mb-6">
                 <div class="is-flex is-align-items-center mb-3">
                   <b-tooltip
                     v-if="dealValue !== undefined && parseInt(dealValue) > 0"
@@ -464,148 +442,122 @@
                   >
                     <i class="fa-solid fa-circle-info"></i>
                   </b-tooltip>
-                  <h5 class="ml-3">
-                    Collateral
-                    <span v-if="parseInt(dealValue) > 0"
-                      >is: {{ dealCollateral }}</span
+                  <h5 class="ml-3">Collateral</h5>
+                </div>
+                <div v-if="!expertMode">
+                  <div class="is-flex is-align-items-center">
+                    <b-button
+                      :disabled="dealValue === 0"
+                      class="btn-transparent fixed-width mr-4"
+                      :type="{
+                        'is-info':
+                          dealCollateral === parseInt(dealValue) &&
+                          parseInt(dealValue) > 0,
+                      }"
+                      @click="dealCollateral = parseInt(dealValue)"
+                      >Minimum</b-button
                     >
-                  </h5>
+                    <b-button
+                      :disabled="dealValue === 0"
+                      class="btn-transparent fixed-width mr-4"
+                      :type="{
+                        'is-info':
+                          dealCollateral ===
+                            parseInt(dealValue) * (slashingMultiplier / 100) &&
+                          dealValue > 0,
+                      }"
+                      @click="
+                        dealCollateral =
+                          parseInt(dealValue) * (slashingMultiplier / 100)
+                      "
+                      >Low</b-button
+                    >
+                    <b-button
+                      :disabled="dealValue === 0"
+                      class="btn-transparent fixed-width mr-4"
+                      :type="{
+                        'is-info':
+                          dealCollateral ===
+                            parseInt(dealValue) * (slashingMultiplier / 10) &&
+                          dealValue > 0,
+                      }"
+                      @click="
+                        dealCollateral =
+                          parseInt(dealValue) * (slashingMultiplier / 10)
+                      "
+                      >Medium</b-button
+                    >
+                    <b-button
+                      :disabled="dealValue === 0"
+                      class="btn-transparent fixed-width"
+                      :type="{
+                        'is-info':
+                          dealCollateral ===
+                            parseInt(dealValue) * slashingMultiplier &&
+                          dealValue > 0,
+                      }"
+                      @click="
+                        dealCollateral =
+                          parseInt(dealValue) * slashingMultiplier
+                      "
+                      >Max</b-button
+                    >
+                  </div>
+                  <!-- ALERT BANNER PAYMENT -->
+                  <div v-if="dealCollateralLow" class="alert-banner p-3 mt-3">
+                    <p>
+                      <i class="fa-solid fa-circle-exclamation mr-3"></i>
+                      <b
+                        >Collateral is less than the Deal value. Keep attention
+                        storage is at your own risk.
+                      </b>
+                    </p>
+                  </div>
+                  <!-- ALERT BANNER PAYMENT -->
                 </div>
 
-                <div class="is-flex is-align-items-center">
-                  <b-button
-                    :disabled="dealValue === 0"
-                    class="btn-transparent fixed-width"
-                    :type="{
-                      'is-info':
-                        dealCollateral === parseInt(dealValue) &&
-                        parseInt(dealValue) > 0,
-                    }"
-                    @click="dealCollateral = parseInt(dealValue)"
-                    >Minimum</b-button
-                  >
-                  <b-button
-                    :disabled="dealValue === 0"
-                    class="btn-transparent fixed-width"
-                    :type="{
-                      'is-info':
-                        dealCollateral ===
-                          parseInt(dealValue) * (slashingMultiplier / 100) &&
-                        dealValue > 0,
-                    }"
-                    @click="
-                      dealCollateral =
-                        parseInt(dealValue) * (slashingMultiplier / 100)
-                    "
-                    >Low</b-button
-                  >
-                  <b-button
-                    :disabled="dealValue === 0"
-                    class="btn-transparent fixed-width"
-                    :type="{
-                      'is-info':
-                        dealCollateral ===
-                          parseInt(dealValue) * (slashingMultiplier / 10) &&
-                        dealValue > 0,
-                    }"
-                    @click="
-                      dealCollateral =
-                        parseInt(dealValue) * (slashingMultiplier / 10)
-                    "
-                    >Medium</b-button
-                  >
-                  <b-button
-                    :disabled="dealValue === 0"
-                    class="btn-transparent fixed-width"
-                    :type="{
-                      'is-info':
-                        dealCollateral ===
-                          parseInt(dealValue) * slashingMultiplier &&
-                        dealValue > 0,
-                    }"
-                    @click="
-                      dealCollateral = parseInt(dealValue) * slashingMultiplier
-                    "
-                    >Max</b-button
-                  >
+                <div v-if="expertMode">
+                  <div style="position: relative">
+                    <b-field type="is-info">
+                      <b-input
+                        type="number"
+                        v-model="dealCollateral"
+                        :disabled="isWorking"
+                        :min="0"
+                        placeholder="Payment in wei"
+                      ></b-input>
+                    </b-field>
+                    <div class="placeholder-input">collateral</div>
+                  </div>
+                  <!-- ALERT BANNER COLLATERAL -->
+                  <div v-if="dealCollateralLow" class="alert-banner p-3 mt-3">
+                    <p>
+                      <i class="fa-solid fa-circle-exclamation mr-3"></i>
+                      <b
+                        >Collateral is less than the Deal value. Keep attention
+                        storage is at your own risk.
+                      </b>
+                    </p>
+                  </div>
+                  <!-- ALERT BANNER COLLATERAL -->
                 </div>
-                <!-- ALERT BANNER PAYMENT -->
-                <div v-if="dealCollateralLow" class="alert-banner p-3 mt-3">
-                  <p>
-                    <i class="fa-solid fa-circle-exclamation mr-3"></i>
-                    <b
-                      >Collateral is less than the Deal value. Keep attention
-                      storage is at your own risk.
-                    </b>
-                  </p>
-                </div>
-                <!-- ALERT BANNER PAYMENT -->
+                <!-- END | Collateral Input -->
+                <p class="mt-3 grey-color recap-deal">
+                  Your Collateral:
+                  <b> {{ dealCollateral }} WEI</b>
+                </p>
               </div>
 
-              <div class="mb-5" v-if="expertMode">
-                <div class="is-flex is-align-items-center mb-3">
-                  <b-tooltip
-                    v-if="dealValue !== undefined && parseInt(dealValue) > 0"
-                    type="is-info"
-                    label="Select size of collateral"
-                    multilined
-                  >
-                    <i class="fa-solid fa-circle-info"></i>
-                  </b-tooltip>
-                  <b-tooltip
-                    v-if="dealValue !== undefined && parseInt(dealValue) === 0"
-                    type="is-warning"
-                    label="When the payment is set to 0 the size of the collateral cannot be changed"
-                    multilined
-                  >
-                    <i class="fa-solid fa-circle-info"></i>
-                  </b-tooltip>
-                  <h5 class="ml-3">
-                    Collateral
-                    <span v-if="parseInt(dealValue) > 0"
-                      >is: {{ dealCollateral }}</span
-                    >
-                  </h5>
-                </div>
-                <div style="position: relative">
-                  <b-field type="is-info">
-                    <b-input
-                      type="number"
-                      v-model="dealCollateral"
-                      :disabled="isWorking"
-                      :min="0"
-                      placeholder="Payment in wei"
-                    ></b-input>
-                  </b-field>
-                  <div class="placeholder-input">collateral</div>
-                </div>
-                <!-- ALERT BANNER COLLATERAL -->
-                <div v-if="dealCollateralLow" class="alert-banner p-3 mt-3">
-                  <p>
-                    <i class="fa-solid fa-circle-exclamation mr-3"></i>
-                    <b
-                      >Collateral is less than the Deal value. Keep attention
-                      storage is at your own risk.
-                    </b>
-                  </p>
-                </div>
-                <!-- ALERT BANNER COLLATERAL -->
-              </div>
-              <!-- END | Collateral Input -->
-            </div>
-            <!-- END | Dealinput fields -->
-
-            <div class="column is-half">
               <div class="is-flex is-align-items-center mb-5">
                 <b-field class="mb-0">
-                  <b-checkbox v-model="termsOfService" type="is-info">
-                    I agree to the referee net # 1 terms and conditions
+                  <b-checkbox v-model="termsOfService" type="is-info inter">
+                    I agree to the referee net #1 terms and conditions
                   </b-checkbox>
                 </b-field>
                 <i
-                  class="fa-solid fa-circle-info"
+                  class="fa-solid fa-circle-info pointer"
                   @click="closeSpec()"
-                  style="cursor: pointer; margin-top: -5px"
+                  style="margin-top: -5px"
                 ></i>
               </div>
 

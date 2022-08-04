@@ -113,9 +113,8 @@
                       @mouseleave="$emit('closeSpec')"
                       class="right-col"
                     >
-                      <div class="nav-container px-5">
-                        <div class="referee-icon">
-                        </div>
+                      <div class="referee-container px-5">
+                        <div class="referee-icon"></div>
                         <div class="mt-5">
                           <h3>Referee Net #1</h3>
                           <div class="mt-6">
@@ -132,7 +131,8 @@
                         </div>
                         <div class="mt-5">
                           <h5 class="pb-2 b-bottom-colored-dark">
-                            TERMS OF SERVICE
+                            TERMS OF AGREEMENT
+                            <i class="fa-solid fa-file-lines ml-2"></i>
                           </h5>
                           <p class="mt-3"><b>Deal proposal time out: </b>24h</p>
                           <p class="mt-5"><b># Round: </b>12</p>
@@ -142,9 +142,15 @@
                           <p><b>Appeal cost: </b>0.2 x payment</p>
                           <p class="mt-5"><b>Provider slash: </b></p>
                           <p>- Payment completely refunded</p>
-                          <p>
-                            - Collateral goes into protoco vault
-                          </p>
+                          <p>- Collateral goes into protoco vault</p>
+                        </div>
+                        <div class="mt-5">
+                          <a
+                            class="btn-icon"
+                            href="https://hackmd.io/Mp3_NyJhSbi-6g8BU_bgTg"
+                            target="_blank"
+                            >LEARN MORE</a
+                          >
                         </div>
                       </div>
                     </div>

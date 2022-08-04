@@ -235,9 +235,48 @@
                               :disabled="
                                 parseInt(deal.timestamp_start * 1000) === 0
                               "
-                              class="btn-icon"
+                              class="btn-icon svg-icon"
                             >
-                              <i class="fa-solid fa-file-contract"></i>
+                              <svg
+                                version="1.1"
+                                id="Livello_1"
+                                xmlns="http://www.w3.org/2000/svg"
+                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                x="0px"
+                                y="0px"
+                                viewBox="0 0 192 192"
+                                style="enable-background: new 0 0 192 192"
+                                xml:space="preserve"
+                              >
+                                <g>
+                                  <g>
+                                    <path
+                                      class="st0"
+                                      d="M9.2,95.8c0-11.3,0.1-22.6,0-34c0-4.2,1-8,2.7-11.8c1.1-2.5,2.6-4.7,4.5-6.6c0.6-0.6,66.8-40.1,68.9-41.1
+			c2.2-1,4.5-1.8,6.9-1.9C93,0.4,93.8,0,94.6,0c1.6-0.1,3.1,0.1,4.7,0.4c1.4,0.3,2.8,0.5,4.3,0.9c1.7,0.4,3.2,1.1,4.6,1.9
+			c1.4,0.7,61.3,34.9,64.1,37.2c3.9,3.2,6.6,7.3,8.8,11.8c-0.1,2,1.5,3.7,1.1,5.7c1,2.6,0.5,5.3,0.5,8c0,21.5,0,43.1,0,64.6
+			c0,1.3-0.3,2.6-0.5,3.9c-0.2,1.3-0.7,2.5-0.9,3.7c-0.2,1.7-1.2,3-1.7,4.5c-0.7,1.8-1.8,3.3-3,4.7c-1.9,2.1-3.9,4.1-6.3,5.7
+			c-3.3,2.3-59.6,35-62.2,36.2c-2.6,1.2-5.4,2-8.3,2.4c-1.7,0.2-3.3,0.6-4.9,0.4c-3.8-0.4-7.6-1.1-11.1-2.9
+			c-4.6-2.3-8.9-5.1-13.3-7.6c-2.4-1.4-39.5-23-42.1-24.4c-4.8-3-9.7-5.8-13.5-10.2c-1.7-2-3.5-5.5-4.5-8.9
+			c-0.6-2.1-1.1-4.3-1.1-6.5C9.3,119.5,9.2,107.7,9.2,95.8z M46.3,103.6c0.8,2.3,1.5,4.7,2.3,7c1.8,5.4,3.6,10.8,5.4,16.3
+			c1.6,4.8,2.8,9.6,4.7,14.3c1.4,3.6,4,4.8,7.8,3.6c0.7-0.2,1.4-0.3,2-0.9c1.7-1.6,2.5-3.6,2.5-5.9c0-27.9,0-55.8,0-83.7
+			c0-0.3-0.1-0.9-0.1-1.2c-0.4-1.8-0.9-3.5-2.4-4.9c-1.5-1.5-5.2-1.7-6.7-0.7c-1.9,1.2-3.2,2.7-3.2,5.2c0.1,15.5,0,30.9,0,46.4
+			c-0.7,0.2,0.2,0-0.6,0.1c-0.7-1.7-1.3-3.3-1.9-5c-1.9-5.7-3.6-11.4-5.8-16.9c-1.4-3.7-2.4-7.6-3.7-11.3c-0.7-1.9-1.3-3.8-2.9-5.2
+			c-1.7-1.5-4.7-2-6.7-0.9c-2,1.1-3.3,2.6-3.3,5.1c0.1,15.4,0,57.1,0,62.5c0,0.7,0,5.4,6.3,5.5c5.9,0.1,6-4.4,6-7.7
+			C46.3,118,46.3,110.8,46.3,103.6z M95.8,45c3.1,1.6,5.9,2.9,8.5,4.5c2.4,1.5,4.6,1.7,7.1,0c1.1-0.7,1.9-1.6,2.3-2.7
+			c0.4-1.2,0.8-2.3,0.1-3.7c-0.7-1.5-0.9-2.4-2.2-3.4c-3-2.2-6.3-3.8-9.5-5.8c-2.8-1.7-5.7-3.3-8.5-5c-2.5-1.6-5.2-2-7.8-0.2
+			c-1.5,1-2.6,2.1-2.6,4.3c0.1,39.5,0.1,79.1,0,118.6c0,1.7,0.5,3,1.7,4.2c1,1,2.1,1.5,3.3,1.9c1,0.3,2.5,0.1,3.2-0.1
+			c0.2-0.1,0.9-0.5,1.1-0.7c2.3-1.9,3.1-4.2,3.1-7.3c-0.1-14.9,0-29.8,0-44.8c0-0.8,0-1.7,0-2.6c3.8,0,7.5,0.1,11.2,0
+			c1.2,0,2.6-0.1,3.5-0.7c1.3-0.8,2.5-2,3.1-3.5c0.6-1.3,0.4-2.6,0.1-4c-0.6-2.3-3-4.1-5.3-4.1c-3,0-5.9,0-8.9,0c-1.3,0-2.5,0-3.8,0
+			V45z M145.1,73.1c1.9,1.1,3.6,1.9,5.2,2.9c2.5,1.5,5.4,2.1,8.1-0.5c0.6-0.6,1.3-1.3,1.6-1.9c0.5-1.3,0.8-3,0.2-4.9
+			c-0.8-1.9-1.6-2.2-3.2-3.3c-1.8-1.3-3.8-2.4-5.8-3.4c-3.3-1.7-6.4-3.7-9.7-5.4c-1.7-0.9-3.5-1.9-5.1-2.9c-2.4-1.5-4.8-2.8-7.3-4
+			c-2-1-3.4-1.1-5.1-0.2c-1.4,0.7-2.6,1.6-3.2,3.4c-0.3,1-0.2,1.8-0.3,2.7c-0.3,2.5,1.2,4.1,3.1,5.2c2.3,1.4,4.6,2.6,7.1,3.8
+			c1.4,0.6,2.2,2,2.2,3.5c-0.1,21.6,0,43.2,0,64.8c0,0.4,0,0.9,0,1.3c0,1.3,0.6,2.2,1.2,3c0.4,0.6,0.5,1,1.2,1.3
+			c1.4,0.8,2.5,1,3.8,1c0.8,0,2-0.3,2.7-0.8c2.3-1.8,3.6-4.1,3.6-7.3c-0.1-18.5,0-37,0-55.5C145.1,74.9,145.1,74.1,145.1,73.1z"
+                                    />
+                                  </g>
+                                </g>
+                              </svg>
                             </b-button>
                           </a>
                           <div class="divider ml-4 mr-4"></div>
@@ -324,7 +363,10 @@
                           <!-- END BADGES -->
                           <div class="divider ml-3 mr-3"></div>
                           <div
-                            @click="openDeal(index)"
+                            @click="
+                              openDeal(index);
+                              openTimingDeal = false;
+                            "
                             class="card-header-icon mr-3 p-3"
                             style="width: 35px"
                           >
@@ -354,7 +396,7 @@
                                 >
                                   <div>
                                     <div
-                                      class="b-top-colored-grey b-bottom-colored-grey"
+                                      class="b-top-colored-grey b-bottom-colored-grey bg-pink-light px-2"
                                       :class="{
                                         'pb-3 pt-3': isDesktop,
                                         'pb-1 pt-1': isTablet,
@@ -375,7 +417,7 @@
                                       </p>
                                     </div>
                                     <div
-                                      class="is-flex is-justify-content-space-between is-align-items-center b-bottom-colored-grey"
+                                      class="is-flex is-justify-content-space-between is-align-items-center b-bottom-colored-grey bg-pink-light px-2"
                                       :class="{
                                         'pb-1 pt-1': isTablet,
                                       }"
@@ -383,7 +425,7 @@
                                       <div style="width: 100%">
                                         <p><b>Value:</b> {{ deal.value }}</p>
                                       </div>
-                                      <div class="divider"></div>
+                                      <div class="divider-small"></div>
                                       <div
                                         class="has-text-right"
                                         style="width: 100%"
@@ -395,7 +437,7 @@
                                       </div>
                                     </div>
                                     <div
-                                      class="b-bottom-colored-grey"
+                                      class="b-bottom-colored-grey bg-pink-light px-2"
                                       :class="{
                                         'pb-3 pt-3': isDesktop,
                                         'pb-1 pt-1': isTablet,
@@ -406,7 +448,7 @@
                                       </p>
                                     </div>
                                     <div
-                                      class="b-bottom-colored-grey"
+                                      class="b-bottom-colored-grey bg-pink-light px-2"
                                       :class="{
                                         'pb-3 pt-3': isDesktop,
                                         'pb-1 pt-1': isTablet,
@@ -430,100 +472,172 @@
                                         >
                                       </p>
                                     </div>
+                                    <!-- TIMING DEAL -->
                                     <div
-                                      class="b-bottom-colored-grey"
-                                      :class="{
-                                        'pb-3 pt-3': isDesktop,
-                                        'pb-1 pt-1': isTablet,
-                                      }"
+                                      class="b-bottom-colored-grey bg-pink-light"
+                                      :class="{ 'pb-3': openTimingDeal }"
                                     >
-                                      <p>
-                                        <b>Timestamp request:</b>
-                                        {{ returnDate(deal.timestamp_request) }}
-                                      </p>
-                                    </div>
-                                    <div
-                                      class="b-bottom-colored-grey"
-                                      :class="{
-                                        'pb-3 pt-3': isDesktop,
-                                        'pb-1 pt-1': isTablet,
-                                      }"
-                                      v-if="
-                                        parseInt(deal.timestamp_start) !== 0
-                                      "
-                                    >
-                                      <p>
-                                        <b>Timestamp start:</b>
-                                        {{ returnDate(deal.timestamp_start)
-                                        }}<br />
-                                      </p>
-                                    </div>
-                                    <div
-                                      v-if="
-                                        parseInt(deal.timestamp_end) -
-                                          new Date().getTime() / 1000 >
-                                        0
-                                      "
-                                      class="b-bottom-colored-grey"
-                                      :class="{
-                                        'pb-3 pt-3': isDesktop,
-                                        'pb-1 pt-1': isTablet,
-                                      }"
-                                    >
-                                      <p>
-                                        <b>Timestamp end:</b>
-                                        {{ returnDate(deal.timestamp_end)
-                                        }}<br />
-                                      </p>
-                                    </div>
-                                    <div
-                                      v-if="
-                                        parseInt(deal.timestamp_end) -
-                                          new Date().getTime() / 1000 >
-                                        0
-                                      "
-                                      class="b-bottom-colored-grey"
-                                      :class="{
-                                        'pb-3 pt-3': isDesktop,
-                                        'pb-1 pt-1': isTablet,
-                                      }"
-                                    >
-                                      <p>
-                                        <b>Time remaining:</b>
-                                        {{
-                                          secondsToDhms(
+                                      <div
+                                        class="is-flex is-justify-content-space-between is-align-items-center px-2"
+                                        style="cursor: pointer"
+                                        :class="{
+                                          'pb-3 pt-3': isDesktop,
+                                          'pb-1 pt-1': isTablet,
+                                        }"
+                                        @click="
+                                          openTimingDeal = !openTimingDeal
+                                        "
+                                      >
+                                        <div
+                                          v-if="
                                             parseInt(deal.timestamp_end) -
-                                              new Date().getTime() / 1000
-                                          )
-                                        }}<br />
-                                      </p>
+                                              new Date().getTime() / 1000 >
+                                            0
+                                          "
+                                        >
+                                          <p>
+                                            <b>Time remaining:</b>
+                                            {{
+                                              secondsToDhms(
+                                                parseInt(deal.timestamp_end) -
+                                                  new Date().getTime() / 1000
+                                              )
+                                            }}<br />
+                                          </p>
+                                        </div>
+                                        <div
+                                          v-if="
+                                            parseInt(deal.timestamp_end) -
+                                              new Date().getTime() / 1000 <
+                                            0
+                                          "
+                                        >
+                                          <p>
+                                            <b>Deal Timing</b>
+                                          </p>
+                                        </div>
+                                        <div
+                                          v-if="
+                                            parseInt(deal.timestamp_end) -
+                                              new Date().getTime() / 1000 <
+                                              0 &&
+                                            parseInt(deal.timestamp_start) !== 0
+                                          "
+                                        >
+                                          <p>
+                                            <b>Time remaining:</b> deal ended
+                                          </p>
+                                        </div>
+                                        <i
+                                          v-if="!openTimingDeal"
+                                          class="fa-solid fa-chevron-right"
+                                        ></i>
+                                        <i
+                                          v-if="openTimingDeal"
+                                          class="fa-solid fa-chevron-down"
+                                        ></i>
+                                      </div>
+                                      <div v-show="openTimingDeal">
+                                        <div class="px-2">
+                                          <p>
+                                            <b>Deal request:</b>
+                                            {{
+                                              returnDate(deal.timestamp_request)
+                                            }}
+                                          </p>
+                                        </div>
+                                        <div
+                                          class="bg-pink-light px-2"
+                                          v-if="
+                                            parseInt(deal.timestamp_start) !== 0
+                                          "
+                                        >
+                                          <p>
+                                            <b>Deal start:</b>
+                                            {{ returnDate(deal.timestamp_start)
+                                            }}<br />
+                                          </p>
+                                        </div>
+                                        <div
+                                          v-if="
+                                            parseInt(deal.timestamp_end) -
+                                              new Date().getTime() / 1000 >
+                                            0
+                                          "
+                                          class="px-2"
+                                        >
+                                          <p>
+                                            <b>Deal end:</b>
+                                            {{ returnDate(deal.timestamp_end)
+                                            }}<br />
+                                          </p>
+                                        </div>
+                                      </div>
                                     </div>
+                                    <!-- TIMING DEAL -->
                                     <div
+                                      class=""
                                       v-if="
-                                        parseInt(deal.timestamp_end) -
-                                          new Date().getTime() / 1000 <
-                                          0 &&
-                                        parseInt(deal.timestamp_start) !== 0
+                                        deal.appeal.round !== undefined &&
+                                        parseInt(deal.appeal.round) < 99
                                       "
-                                      class="b-bottom-colored-grey"
-                                      :class="{
-                                        'pb-3 pt-3': isDesktop,
-                                        'pb-1 pt-1': isTablet,
-                                      }"
                                     >
-                                      <p><b>Time remaining:</b> deal ended</p>
+                                      <div
+                                        class="container-appeal b-bottom-colored-grey bg-primary-color px-2"
+                                        :class="{
+                                          'pb-3 pt-3': isDesktop,
+                                          'pb-1 pt-1': isTablet,
+                                        }"
+                                      >
+                                        <p>
+                                          <b style="color: white !important"
+                                            >Appeal Status</b
+                                          >
+                                        </p>
+                                      </div>
+                                      <div
+                                        class="b-bottom-colored-grey bg-pink-dark px-2"
+                                        :class="{
+                                          'pb-3 pt-3': isDesktop,
+                                          'pb-1 pt-1': isTablet,
+                                        }"
+                                      >
+                                        <p>
+                                          <b>Round: </b>
+                                          {{ deal.appeal.round }}/12
+                                          <i
+                                            class="fa-solid fa-hourglass-half fa-fade ml-2"
+                                          ></i>
+                                        </p>
+                                      </div>
+                                      <div
+                                        class="b-bottom-colored-grey bg-pink-dark px-2"
+                                        :class="{
+                                          'pb-3 pt-3': isDesktop,
+                                          'pb-1 pt-1': isTablet,
+                                        }"
+                                      >
+                                        <p>
+                                          <b>Slashes: </b>
+                                          {{ deal.appeal.slashes }}
+                                        </p>
+                                      </div>
                                     </div>
-                                    <div v-if="!isWorking">
+                                    <!-- CANCEL DEAL PROPOSAL -->
+                                    <!-- <div v-if="!isWorking">
                                       <a
                                         href="#"
                                         v-if="
-                                          deal.active === true &&
-                                          parseInt(deal.timestamp_start) === 0
+                                          deal.timestamp_start !== undefined &&
+                                          parseInt(deal.timestamp_start) ===
+                                            0 &&
+                                          !deal.expired
                                         "
-                                        @click="cancelDealProposal(deal.index)"
+                                        @click="cancelDealProposal(deal)"
                                         >🗑️ cancel deal proposal</a
                                       >
-                                    </div>
+                                    </div> -->
+                                    <!-- CANCEL DEAL PROPOSAL -->
                                   </div>
                                 </div>
                                 <div
@@ -547,51 +661,6 @@
                                         deal.deal_uri.replace('ipfs://', '')
                                       "
                                     />
-                                  </div>
-
-                                  <div
-                                    class="pl-3 mt-5"
-                                    v-if="
-                                      deal.appeal.round !== undefined &&
-                                      parseInt(deal.appeal.round) < 99
-                                    "
-                                  >
-                                    <div
-                                      class="container-appeal b-bottom-colored-grey bg-pink-dark px-2"
-                                      :class="{
-                                        'pb-3 pt-3': isDesktop,
-                                        'pb-1 pt-1': isTablet,
-                                      }"
-                                    >
-                                      <p><b>Appeal Stautus</b></p>
-                                    </div>
-                                    <div
-                                      class="b-bottom-colored-grey bg-pink-light px-2"
-                                      :class="{
-                                        'pb-3 pt-3': isDesktop,
-                                        'pb-1 pt-1': isTablet,
-                                      }"
-                                    >
-                                      <p>
-                                        <b>Round: </b>
-                                        {{ deal.appeal.round }}/12
-                                        <i
-                                          class="fa-solid fa-hourglass-half fa-fade ml-2"
-                                        ></i>
-                                      </p>
-                                    </div>
-                                    <div
-                                      class="b-bottom-colored-grey bg-pink-light px-2"
-                                      :class="{
-                                        'pb-3 pt-3': isDesktop,
-                                        'pb-1 pt-1': isTablet,
-                                      }"
-                                    >
-                                      <p>
-                                        <b>Slashes: </b>
-                                        {{ deal.appeal.slashes }}
-                                      </p>
-                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -707,6 +776,7 @@ export default {
       expertMode: false,
       isOpening: -1,
       navSpec: false,
+      openTimingDeal: false,
       // FILTER
       changeNetwork: false,
       filtered: false,
@@ -864,7 +934,7 @@ export default {
         }
         app.$forceUpdate();
         // app.log("Found #" + app.deals.length + " deals.");
-        // console.log("deals", app.deals);
+        console.log("deals", app.deals);
 
         // app.activeDeals();
       } catch (e) {
@@ -930,11 +1000,13 @@ export default {
       app.log("Found " + app.providers.length + " active providers");
     },
 
-    async cancelDealProposal(index) {
+    async cancelDealProposal(deal) {
       const app = this;
+      const index = deal.index;
       if (!app.isWorking) {
         app.isWorking = true;
         app.workingMessage = "Please confirm action with metamask..";
+        console.log("cancel deal number", index);
         try {
           const contract = new app.web3.eth.Contract(app.abi, app.contract);
           await contract.methods
@@ -1311,12 +1383,28 @@ export default {
               appealsByUri[deal.deal_uri] = deal.appeal;
             }
             // Check if deal ended
-            if (deal.timestamp_end * 1000 < new Date().getTime()) {
+            if (
+              deal.timestamp_end * 1000 < new Date().getTime() &&
+              deal.timestamp_start !== 0 &&
+              parseInt(deal.timestamp_end) !== 604800
+            ) {
               deal.canAppeal = false;
               deal.dealisEnded = true;
             } else {
               deal.dealisEnded = false;
             }
+
+            // Check if deal is pending
+            if (
+              parseInt(deal.timestamp_start) === 0 &&
+              deal.expired === false &&
+              parseInt(deal.timestamp_end) === 604800
+            ) {
+              deal.dealPending = true;
+            } else {
+              deal.dealPending = false;
+            }
+
             // Check if appeal doesn't exists
             if (deal.appeal === undefined || Object.keys(deal.appeal) === 0) {
               deal.canAppeal = true;
@@ -1329,7 +1417,12 @@ export default {
               parseInt(deal.timestamp_end * 1000) < new Date().getTime()
             );
             if (keys.indexOf(parseInt(deal.index)) === -1) {
-              if (deal.dealisEnded === true || (deal.dealisEnded === true && deal.expired === true)) {
+              if (
+                deal.dealisEnded === true ||
+                (deal.dealisEnded === true &&
+                  deal.expired === true &&
+                  !deal.dealPending)
+              ) {
                 keys.push(parseInt(deal.index));
                 app.deals.push(deal);
               }
@@ -1429,6 +1522,7 @@ export default {
         app.refreshDeal(index);
       }
     },
+
     closeSpec() {
       const app = this;
       app.navSpec = !app.navSpec;
