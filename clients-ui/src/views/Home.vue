@@ -888,8 +888,20 @@ export default {
           if (keys.indexOf(parseInt(deal.index)) === -1) {
             keys.push(parseInt(deal.index));
             app.downloads[deal.deal_uri] = false;
+
             // Check if deal can appeal or not
             deal.canAppeal = true;
+
+            const contract = new app.web3.eth.Contract(app.abi, app.contract);
+            const appeal_index = await contract.methods
+              .active_appeals(deal.deal_uri)
+              .call();
+            const round = await contract.methods.getRound(appeal_index).call();
+            console.log(
+              "deal " + deal.index + " with appeal index ",
+              appeal_index + " have a round " + round
+            );
+
             // Check if appeal ended
             if (
               deal.appeal !== undefined &&
@@ -921,6 +933,8 @@ export default {
             } else {
               deal.expired = false;
             }
+            // Getting round appel
+
             // Getting active deals
             if (
               parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0 ||
@@ -1505,19 +1519,21 @@ export default {
         app.isOpening = -1;
       } else {
         console.log("Opening deal", app.deals[index]);
-        const uri =
-          app.providerEndpoints[app.deals[index].provider] +
-          "/ipfs/" +
-          app.deals[index].deal_uri.replace("ipfs://", "");
-        try {
-          console.log("Downloading file from:", uri);
-          const downloaded = await axios.get(uri);
-          if (downloaded.data !== undefined) {
-            app.downloads[app.deals[index].deal_uri] = true;
+        setTimeout(async function () {
+          const uri =
+            app.providerEndpoints[app.deals[index].provider] +
+            "/ipfs/" +
+            app.deals[index].deal_uri.replace("ipfs://", "");
+          try {
+            console.log("Downloading file from:", uri);
+            const downloaded = await axios.get(uri);
+            if (downloaded.data !== undefined) {
+              app.downloads[app.deals[index].deal_uri] = true;
+            }
+          } catch (e) {
+            console.log("Error while downloading from:", uri);
           }
-        } catch (e) {
-          console.log("Error while downloading from:", uri);
-        }
+        }, 2000);
         app.isOpening = index;
         app.refreshDeal(index);
       }

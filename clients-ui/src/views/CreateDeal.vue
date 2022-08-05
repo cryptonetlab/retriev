@@ -125,6 +125,14 @@
                   placeholder="ex: ipfs://CID"
                 ></b-input>
               </b-field>
+              <!-- ALERT BANNER PAYMENT -->
+              <div v-if="fileToUpload.name" class="alert-banner p-3 mt-3 mb-3">
+                <p>
+                  <i class="fa-solid fa-circle-exclamation mr-3"></i>
+                  <b>It can be edited only by removing the file. </b>
+                </p>
+              </div>
+              <!-- ALERT BANNER PAYMENT -->
             </div>
           </div>
           <!-- END | Appeal address & Deal URI -->
@@ -267,6 +275,14 @@
                     >
                       <span>Year</span>
                     </b-radio-button>
+
+                    <b-radio-button
+                      class="fixed-width"
+                      disabled
+                      type="is-info is-light is-outlined"
+                    >
+                      <span>Forever</span>
+                    </b-radio-button>
                   </b-field>
                 </div>
                 <p class="pt-3 grey-color recap-deal">
@@ -283,9 +299,7 @@
                 <div class="is-flex is-align-items-center mb-3">
                   <b-tooltip
                     type="is-info"
-                    label="Select payment for your deal. The higher the value selected
-                    the greater the likelihood that it will be approved by the
-                    selected Provider"
+                    label="Select payment for your deal, value will be calculated after uploading the file"
                     multilined
                   >
                     <i class="fa-solid fa-circle-info"></i>
@@ -437,7 +451,7 @@
                   <b-tooltip
                     v-if="dealValue !== undefined && parseInt(dealValue) === 0"
                     type="is-warning"
-                    label="When the payment is set to 0 the size of the collateral cannot be changed"
+                    label="When deal is free the size of the collateral cannot be changed"
                     multilined
                   >
                     <i class="fa-solid fa-circle-info"></i>

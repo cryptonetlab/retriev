@@ -114,7 +114,8 @@
                       class="right-col"
                     >
                       <div class="referee-container px-5">
-                        <div class="referee-icon"></div>
+                        <!-- <div class="referee-icon">
+                        </div> -->
                         <div class="mt-5">
                           <h3>Referee Net #1</h3>
                           <div class="mt-6">
