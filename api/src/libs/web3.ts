@@ -116,7 +116,8 @@ export const parseAppeal = async (deal_index) => {
             active: onchain_appeal.active,
             slashes: onchain_appeal.slashes.toString(),
             origin_timestamp: onchain_appeal.origin_timestamp.toString(),
-            slashed: false
+            slashed: false,
+            appeal_index: active_appeal
           }
           const round = await instance.contract.getRound(active_appeal);
           console.log("[APPEALS] --> Round is:", round.toString())
