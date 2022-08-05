@@ -912,6 +912,7 @@ export default {
             data: formData,
             headers: {
               "Content-Type": "multipart/form-data;",
+              "Authorization": "Basic " + process.env.VUE_APP_INFURA_KEY
             },
           }).then(function (response) {
             app.dealUri = "ipfs://" + response.data.Hash;
