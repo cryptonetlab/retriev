@@ -30,7 +30,8 @@ We used a bunch of different technologies to create the protocol:
 Project is divided by subfolders, any folder contains a different piece of the protocol:
 - `shared`: which contains a shared library to bootstrap nodes, dial with web3 and communicate between peers.
 - `smart-contract`: which contains *smart contract* logic to create the deals and run the retrieval protocol if the *provider* doesn't provide the file. It will include the indexer too in order to process and store requests.
-- `clients-ui`: Minimal UI to interact with contract, create deal and appeals.
+- `clients-cli`: (WIP) which contains a basic CLI to interact with contract, create deals and appeals.
+- `clients-ui`: which contains UI to interact with contract, create deals and appeals.
 - `provider-cli`: which contains *provider* logic to accept deals published on-chain and serve deal files.
 - `referee-cli`: which contains *referee* logic to ask `providers` if some clients asks for a retrieval.
 - `website`: which contains public website, now deployed at `retriev.eth`.
@@ -143,6 +144,10 @@ Loaded identity: 0x66Ed08Bd5067D2e1aEA20CB988FA594Db0F4b511
 As you can see the node created a new identity (aka blockchain address) which will be used as identifier inside the network. You'll find the private key inside the `configs.json` file in the `~/.pldr/provider0` folder. Should be something like:
 ```
 {
+    "api_url": "https://api.pldr.dev",
+    "pin": true, 
+    "max_size": 20000000, 
+    "price_strategy": 0,
     "key": "0x1087e6f2fc70ab1a4ecd30b0782c6aaf69c38bf98e719cc618e191ea1e80d386",
     "address": "0x66Ed08Bd5067D2e1aEA20CB988FA594Db0F4b511",
     "provider": "https://eth-rinkeby.alchemyapi.io/v2/YOUR_INFURA_ID",
@@ -182,7 +187,29 @@ For example our demo-provider will answer [here](https://provider.pldr.dev/ident
 
 ## Signup as provider
 
-If you completed this procedure to be included as provider inside the protocol you're now able to follow this link and signup: https://dapp.pldr.dev/#/signup.
+If you completed this procedure to be included as provider inside the protocol you're now able to signup using the CLI.
+
+Please follow these basic steps, assuming you're in the main project's folder:
+```
+cd provider-cli
+./bin/pldr-provider-linux --name=provider0 --port=8000 subscribe https://YOUR_DOMAIN
+```
+## Tune your SLA
+
+As you may noticed on the config file you have those three parameters:
+- `pin`: which defines if your node automatically pin on the default instance or not, it can be `true` or `false` (default is `true`).
+- `max_size`: which defines the max size your node will accept, written in `bytes` (defauls is `20000000`).
+- `price_strategy`: which defines the amount of *wei* needed to accept the deal. Minimum amount is defined as the result of `price_strategy` * `file_size_in_bytes` * `duration_of_deal` (default is `0`).
+
+If you want to define your own strategy you can tune directly the `config.json` file or using following commands.
+Assuming you're in the main project's folder:
+```
+cd provider-cli
+./bin/pldr-provider-linux --name=provider0 --port=8000 setupstrategy <AMOUNT_IN_WEI>
+./bin/pldr-provider-linux --name=provider0 --port=8000 setupmaxsize <MAX_SIZE_IN_BYTE>
+./bin/pldr-provider-linux --name=provider0 --port=8000 pin <TRUE_OR_FALSE>
+```
+
 # Support
 
 If you need support please feel free to jump into our [Slack](https://filecoinproject.slack.com/archives/C03CJKWP2DR) channel and ask for it.
