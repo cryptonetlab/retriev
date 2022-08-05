@@ -522,6 +522,10 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             msg.value == returnAppealFee(deal_index),
             "Must send exact fee to create an appeal"
         );
+        
+        // TODO: Add another check if we're waiting for the appeal request
+        // but the appeal didn't started yet
+
         // Split fee to referees
         tot_appeals[deal_index]++;
         uint256 fee = msg.value / active_referees.length;
