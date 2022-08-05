@@ -58,10 +58,6 @@
           </div>
           <!--END | BACK BUTTON AND EXPERT MODE SWITCH -->
 
-          <!-- <div class="mt-3" v-if="isUploadingIPFS">
-            Uploading file on IPFS, please wait..
-          </div> -->
-
           <!-- Upload file -->
           <b-field v-if="!fileToUpload.name && !expertMode">
             <b-upload
@@ -78,6 +74,9 @@
               </section>
             </b-upload>
           </b-field>
+          <div class="mt-3" v-if="isUploadingIPFS">
+            <p>Uploading file on IPFS, please wait..</p>
+          </div>
           <div
             class="bordered-dashed is-flex is-flex-wrap-wrap is-align-items-start is-justify-content-space-between p-3"
             v-if="fileToUpload.name"
@@ -577,7 +576,11 @@
 
               <b-button
                 class="btn-secondary"
-                :disabled="termsOfService !== undefined && !termsOfService"
+                :disabled="
+                  termsOfService !== undefined &&
+                  !termsOfService &&
+                  !isUploadingIPFS
+                "
                 v-if="!isWorking && canDoProposal"
                 @click="createDealProposal()"
               >
@@ -882,6 +885,7 @@ export default {
     },
     async uploadFile() {
       const app = this;
+      console.log("init upload file");
       if (app.fileToUpload.name && !app.isUploadingIPFS) {
         // TODO: Handle case where providers > 1
         if (
@@ -912,11 +916,12 @@ export default {
             data: formData,
             headers: {
               "Content-Type": "multipart/form-data;",
-              "Authorization": "Basic " + process.env.VUE_APP_INFURA_KEY
+              Authorization: "Basic " + process.env.VUE_APP_INFURA_KEY,
             },
           }).then(function (response) {
             app.dealUri = "ipfs://" + response.data.Hash;
             app.isUploadingIPFS = false;
+            console.log("uploaded correctly");
           });
         } else if (!app.expertMode) {
           // TODO: Change with fancy alert

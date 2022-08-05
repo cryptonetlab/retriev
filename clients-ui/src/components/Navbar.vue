@@ -123,10 +123,13 @@
                               Referee IDs
                               <i class="fa-solid fa-wallet ml-3"></i>
                             </h5>
+
                             <p class="mt-3">
-                              0x6909...eAdv<br />
-                              0x1106...0Beoz<br />
-                              0x429r...bmAKg
+                              0x9E613...D6C6<br />
+                              0x6c3B6...2290A<br />
+                              0x3337...1B9a11<br />
+                              0x7ee8d...BDb68<br />
+                              0x4698c...b1d2F
                             </p>
                           </div>
                         </div>
