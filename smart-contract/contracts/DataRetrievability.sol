@@ -78,6 +78,8 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
     mapping(uint256 => Deal) public deals;
     // Mapping appeals
     mapping(uint256 => Appeal) public appeals;
+    // Mapping pending appeals using deal_uri as index
+    mapping(string => uint256) public pending_appeals;
     // Mapping active appeals using deal_uri as index
     mapping(string => uint256) public active_appeals;
     // Mapping all appeals using deal_index as index
@@ -357,7 +359,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         // uint256 maximum_collateral = slashing_multiplier * msg.value;
         require(
             msg.value >= min_deal_value,
-            // && collateral >= msg.value && collateral <= maximum_collateral 
+            // && collateral >= msg.value && collateral <= maximum_collateral
             "Collateral or value out of range"
         );
         require(
@@ -475,6 +477,10 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             deals[deal_index].duration;
         require(block.timestamp > timeout, "Deal didn't ended, can't redeem");
         require(
+            pending_appeals[deals[deal_index].deal_uri] == 0,
+            "Found a pending appeal, can't redeem"
+        );
+        require(
             getRound(active_appeals[deals[deal_index].deal_uri]) >= 99,
             "Found an active appeal, can't redeem"
         );
@@ -510,6 +516,11 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             deals[deal_index].appeal_addresses[msg.sender],
             "Only authorized addresses can create appeal"
         );
+        // Check if there's a pending appeal request
+        require(
+            pending_appeals[deals[deal_index].deal_uri] == 0,
+            "There's a pending appeal request"
+        );
         // Check if appeal exists or is expired
         require(
             active_appeals[deals[deal_index].deal_uri] == 0 ||
@@ -522,9 +533,6 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
             msg.value == returnAppealFee(deal_index),
             "Must send exact fee to create an appeal"
         );
-        
-        // TODO: Add another check if we're waiting for the appeal request
-        // but the appeal didn't started yet
 
         // Split fee to referees
         tot_appeals[deal_index]++;
@@ -536,7 +544,7 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         appealCounter.increment();
         uint256 index = appealCounter.current();
         // Storing appeal status
-        active_appeals[deals[deal_index].deal_uri] = index;
+        pending_appeals[deals[deal_index].deal_uri] = index;
         // Creating appeal
         appeals[index].deal_index = deal_index;
         appeals[index].active = true;
@@ -559,6 +567,12 @@ contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
         );
         require(referees[msg.sender].active, "Only referees can start appeals");
         appeals[appeal_index].origin_timestamp = block.timestamp;
+        // Reset pending appeal state
+        pending_appeals[deals[appeals[appeal_index].deal_index].deal_uri] = 0;
+        // Set active appeal state
+        active_appeals[
+            deals[appeals[appeal_index].deal_index].deal_uri
+        ] = appeal_index;
         // Emit appeal created event
         emit AppealStarted(appeal_index);
     }
