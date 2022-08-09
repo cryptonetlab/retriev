@@ -44,9 +44,11 @@ const getbalance = async (node) => {
     console.log("Balance is " + ethers.utils.formatEther(balance) + " ETH")
 }
 
-const retrievefile = (provider, hash) => {
+const retrievefile = (provider, deal_uri) => {
     return new Promise(async response => {
         try {
+            const hash = deal_uri.replace('ipfs://', "")
+            console.log("Retrieving file from:", provider + "/ipfs/" + hash)
             const file = await axios.get(provider + "/ipfs/" + hash)
             // TODO: Performs some other security check on the file, 
             // like hash again the file and check if CID is the same
@@ -75,7 +77,7 @@ const processappeal = async (node, index) => {
                 console.log("Provider is:", ownerOf)
                 const provider = await contract.providers(ownerOf)
                 console.log("Asking file to provider at", provider.endpoint)
-                const retrieved = await retrievefile(provider.endpoint, deal.ipfs_hash)
+                const retrieved = await retrievefile(provider.endpoint, deal.deal_uri)
                 console.log("Processing appeal as leader.")
                 if (retrieved === false) {
                     console.log("Slashing provider on-chain for appeal " + index + "..")
@@ -129,7 +131,7 @@ const processappeal = async (node, index) => {
                         console.log("Provider is:", ownerOf)
                         const provider = await contract.providers(ownerOf)
                         console.log("Asking file to provider at", provider.endpoint)
-                        const retrieved = await retrievefile(provider.endpoint, deal.ipfs_hash)
+                        const retrieved = await retrievefile(provider.endpoint, deal.deal_uri)
                         if (retrieved === false) {
                             const prefix = await contract.getPrefix(index)
                             // Create hashed version of message
@@ -231,7 +233,7 @@ const parseslash = async (node, raw) => {
                     console.log("Retrieving again the file to check if leader is not corrupted..")
                     // Process positive slash
                     // This means leader found the file so try to retrieve the file from leader to double-check
-                    const retrieved = await retrievefile(leaderDetails.endpoint, deal.ipfs_hash)
+                    const retrieved = await retrievefile(leaderDetails.endpoint, deal.deal_uri)
                     if (retrieved) {
                         console.log("File was retrieved correctly!")
                     } else {
@@ -262,7 +264,7 @@ const parseslash = async (node, raw) => {
                                 })
                             }
                         }
-                        const retrieved = await retrievefile(leaderDetails.endpoint, deal.ipfs_hash)
+                        const retrieved = await retrievefile(leaderDetails.endpoint, deal.deal_uri)
                         if (retrieved) {
                             console.log("File was retrieved correctly!")
                         } else {
