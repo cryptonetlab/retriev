@@ -11,9 +11,14 @@ async function main() {
 
     // Working always with last deal
     const deal_index = await contract.totalDeals()
+    const deal = await contract.deals(deal_index)
     const can_create_appeal = await contract.canAddressAppeal(deal_index, wallet.address)
     console.log("Can address create the appeal?", can_create_appeal)
-    if (can_create_appeal) {
+    const pending_appeal = (await contract.pending_appeals(deal.deal_uri)).toString()
+    console.log("There is a pending appeal?", pending_appeal)
+    const active_appeal = (await contract.active_appeals(deal.deal_uri)).toString()
+    console.log("There is an active appeal?", active_appeal)
+    if (can_create_appeal && parseInt(pending_appeal) == 0) {
         try {
             const fee = await contract.returnAppealFee(deal_index)
             console.log("Fee for appeal is:", ethers.utils.formatEther(fee.toString()))

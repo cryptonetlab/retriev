@@ -154,17 +154,38 @@
                       v-if="!isMobile"
                     >
                       <div
-                        class="column is-4-mobile is-2-tablet is-5-desktop is-6-widescreen is-6-fullhd"
+                        class="
+                          column
+                          is-4-mobile
+                          is-2-tablet
+                          is-5-desktop
+                          is-6-widescreen
+                          is-6-fullhd
+                        "
                       >
                         <h5 class="title-table ml-5">DEAL NAME</h5>
                       </div>
                       <div
-                        class="column is-4-mobile is-6-tablet is-4-desktop is-4-widescreen is-4-fullhd"
+                        class="
+                          column
+                          is-4-mobile
+                          is-6-tablet
+                          is-4-desktop
+                          is-4-widescreen
+                          is-4-fullhd
+                        "
                       >
                         <h5 class="title-table ml-5">ACTIONS</h5>
                       </div>
                       <div
-                        class="column is-4-mobile is-2-tablet is-2-desktop is-2-widescreen is-2-fullhd"
+                        class="
+                          column
+                          is-4-mobile
+                          is-2-tablet
+                          is-2-desktop
+                          is-2-widescreen
+                          is-2-fullhd
+                        "
                       >
                         <h5
                           class="title-table"
@@ -192,7 +213,12 @@
                         </h4>
 
                         <div
-                          class="is-flex is-align-items-center is-justify-content-center is-flex-wrap-wrap"
+                          class="
+                            is-flex
+                            is-align-items-center
+                            is-justify-content-center
+                            is-flex-wrap-wrap
+                          "
                         >
                           <b-button
                             @click="createAppeal(deal)"
@@ -392,11 +418,18 @@
                             <div class="content">
                               <div class="columns is-mobile">
                                 <div
-                                  class="column is-three-quarter-tablet is-half-desktop"
+                                  class="
+                                    column
+                                    is-three-quarter-tablet is-half-desktop
+                                  "
                                 >
                                   <div>
                                     <div
-                                      class="b-top-colored-grey b-bottom-colored-grey bg-pink-light px-2"
+                                      class="
+                                        b-top-colored-grey b-bottom-colored-grey
+                                        bg-pink-light
+                                        px-2
+                                      "
                                       :class="{
                                         'pb-3 pt-3': isDesktop,
                                         'pb-1 pt-1': isTablet,
@@ -405,6 +438,7 @@
                                       <p>
                                         <b>Deal URI: </b>
                                         <a
+                                          v-if="deal.provider"
                                           style="word-wrap: break-word"
                                           class="link-primary"
                                           :href="
@@ -412,12 +446,27 @@
                                             '/ipfs/' +
                                             deal.deal_uri.replace('ipfs://', '')
                                           "
+                                          target="_blank"
+                                          >{{ deal.deal_uri }}</a
+                                        >
+                                        <a
+                                          v-if="!deal.provider"
+                                          style="word-wrap: break-word"
+                                          class="link-primary"
+                                          href="#"
                                           >{{ deal.deal_uri }}</a
                                         >
                                       </p>
                                     </div>
                                     <div
-                                      class="is-flex is-justify-content-space-between is-align-items-center b-bottom-colored-grey bg-pink-light px-2"
+                                      class="
+                                        is-flex
+                                        is-justify-content-space-between
+                                        is-align-items-center
+                                        b-bottom-colored-grey
+                                        bg-pink-light
+                                        px-2
+                                      "
                                       :class="{
                                         'pb-1 pt-1': isTablet,
                                       }"
@@ -437,7 +486,11 @@
                                       </div>
                                     </div>
                                     <div
-                                      class="b-bottom-colored-grey bg-pink-light px-2"
+                                      class="
+                                        b-bottom-colored-grey
+                                        bg-pink-light
+                                        px-2
+                                      "
                                       :class="{
                                         'pb-3 pt-3': isDesktop,
                                         'pb-1 pt-1': isTablet,
@@ -448,7 +501,11 @@
                                       </p>
                                     </div>
                                     <div
-                                      class="b-bottom-colored-grey bg-pink-light px-2"
+                                      class="
+                                        b-bottom-colored-grey
+                                        bg-pink-light
+                                        px-2
+                                      "
                                       :class="{
                                         'pb-3 pt-3': isDesktop,
                                         'pb-1 pt-1': isTablet,
@@ -474,11 +531,19 @@
                                     </div>
                                     <!-- TIMING DEAL -->
                                     <div
-                                      class="b-bottom-colored-grey bg-pink-light"
+                                      class="
+                                        b-bottom-colored-grey
+                                        bg-pink-light
+                                      "
                                       :class="{ 'pb-3': openTimingDeal }"
                                     >
                                       <div
-                                        class="is-flex is-justify-content-space-between is-align-items-center px-2"
+                                        class="
+                                          is-flex
+                                          is-justify-content-space-between
+                                          is-align-items-center
+                                          px-2
+                                        "
                                         style="cursor: pointer"
                                         :class="{
                                           'pb-3 pt-3': isDesktop,
@@ -583,7 +648,12 @@
                                       "
                                     >
                                       <div
-                                        class="container-appeal b-bottom-colored-grey bg-primary-color px-2"
+                                        class="
+                                          container-appeal
+                                          b-bottom-colored-grey
+                                          bg-primary-color
+                                          px-2
+                                        "
                                         :class="{
                                           'pb-3 pt-3': isDesktop,
                                           'pb-1 pt-1': isTablet,
@@ -596,7 +666,11 @@
                                         </p>
                                       </div>
                                       <div
-                                        class="b-bottom-colored-grey bg-pink-dark px-2"
+                                        class="
+                                          b-bottom-colored-grey
+                                          bg-pink-dark
+                                          px-2
+                                        "
                                         :class="{
                                           'pb-3 pt-3': isDesktop,
                                           'pb-1 pt-1': isTablet,
@@ -606,12 +680,19 @@
                                           <b>Round: </b>
                                           {{ deal.appeal.round }}/12
                                           <i
-                                            class="fa-solid fa-hourglass-half fa-fade ml-2"
+                                            class="
+                                              fa-solid fa-hourglass-half fa-fade
+                                              ml-2
+                                            "
                                           ></i>
                                         </p>
                                       </div>
                                       <div
-                                        class="b-bottom-colored-grey bg-pink-dark px-2"
+                                        class="
+                                          b-bottom-colored-grey
+                                          bg-pink-dark
+                                          px-2
+                                        "
                                         :class="{
                                           'pb-3 pt-3': isDesktop,
                                           'pb-1 pt-1': isTablet,
@@ -641,7 +722,10 @@
                                   </div>
                                 </div>
                                 <div
-                                  class="column is-one-quarter-tablet is-half-desktop"
+                                  class="
+                                    column
+                                    is-one-quarter-tablet is-half-desktop
+                                  "
                                 >
                                   <div
                                     v-if="!downloads[deal.deal_uri]"
@@ -709,7 +793,14 @@
 
       <!-- Working Messages -->
       <div
-        class="workingMessage is-flex is-flex-direction-row is-flex-wrap-wrap is-align-items-center is-justify-content-center"
+        class="
+          workingMessage
+          is-flex
+          is-flex-direction-row
+          is-flex-wrap-wrap
+          is-align-items-center
+          is-justify-content-center
+        "
         v-if="isWorking"
       >
         <i class="fas fa-spinner fa-pulse mr-5"></i>
