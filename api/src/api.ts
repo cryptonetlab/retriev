@@ -84,9 +84,9 @@ app.post("/upload", upload.single('file'), async function (req, res) {
           timestamp: new Date().getTime(),
           expired: false
         })
-        res.send({ added, error: false })
+        res.send({ cid: added, error: false })
       } else {
-        res.send({ message: "Can't add on cache node, already exists.", error: true })
+        res.send({ message: "CID already pinned.", cid: cid, error: false })
       }
     } else {
       res.send({ message: "Can't add on IPFS, please retry.", error: true })
