@@ -1,11 +1,10 @@
-const { MongoClient } = require("mongodb");
-require("dotenv").config();
-const fs = require("fs");
-
+import { MongoClient } from "mongodb";
+import * as dotenv from "dotenv"
+dotenv.config();
 module Database {
   export class Mongo {
     client: any;
-    dbOptions = {
+    dbOptions: any = {
       useUnifiedTopology: true,
       //   sslValidate: false,
       //   sslCA: "./ca-certificate.crt",
@@ -21,7 +20,7 @@ module Database {
           // }
           // const cert = await fs.readFileSync("./ca-certificate.crt");
           let client = new MongoClient(
-            process.env.MONGODB_CONNECTION,
+            process.env.MONGODB_CONNECTION || "",
             this.dbOptions
           );
           await client.connect();
@@ -53,7 +52,7 @@ module Database {
           //   ssl = "";
           // }
           let client = new MongoClient(
-            process.env.MONGODB_CONNECTION,
+            process.env.MONGODB_CONNECTION || "",
             this.dbOptions
           );
           await client.connect();
@@ -77,7 +76,7 @@ module Database {
           //   ssl = "";
           // }
           let client = new MongoClient(
-            process.env.MONGODB_CONNECTION,
+            process.env.MONGODB_CONNECTION || "",
             this.dbOptions
           );
           await client.connect();
@@ -102,7 +101,7 @@ module Database {
           //   ssl = "";
           // }
           let client = new MongoClient(
-            process.env.MONGODB_CONNECTION,
+            process.env.MONGODB_CONNECTION || "",
             this.dbOptions
           );
           await client.connect();
@@ -122,4 +121,4 @@ module Database {
   }
 }
 
-export = Database;
+export default Database;

@@ -1,8 +1,9 @@
 {
   "scripts": {
-    "dev": "nodemon --watch \"src/*\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node src/api.ts\"",
-    "start": "ts-node src/api.ts"
+    "dev": "nodemon --watch \"src/*\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node-esm --experimental-specifier-resolution=node src/api.ts\"",
+    "start": "ts-node-esm src/api.ts"
   },
+  "type": "module",
   "devDependencies": {
     "@types/node": "^17.0.36",
     "dynamodb-admin": "^4.1.0",
@@ -19,6 +20,7 @@
     "ethers": "^5.6.4",
     "express": "^4.17.2",
     "form-data": "^4.0.0",
+    "ipfs": "^0.63.5",
     "mongodb": "^4.6.0"
   }
 }

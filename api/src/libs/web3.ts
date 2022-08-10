@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
 import { ABI } from "./abi";
 import * as Database from "./database";
-require('dotenv').config()
+import * as dotenv from "dotenv"
+dotenv.config();
 let isParsingAppeals = false
 let isParsingDeals = false
 
@@ -33,7 +34,7 @@ export const parseDeal = async (deal_index) => {
   return new Promise(async response => {
     const instance = await contract()
     console.log('[DEALS] Parsing deal #' + deal_index)
-    const db = new Database.Mongo();
+    const db = new Database.default.Mongo();
     const onchain_deal = await instance.contract.deals(deal_index);
     let provider = 'NOT_ACCEPTED'
     try {
@@ -77,7 +78,7 @@ export const parseDeals = async () => {
     const instance = await contract()
     const totalDeals = await instance.contract.totalDeals()
     console.log("[DEALS] -> Parsing " + totalDeals + " deals to store informations.");
-    const db = new Database.Mongo();
+    const db = new Database.default.Mongo();
     for (let k = totalDeals; k >= 1; k--) {
       const deal_index = parseInt(k.toString())
       const checkDB = await db.find('deals', { index: deal_index })
@@ -105,7 +106,7 @@ export const parseAppeal = async (deal_index) => {
     const instance = await contract()
     const onchain_deal = await instance.contract.deals(deal_index);
     const active_appeal = await instance.contract.active_appeals(onchain_deal.deal_uri)
-    const db = new Database.Mongo();
+    const db = new Database.default.Mongo();
     if (active_appeal > 0) {
       console.log("[APPEALS] Found appeal for deal #" + deal_index + ", asking details..");
       try {
@@ -146,7 +147,7 @@ export const parseAppeal = async (deal_index) => {
 export const parseAppeals = async () => {
   if (!isParsingAppeals) {
     isParsingAppeals = true
-    const db = new Database.Mongo();
+    const db = new Database.default.Mongo();
     const deals = await db.find('deals', {}, { timestamp_start: -1 })
     for (let k in deals) {
       const deal = deals[k]
