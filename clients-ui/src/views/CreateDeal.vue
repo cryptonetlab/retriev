@@ -40,7 +40,10 @@
 
           <!-- BACK BUTTON AND EXPERT MODE SWITCH -->
           <div
-            class="is-flex is-justify-content-space-between is-align-items-center mb-5"
+            class="
+              is-flex is-justify-content-space-between is-align-items-center
+              mb-5
+            "
           >
             <a class="btn-white" href="/">
               <i class="fa-solid fa-arrow-left"></i> back
@@ -78,7 +81,14 @@
             <p>Uploading file on IPFS, please wait..</p>
           </div>
           <div
-            class="bordered-dashed is-flex is-flex-wrap-wrap is-align-items-start is-justify-content-space-between p-3"
+            class="
+              bordered-dashed
+              is-flex
+              is-flex-wrap-wrap
+              is-align-items-start
+              is-justify-content-space-between
+              p-3
+            "
             v-if="fileToUpload.name"
           >
             <div>
@@ -180,7 +190,12 @@
                 </div>
 
                 <div
-                  class="column is-3-tablet is-3-desktop b-left-colored-grey b-right-colored-grey pl-3"
+                  class="
+                    column
+                    is-3-tablet is-3-desktop
+                    b-left-colored-grey b-right-colored-grey
+                    pl-3
+                  "
                 >
                   <p>{{ provider.endpoint }}</p>
                 </div>
@@ -596,7 +611,14 @@
 
       <!-- Working Messages -->
       <div
-        class="workingMessage is-flex is-flex-direction-row is-flex-wrap-wrap is-align-items-center is-justify-content-center"
+        class="
+          workingMessage
+          is-flex
+          is-flex-direction-row
+          is-flex-wrap-wrap
+          is-align-items-center
+          is-justify-content-center
+        "
         v-if="isWorking"
       >
         <i class="fas fa-spinner fa-pulse mr-5"></i>
@@ -606,7 +628,14 @@
 
       <!-- Loading PROVIDERS  -->
       <div
-        class="workingMessage is-flex is-flex-direction-row is-flex-wrap-wrap is-align-items-center is-justify-content-center"
+        class="
+          workingMessage
+          is-flex
+          is-flex-direction-row
+          is-flex-wrap-wrap
+          is-align-items-center
+          is-justify-content-center
+        "
         v-if="providers.length <= 0"
       >
         <i class="fas fa-spinner fa-pulse mr-5"></i>
@@ -663,7 +692,6 @@ export default {
       termsOfService: "",
       abi: ABI,
       balance: 0,
-      infuraURL: "https://ipfs.infura.io:5001/api/v0/add",
       currentNetwork: { icon: "fa-solid fa-user-secret", text: "Rinkeby" },
       fileToUpload: {},
       isUploadingIPFS: false,
@@ -896,6 +924,7 @@ export default {
           app.canDoProposal = true;
           const formData = new FormData();
           formData.append("file", app.fileToUpload);
+          formData.append("address", app.account);
           console.log("UPLOADED_FILE", app.fileToUpload);
           console.log("Size of FILE is: ", app.fileToUpload.size);
           console.log(
@@ -912,16 +941,19 @@ export default {
           console.log("changed Deal value, now is: ", app.dealValue);
           axios({
             method: "post",
-            url: app.infuraURL + "?cid-version=1",
+            url: process.env.VUE_APP_API_URL + "/upload",
             data: formData,
             headers: {
               "Content-Type": "multipart/form-data;",
-              Authorization: "Basic " + process.env.VUE_APP_INFURA_KEY,
             },
           }).then(function (response) {
-            app.dealUri = "ipfs://" + response.data.Hash;
-            app.isUploadingIPFS = false;
-            console.log("uploaded correctly");
+            if (response.data.cid !== undefined) {
+              app.dealUri = "ipfs://" + response.data.cid;
+              app.isUploadingIPFS = false;
+              console.log("uploaded correctly");
+            } else {
+              app.alertCustomError("Error while uploading file, please retry!");
+            }
           });
         } else if (!app.expertMode) {
           // TODO: Change with fancy alert
