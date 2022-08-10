@@ -443,6 +443,17 @@ const processCache = async (node) => {
 }
 
 const daemon = async (node) => {
+    console.log("Adding cache node to swarm..")
+    const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
+    const cacheId = await axios.get(configs.api_url + "/ipfs-id")
+    console.log("Found those identities for node:", cacheId.data)
+
+    for(let k in cacheId.data){
+        const identity = cacheId.data[k]
+        console.log("Adding " + identity + " to swarm")
+        await ipfsApi("post", "/swarm/connect?arg=" + identity)
+    }
+
     console.log("Running provider daemon..")
     const { contract, wallet, ethers } = await node.contract()
     // Parse proposals
