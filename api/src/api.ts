@@ -96,6 +96,12 @@ app.post("/upload", upload.single('file'), async function (req, res) {
   }
 })
 
+// Return IPFS identity
+app.get("/ipfs-id", async function (req, res) {
+  const multiAddrs = await global['ipfs'].swarm.localAddrs()
+  res.send(multiAddrs)
+})
+
 // Default endpoint
 app.use((req, res, next) => {
   return res.status(404).json({
