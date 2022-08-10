@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "nodemon --watch \"src/*\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node-esm --experimental-specifier-resolution=node src/api.ts\"",
-    "start": "ts-node-esm src/api.ts"
+    "start": "ts-node-esm --experimental-specifier-resolution=node src/api.ts"
   },
   "type": "module",
   "devDependencies": {
