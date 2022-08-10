@@ -19,6 +19,8 @@ sudo apt install certbot python3-certbot-nginx -y
 #SETTING UP FIREWALL
 ufw allow 22
 ufw allow 3000
+ufw allow 4001
+ufw allow 4002
 ufw --force enable
 
 yarn
