@@ -1,10 +1,12 @@
-import { IPFS, create } from 'ipfs-core'
+import { run, add, hash, parseCache } from "./libs/ipfs"
 import * as Database from "./libs/database";
 import { parseDeals, parseAppeals, parseDeal, parseAppeal, contract, verify, listenEvents } from "./libs/web3";
 import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
-let ipfs
+import multer from 'multer'
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
 // Init express server
 const app = express();
 app.use(cors());
@@ -17,11 +19,12 @@ db.createDealsIndex();
 
 // Automatic parsers
 async function init() {
-  console.log("Running IPFS node..")
-  ipfs = await create()
+  run()
+  // TODO: Add a timeout which unpins all expired deal proposals
   listenEvents()
   parseDeals()
   parseAppeals()
+  parseCache()
 }
 init()
 
@@ -61,6 +64,32 @@ app.post("/signup", async function (req, res) {
       }
     } else {
       res.send({ message: "Can't verify address", error: true })
+    }
+  } else {
+    res.send({ message: "Malformed request", error: true })
+  }
+})
+
+// Add signup endpoint
+app.post("/upload", upload.single('file'), async function (req, res) {
+  if (req.body.address !== undefined) {
+    const cid = await hash(req.file.buffer)
+    if (cid !== false) {
+      const checkDB = await db.find('cache', { cid: cid })
+      if (checkDB === null || (checkDB !== null && checkDB.expired !== undefined && checkDB.expired === true)) {
+        const added = await add(req.file.buffer)
+        await db.insert('cache', {
+          cid: cid,
+          address: req.body.address,
+          timestamp: new Date().getTime(),
+          expired: false
+        })
+        res.send({ added, error: false })
+      } else {
+        res.send({ message: "Can't add on cache node, already exists.", error: true })
+      }
+    } else {
+      res.send({ message: "Can't add on IPFS, please retry.", error: true })
     }
   } else {
     res.send({ message: "Malformed request", error: true })

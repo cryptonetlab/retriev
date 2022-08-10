@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { ABI } from "./abi";
 import * as Database from "./database";
 import * as dotenv from "dotenv"
+import { unpin } from "./ipfs"
 dotenv.config();
 let isParsingAppeals = false
 let isParsingDeals = false
@@ -39,10 +40,8 @@ export const parseDeal = async (deal_index) => {
     let provider = 'NOT_ACCEPTED'
     try {
       provider = await instance.contract.ownerOf(deal_index);
-      response(true)
     } catch (e) {
       console.log('[DEALS] -> Deal #', deal_index, 'not accepted yet.')
-      response(false)
     }
 
     console.log('[DEALS] -> Provider is:', provider)
@@ -67,8 +66,12 @@ export const parseDeal = async (deal_index) => {
       await db.insert('deals', deal)
     } else {
       console.log('[DEALS] --> Updating deal')
+      if (provider !== 'NOT_ACCEPTED') {
+        await unpin(deal.deal_uri)
+      }
       await db.update('deals', { index: deal_index }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider } })
     }
+    response(true)
   })
 }
 
