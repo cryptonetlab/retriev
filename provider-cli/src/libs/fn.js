@@ -93,7 +93,23 @@ const setupmaxcollateral = async (node) => {
     }
 }
 
-const setupstrategy = async (node) => {
+const setupmaxduration = async (node) => {
+    const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
+    if (argv._ !== undefined && argv._.length === 2 && parseInt(argv._[1]) >= 0) {
+        configs.max_duration = parseInt(argv._[1])
+        try {
+            fs.writeFileSync(node.nodePath + "/configs.json", JSON.stringify(configs, null, 4))
+            console.log("Max duration policy changed correctly to:", configs.max_duration)
+        } catch (e) {
+            console.log("Can't save file to disk, retry.")
+        }
+    } else {
+        console.log("Please provide a maximum duration in day, default is 365.")
+        console.log("`Please run setupmaxduration <DAYS>`")
+    }
+}
+
+const setminprice = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     if (argv._ !== undefined && argv._.length === 2 && parseInt(argv._[1]) >= 0) {
         configs.price_strategy = parseInt(argv._[1])
@@ -105,18 +121,38 @@ const setupstrategy = async (node) => {
         }
     } else {
         console.log("Please provide a minimum price for retrieval pinning.")
-        console.log("`Please run setupstrategy <PRICE>`")
+        console.log("`Please run setminprice <PRICE>`")
     }
 }
 
 const getstrategy = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
-    console.log("Price strategy is:", configs.price_strategy)
+    console.log("Min price is:", configs.price_strategy, 'wei')
+    console.log("Max duration is:", configs.max_duration, 'days')
+    console.log("Max collateral multiplier is:", configs.max_collateral_multiplier)
 }
 
-const getmaxsize = async (node) => {
+const storestrategy = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
-    console.log("Max allowed size is:", configs.max_size)
+    if (configs.api_url !== undefined) {
+        if (argv._[1] !== undefined && argv._[1].indexOf('https') !== undefined) {
+            const message = "Sign me as PLDR provider."
+            const signature = await node.sign(message)
+            const { wallet } = await node.contract()
+            console.log('Signature is:', signature)
+            console.log('Sending request to api..')
+            const subscription = await axios.post(configs.api_url + '/signup', {
+                endpoint: argv._[1],
+                address: wallet.address,
+                signature: signature
+            })
+            console.log('Response is:', subscription.data.message)
+        } else {
+            console.log('You must provide an endpoint where referees and clients will contact you.')
+        }
+    } else {
+        console.log('Can\'t signup, API URL is not configured.')
+    }
 }
 
 const subscribe = async (node) => {
@@ -218,13 +254,13 @@ const deals = async (node, ...args) => {
                     console.log("Please provide DEAL_ID first.")
                 }
                 break;
-                case "process":
-                    if (args[2] !== undefined) {
-                        processdeal(node, args[2])
-                    } else {
-                        console.log("Please provide DEAL_ID first.")
-                    }
-                    break;
+            case "process":
+                if (args[2] !== undefined) {
+                    processdeal(node, args[2])
+                } else {
+                    console.log("Please provide DEAL_ID first.")
+                }
+                break;
             default:
                 console.log("Subcommand not found.")
                 break;
@@ -448,7 +484,7 @@ const daemon = async (node) => {
     const cacheId = await axios.get(configs.api_url + "/ipfs-id")
     console.log("Found those identities for node:", cacheId.data)
 
-    for(let k in cacheId.data){
+    for (let k in cacheId.data) {
         const identity = cacheId.data[k]
         console.log("Adding " + identity + " to swarm")
         await ipfsApi("post", "/swarm/connect?arg=" + identity)
@@ -474,4 +510,4 @@ const daemon = async (node) => {
     })
 }
 
-module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance, subscribe, setupstrategy, getstrategy, setupmaxsize, getmaxsize, setupmaxcollateral, pin }
+module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance, subscribe, setminprice, getstrategy, setupmaxsize, setupmaxduration, setupmaxcollateral, pin }

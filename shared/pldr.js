@@ -74,6 +74,8 @@ module.exports = class PldrNode {
                 contract_address: process.env.CONTRACT_ADDRESS,
                 price_strategy: 0,
                 max_size: 20000000,
+                max_collateral: 1000,
+                max_duration: 365,
                 api_url: process.env.API_URL,
                 pin: true
             }
