@@ -398,6 +398,22 @@ const processdeal = (node, deal_index) => {
                                 policyMet = false
                             }
                         }
+                        // Check if duration matches policy
+                        if (policyMet && configs.max_duration !== undefined && parseInt(configs.max_duration) > 0) {
+                            const duration_days = parseInt(proposal.duration) / 86400
+                            if (duration_days > parseInt(configs.max_duration)) {
+                                const message = JSON.stringify({
+                                    deal_index: deal_index.toString(),
+                                    owner: proposal.owner,
+                                    action: "DEAL_TOO_LONG",
+                                    deal_uri: proposal.deal_uri,
+                                    timestamp: new Date().getTime()
+                                })
+                                await node.broadcast(message, "message")
+                                console.log("Deal is too long, can't accept.")
+                                policyMet = false
+                            }
+                        }
                     } else {
                         const message = JSON.stringify({
                             deal_index: deal_index.toString(),
