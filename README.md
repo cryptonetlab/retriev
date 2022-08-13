@@ -192,7 +192,7 @@ If you completed this procedure to be included as provider inside the protocol y
 Please follow these basic steps, assuming you're in the main project's folder:
 ```
 cd provider-cli
-./bin/pldr-provider-linux --name=provider0 --port=8000 subscribe https://YOUR_DOMAIN
+./bin/pldr-provider-linux subscribe https://YOUR_DOMAIN
 ```
 ## Tune your SLA
 
@@ -207,11 +207,23 @@ If you want to define your own strategy you can tune directly the `config.json` 
 Assuming you're in the main project's folder:
 ```
 cd provider-cli
-./bin/pldr-provider-linux --name=provider0 --port=8000 setupminprice <AMOUNT_IN_WEI>
-./bin/pldr-provider-linux --name=provider0 --port=8000 setupmaxsize <MAX_SIZE_IN_BYTE>
-./bin/pldr-provider-linux --name=provider0 --port=8000 setupmaxduration <MAX_DURATION_IN_DAYS>
-./bin/pldr-provider-linux --name=provider0 --port=8000 setupmaxcollateral <MAX_COLLATERAL_MULTIPLIER>
-./bin/pldr-provider-linux --name=provider0 --port=8000 pin <TRUE_OR_FALSE>
+./bin/pldr-provider-linux setupminprice <AMOUNT_IN_WEI>
+./bin/pldr-provider-linux setupmaxsize <MAX_SIZE_IN_BYTE>
+./bin/pldr-provider-linux setupmaxduration <MAX_DURATION_IN_DAYS>
+./bin/pldr-provider-linux setupmaxcollateral <MAX_COLLATERAL_MULTIPLIER>
+./bin/pldr-provider-linux pin <TRUE_OR_FALSE>
+```
+
+If you want a recap of your stored configuration you can run this command:
+
+```
+./bin/pldr-provider-linux getstrategy
+```
+
+When you're ready to publish your strategy on the API you run this commmand and wait for confirmation:
+
+```
+./bin/pldr-provider-linux storestrategy
 ```
 
 # Support
