@@ -20,7 +20,8 @@
         "test:maxduration": "node src/provider.js --debug --name=providerdev --port=8000 setupmaxduration 30 && node src/provider.js --debug --name=providerdev --port=8000 getstrategy",
         "test:maxcollateral": "node src/provider.js --debug --name=providerdev --port=8000 setupmaxcollateral 100 && node src/provider.js --debug --name=providerdev --port=8000 getstrategy",
         "test:getstrategy": "node src/provider.js --debug --name=providerdev --port=8000 getstrategy",
-        "test:subscribe": "node src/provider.js --debug --name=providerdev --port=8000 subscribe https://ipfs.io",
+        "test:storestrategy": "node src/provider.js --debug --name=providerdev --port=8000 storestrategy",
+        "test:subscribe": "node src/provider.js --debug --name=providerdev --port=8000 subscribe https://provider.pldr.dev",
         "test:pin": "node src/provider.js --debug --name=providerdev --port=8000 pin true",
         "compile": "pkg . --out-path bin",
         "start": "./bin/pldr-provider-linux --debug --name=provider0 --port=8000 --daemon"

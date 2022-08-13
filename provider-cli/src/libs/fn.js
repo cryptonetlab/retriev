@@ -135,26 +135,23 @@ const getstrategy = async (node) => {
 const storestrategy = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     if (configs.api_url !== undefined) {
-        if (argv._[1] !== undefined && argv._[1].indexOf('https') !== undefined) {
-            const message = "Store " + wallet.address + " strategy."
-            const signature = await node.sign(message)
-            const { wallet } = await node.contract()
-            console.log('Signature is:', signature)
-            console.log('Sending request to api..')
-            const subscription = await axios.post(configs.api_url + '/strategy', {
-                strategy: {
-                    min_price: configs.min_price,
-                    max_size: configs.max_size,
-                    max_collateral: configs.max_collateral,
-                    max_duration: configs.max_duration,
-                },
-                address: wallet.address,
-                signature: signature
-            })
-            console.log('Response is:', subscription.data.message)
-        } else {
-            console.log('You must provide an endpoint where referees and clients will contact you.')
-        }
+        const { wallet } = await node.contract()
+        const message = "Store " + wallet.address + " strategy."
+        const signature = await node.sign(message)
+        console.log('Signature is:', signature)
+        console.log('Sending request to api..')
+        const update = await axios.post(configs.api_url + '/strategy', {
+            strategy: {
+                min_price: configs.min_price,
+                max_size: configs.max_size,
+                max_collateral_multiplier: configs.max_collateral_multiplier,
+                max_duration: configs.max_duration,
+            },
+            endpoint: configs.endpoint,
+            address: wallet.address,
+            signature: signature
+        })
+        console.log('Response is:', update.data.message)
     } else {
         console.log('Can\'t signup, API URL is not configured.')
     }

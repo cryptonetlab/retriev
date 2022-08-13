@@ -91,6 +91,12 @@ app.post("/strategy", async function (req, res) {
   }
 })
 
+// Return all providers
+app.get("/providers", async function (req, res) {
+  const providers = await db.find('providers', {}, { endpoint: 1 })
+  res.send(providers)
+})
+
 // Add signup endpoint
 app.post("/upload", upload.single('file'), async function (req, res) {
   if (req.body.address !== undefined) {
