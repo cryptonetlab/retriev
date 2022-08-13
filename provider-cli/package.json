@@ -15,7 +15,7 @@
         "test:deals": "node src/provider.js --debug --name=providerdev --port=8000 deals",
         "test:getbalance": "node src/provider.js --debug --name=providerdev --port=8000 getbalance",
         "test:withdraw": "node src/provider.js --debug --name=providerdev --port=8000 withdraw",
-        "test:minprice": "node src/provider.js --debug --name=providerdev --port=8000 setupminprice 5 && node src/provider.js --debug --name=providerdev --port=8000 getstrategy",
+        "test:minprice": "node src/provider.js --debug --name=providerdev --port=8000 setupminprice 0 && node src/provider.js --debug --name=providerdev --port=8000 getstrategy",
         "test:maxsize": "node src/provider.js --debug --name=providerdev --port=8000 setupmaxsize 20000000 && node src/provider.js --debug --name=providerdev --port=8000 getstrategy",
         "test:maxduration": "node src/provider.js --debug --name=providerdev --port=8000 setupmaxduration 30 && node src/provider.js --debug --name=providerdev --port=8000 getstrategy",
         "test:maxcollateral": "node src/provider.js --debug --name=providerdev --port=8000 setupmaxcollateral 100 && node src/provider.js --debug --name=providerdev --port=8000 getstrategy",

@@ -109,13 +109,13 @@ const setupmaxduration = async (node) => {
     }
 }
 
-const setminprice = async (node) => {
+const setupminprice = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     if (argv._ !== undefined && argv._.length === 2 && parseInt(argv._[1]) >= 0) {
-        configs.price_strategy = parseInt(argv._[1])
+        configs.min_price = parseInt(argv._[1])
         try {
             fs.writeFileSync(node.nodePath + "/configs.json", JSON.stringify(configs, null, 4))
-            console.log("Price policy changed correctly to:", configs.price_strategy)
+            console.log("Price policy changed correctly to:", configs.min_price)
         } catch (e) {
             console.log("Can't save file to disk, retry.")
         }
@@ -127,7 +127,7 @@ const setminprice = async (node) => {
 
 const getstrategy = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
-    console.log("Min price is:", configs.price_strategy, 'wei')
+    console.log("Min price is:", configs.min_price, 'wei')
     console.log("Max duration is:", configs.max_duration, 'days')
     console.log("Max collateral multiplier is:", configs.max_collateral_multiplier)
 }
@@ -136,13 +136,18 @@ const storestrategy = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     if (configs.api_url !== undefined) {
         if (argv._[1] !== undefined && argv._[1].indexOf('https') !== undefined) {
-            const message = "Sign me as PLDR provider."
+            const message = "Store " + wallet.address + " strategy."
             const signature = await node.sign(message)
             const { wallet } = await node.contract()
             console.log('Signature is:', signature)
             console.log('Sending request to api..')
-            const subscription = await axios.post(configs.api_url + '/signup', {
-                endpoint: argv._[1],
+            const subscription = await axios.post(configs.api_url + '/strategy', {
+                strategy: {
+                    min_price: configs.min_price,
+                    max_size: configs.max_size,
+                    max_collateral: configs.max_collateral,
+                    max_duration: configs.max_duration,
+                },
                 address: wallet.address,
                 signature: signature
             })
@@ -320,8 +325,8 @@ const processdeal = (node, deal_index) => {
                     const file_stats = await ipfsApi("post", "/files/stat?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/"))
                     console.log("File stats:", file_stats)
                     if (file_stats !== false && file_stats.Size !== undefined) {
-                        if (configs.price_strategy !== undefined && parseInt(configs.price_strategy) > 0) {
-                            let expected_price = file_stats.Size * parseInt(configs.price_strategy) * proposal.duration
+                        if (configs.min_price !== undefined && parseInt(configs.min_price) > 0) {
+                            let expected_price = file_stats.Size * parseInt(configs.min_price) * proposal.duration
                             console.log('Expected price in wei is:', expected_price)
                             console.log('Deal value is:', proposal.value.toString())
                             if (parseInt(proposal.value.toString()) >= expected_price) {
@@ -510,4 +515,4 @@ const daemon = async (node) => {
     })
 }
 
-module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance, subscribe, setminprice, getstrategy, setupmaxsize, setupmaxduration, setupmaxcollateral, pin }
+module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance, subscribe, setupminprice, getstrategy, setupmaxsize, setupmaxduration, setupmaxcollateral, pin, storestrategy }

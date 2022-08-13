@@ -70,6 +70,27 @@ app.post("/signup", async function (req, res) {
   }
 })
 
+// Allow providers store strategies
+app.post("/strategy", async function (req, res) {
+  if (req.body.address !== undefined && req.body.strategy !== undefined && req.body.signature !== undefined) {
+    const verified = <any>await verify("Store " + req.body.address + " strategy.", req.body.signature)
+    if (verified !== false && verified.toUpperCase() === req.body.address.toUpperCase()) {
+      const db = new Database.default.Mongo();
+      const provider = await db.find('providers', { address: req.body.address })
+      if (provider !== null) {
+        await db.update('providers', { address: req.body.address }, { $set: { strategy: req.body.strategy } })
+        res.send({ message: "Strategy updated correctly", error: false })
+      } else {
+        res.send({ message: "You're not subscribed as provider", error: true })
+      }
+    } else {
+      res.send({ message: "Can't verify address", error: true })
+    }
+  } else {
+    res.send({ message: "Malformed request", error: true })
+  }
+})
+
 // Add signup endpoint
 app.post("/upload", upload.single('file'), async function (req, res) {
   if (req.body.address !== undefined) {

@@ -72,7 +72,7 @@ module.exports = class PldrNode {
                 address: wallet.address,
                 provider: process.env.WEB3_PROVIDER,
                 contract_address: process.env.CONTRACT_ADDRESS,
-                price_strategy: 0,
+                min_price: 0,
                 max_size: 20000000,
                 max_collateral: 1000,
                 max_duration: 365,
