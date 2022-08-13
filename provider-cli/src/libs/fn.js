@@ -125,11 +125,28 @@ const setupminprice = async (node) => {
     }
 }
 
+const setupendpoint = async (node) => {
+    const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
+    if (argv._ !== undefined && argv._.length === 2 && argv._[1].indexOf('https') === 0) {
+        configs.endpoint = argv._[1]
+        try {
+            fs.writeFileSync(node.nodePath + "/configs.json", JSON.stringify(configs, null, 4))
+            console.log("Price policy changed correctly to:", configs.endpoint)
+        } catch (e) {
+            console.log("Can't save file to disk, retry.")
+        }
+    } else {
+        console.log("Please provide an endpoint where clients and referees will retrieve files.")
+        console.log("`Please run setupendpoint <https://ENDPOINT_URL>`")
+    }
+}
+
 const getstrategy = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     console.log("Min price is:", configs.min_price, 'wei')
     console.log("Max duration is:", configs.max_duration, 'days')
     console.log("Max collateral multiplier is:", configs.max_collateral_multiplier)
+    console.log("Retrieval endpoint is:", configs.endpoint)
 }
 
 const storestrategy = async (node) => {
@@ -171,6 +188,13 @@ const subscribe = async (node) => {
                 address: wallet.address,
                 signature: signature
             })
+            try {
+                configs.endpoint = argv._[1]
+                fs.writeFileSync(node.nodePath + "/configs.json", JSON.stringify(configs, null, 4))
+                console.log("Endpoint saved correctly to disk.")
+            } catch (e) {
+                console.log("Can't save file to disk, retry.")
+            }
             console.log('Response is:', subscription.data.message)
         } else {
             console.log('You must provide an endpoint where referees and clients will contact you.')
@@ -512,4 +536,4 @@ const daemon = async (node) => {
     })
 }
 
-module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance, subscribe, setupminprice, getstrategy, setupmaxsize, setupmaxduration, setupmaxcollateral, pin, storestrategy }
+module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance, subscribe, setupminprice, getstrategy, setupmaxsize, setupmaxduration, setupmaxcollateral, setupendpoint, pin, storestrategy }

@@ -19,6 +19,7 @@
         "test:maxsize": "node src/provider.js --debug --name=providerdev --port=8000 setupmaxsize 20000000 && node src/provider.js --debug --name=providerdev --port=8000 getstrategy",
         "test:maxduration": "node src/provider.js --debug --name=providerdev --port=8000 setupmaxduration 30 && node src/provider.js --debug --name=providerdev --port=8000 getstrategy",
         "test:maxcollateral": "node src/provider.js --debug --name=providerdev --port=8000 setupmaxcollateral 100 && node src/provider.js --debug --name=providerdev --port=8000 getstrategy",
+        "test:endpoint": "node src/provider.js --debug --name=providerdev --port=8000 setupendpoint https://provider.pldr.dev && node src/provider.js --debug --name=providerdev --port=8000 getstrategy",
         "test:getstrategy": "node src/provider.js --debug --name=providerdev --port=8000 getstrategy",
         "test:storestrategy": "node src/provider.js --debug --name=providerdev --port=8000 storestrategy",
         "test:subscribe": "node src/provider.js --debug --name=providerdev --port=8000 subscribe https://provider.pldr.dev",

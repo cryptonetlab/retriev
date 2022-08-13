@@ -196,17 +196,21 @@ cd provider-cli
 ```
 ## Tune your SLA
 
-As you may noticed on the config file you have those three parameters:
+As you may noticed on the config file you have those five parameters:
 - `pin`: which defines if your node automatically pin on the default instance or not, it can be `true` or `false` (default is `true`).
 - `max_size`: which defines the max size your node will accept, written in `bytes` (defauls is `20000000`).
-- `price_strategy`: which defines the amount of *wei* needed to accept the deal. Minimum amount is defined as the result of `price_strategy` * `file_size_in_bytes` * `duration_of_deal` (default is `0`).
+- `min_price`: which defines the amount of *wei* needed to accept the deal. Minimum amount is defined as the result of `price_strategy` * `file_size_in_bytes` * `duration_of_deal` (default is `0`).
+- `max_collateral_multiplier`: which defines the max allowed difference between `value` and `collateral` (default is `1000`).
+- `max_duration`: which defines the max duration of the deal written in `days` (default is `365`).
 
 If you want to define your own strategy you can tune directly the `config.json` file or using following commands.
 Assuming you're in the main project's folder:
 ```
 cd provider-cli
-./bin/pldr-provider-linux --name=provider0 --port=8000 setupstrategy <AMOUNT_IN_WEI>
+./bin/pldr-provider-linux --name=provider0 --port=8000 setupminprice <AMOUNT_IN_WEI>
 ./bin/pldr-provider-linux --name=provider0 --port=8000 setupmaxsize <MAX_SIZE_IN_BYTE>
+./bin/pldr-provider-linux --name=provider0 --port=8000 setupmaxduration <MAX_DURATION_IN_DAYS>
+./bin/pldr-provider-linux --name=provider0 --port=8000 setupmaxcollateral <MAX_COLLATERAL_MULTIPLIER>
 ./bin/pldr-provider-linux --name=provider0 --port=8000 pin <TRUE_OR_FALSE>
 ```
 
