@@ -144,6 +144,7 @@ const setupendpoint = async (node) => {
 const getstrategy = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     console.log("Min price is:", configs.min_price, 'wei')
+    console.log("Max size is:", configs.max_size, 'byte')
     console.log("Max duration is:", configs.max_duration, 'days')
     console.log("Max collateral multiplier is:", configs.max_collateral_multiplier)
     console.log("Retrieval endpoint is:", configs.endpoint)
