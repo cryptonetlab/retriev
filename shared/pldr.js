@@ -80,8 +80,6 @@ module.exports = class PldrNode {
                 pin: true
             }
             fs.writeFileSync(this.nodePath + '/configs.json', JSON.stringify(this.configs, null, 4))
-        } else {
-            console.log('Using configs:', this.configs)
         }
 
         if (daemon !== undefined && daemon === true) {
