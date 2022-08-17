@@ -146,7 +146,7 @@
                           <p><b>Appeal cost: </b>0.2 x payment</p>
                           <p class="mt-5"><b>Provider slash: </b></p>
                           <p>- Payment completely refunded</p>
-                          <p>- Collateral goes into protoco vault</p>
+                          <p>- Collateral goes into protocol's vault</p>
                         </div>
                         <div class="mt-5">
                           <a
