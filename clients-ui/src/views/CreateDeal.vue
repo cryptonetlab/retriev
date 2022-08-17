@@ -150,7 +150,7 @@
             <!-- TITLES TABLE -->
             <div class="columns is-mobile">
               <div
-                class="column is-3-tablet is-5-desktop"
+                class="column is-3-tablet is-4-desktop"
                 :class="{ 'pl-3': isTablet }"
               >
                 <h5 class="title-table">PROVIDER</h5>
@@ -164,6 +164,12 @@
               >
                 <h5 class="title-table">MAX SIZE</h5>
               </div>
+              <div
+                class="column is-2-tablet is-1-desktop pl-0"
+                :class="{ 'pr-0': isDesktop }"
+              >
+                <h5 class="title-table">MAX DURATION</h5>
+              </div>
               <div class="column is-2-tablet is-2-desktop pl-0">
                 <h5 class="title-table">WEI/B PER SEC.</h5>
               </div>
@@ -176,15 +182,8 @@
               class="custom-card custom-card-hover"
             >
               <div class="columns is-mobile m-0">
-                <div class="column is-3-tablet is-5-desktop">
-                  <p v-if="isDesktop">
-                    <b>{{ provider }}</b>
-                  </p>
-                  <p v-if="!isDesktop">
-                    <b>{{
-                      provider.substr(0, 4) + "..." + provider.substr(-4)
-                    }}</b>
-                  </p>
+                <div class="column is-3-tablet is-4-desktop">
+                  {{ provider.substr(0, 4) + "..." + provider.substr(-4) }}
                 </div>
 
                 <div
@@ -202,6 +201,16 @@
                   :class="{ 'pl-3': isTablet }"
                 >
                   <p>{{ providersPolicy[provider].maxSize / 1000000 }}MB</p>
+                </div>
+                <div
+                  class="
+                    column
+                    is-2-tablet is-1-desktop
+                    pl-3
+                    b-right-colored-grey
+                  "
+                >
+                  <p>{{ providersPolicy[provider].maxDuration }} days</p>
                 </div>
                 <div
                   class="column is-2-tablet is-2-desktop b-right-colored-grey"
@@ -239,7 +248,7 @@
                   </b-tooltip>
                   <h5 class="ml-3">Deal Duration</h5>
                 </div>
-                <div v-if="expertMode">
+                <div v-if="expertMode && dealProviders[0]">
                   <div style="position: relative">
                     <b-field type="is-info">
                       <b-input
@@ -247,7 +256,7 @@
                         :disabled="isWorking"
                         placeholder="days"
                         :min="7"
-                        :max="365"
+                        :max="providersPolicy[dealProviders[0]].maxDuration"
                         type="number"
                         id="dealDurationDays"
                       ></b-input>
@@ -302,6 +311,23 @@
                   <b>{{ dealDurationDays }} days</b>
                 </p>
               </div>
+              <!-- ALERT BANNER DURATION -->
+              <div
+                v-if="
+                  dealProviders[0] &&
+                  dealDurationDays >
+                    providersPolicy[dealProviders[0]].maxDuration
+                "
+                class="alert-banner p-3 mt-3 mb-3"
+              >
+                <p>
+                  <i class="fa-solid fa-circle-exclamation mr-3"></i>
+                  <b
+                    >Duration is too long, provider may not accept the deal.
+                  </b>
+                </p>
+              </div>
+              <!-- ALERT BANNER DURATION -->
             </div>
             <!-- END | Dealinput fields -->
 
@@ -774,7 +800,7 @@ export default {
       if (parseInt(app.dealCollateral) > parseInt(maximumCollateral)) {
         app.log("Min collateral is " + maximumCollateral + ", please fix it!");
       }
-    }
+    },
   },
   mounted() {
     this.connect();
