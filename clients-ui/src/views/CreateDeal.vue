@@ -171,20 +171,18 @@
             <!-- END TITLES TABLE -->
             <div
               v-for="provider in providers"
-              :value="provider.address"
-              :key="provider.address"
+              :value="provider"
+              :key="provider"
               class="custom-card custom-card-hover"
             >
               <div class="columns is-mobile m-0">
                 <div class="column is-3-tablet is-5-desktop">
                   <p v-if="isDesktop">
-                    <b>{{ provider.address }}</b>
+                    <b>{{ provider }}</b>
                   </p>
                   <p v-if="!isDesktop">
                     <b>{{
-                      provider.address.substr(0, 4) +
-                      "..." +
-                      provider.address.substr(-4)
+                      provider.substr(0, 4) + "..." + provider.substr(-4)
                     }}</b>
                   </p>
                 </div>
@@ -197,18 +195,18 @@
                     pl-3
                   "
                 >
-                  <p>{{ provider.endpoint }}</p>
+                  <p>{{ providersPolicy[provider].endpoint }}</p>
                 </div>
                 <div
                   class="column is-2-tablet is-1-desktop b-right-colored-grey"
                   :class="{ 'pl-3': isTablet }"
                 >
-                  <p>{{ provider.maxSize / 1000000 }}MB</p>
+                  <p>{{ providersPolicy[provider].maxSize / 1000000 }}MB</p>
                 </div>
                 <div
                   class="column is-2-tablet is-2-desktop b-right-colored-grey"
                 >
-                  <p>{{ provider.price }}</p>
+                  <p>{{ providersPolicy[provider].price }}</p>
                 </div>
                 <div
                   class="column is-2-tablet is-1-desktop has-text-centered pl-5"
@@ -217,7 +215,7 @@
                     type="is-info"
                     :disabled="isWorking"
                     v-model="dealProviders"
-                    :native-value="provider.address"
+                    :native-value="provider"
                     checked
                   >
                   </b-checkbox>
@@ -776,11 +774,7 @@ export default {
       if (parseInt(app.dealCollateral) > parseInt(maximumCollateral)) {
         app.log("Min collateral is " + maximumCollateral + ", please fix it!");
       }
-    },
-    closeSpec() {
-      const app = this;
-      app.navSpec = false;
-    },
+    }
   },
   mounted() {
     this.connect();
@@ -873,41 +867,26 @@ export default {
       app.loading = false;
       // Connecting to p2p network
       app.providers = [];
-      let ended = false;
-      let i = 0;
-      while (!ended) {
-        try {
-          const provider = await contract.methods.active_providers(i).call();
-          if (app.providers.indexOf(provider) === -1) {
-            app.log("Found provider " + provider);
-            let providerDetails = await contract.methods
-              .providers(provider)
-              .call();
-            providerDetails.address = provider;
-            console.log("Details Provider", provider);
-            if (
-              providerDetails.endpoint.indexOf("localhost") === -1 &&
-              providerDetails.endpoint.indexOf("https") !== -1
-            ) {
-              // Just for demo
-              providerDetails.maxSize = 20000000;
-              providerDetails.price = 1;
-              app.providersPolicy[provider] = {
-                maxSize: providerDetails.maxSize,
-                price: providerDetails.price,
-              };
-              // end
-              app.providers.push(providerDetails);
-              app.dealProviders.push(provider);
-              app.canDoProposal = true;
-              app.connectSocket(providerDetails.endpoint);
-            }
-          }
-        } catch (e) {
-          ended = true;
+      const providersApi = await axios.get(
+        process.env.VUE_APP_API_URL + "/providers"
+      );
+      for (let k in providersApi.data) {
+        const provider = providersApi.data[k];
+        if (app.providers.indexOf(provider.address) === -1) {
+          app.providers.push(provider.address);
+          app.providersPolicy[provider.address] = {
+            maxSize: provider.strategy.max_size,
+            price: provider.strategy.min_price,
+            maxDuration: provider.strategy.max_duration,
+            maxCollateralMultiplier:
+              provider.strategy.max_collateral_multiplier,
+            endpoint: provider.endpoint,
+          };
+          app.dealProviders.push(provider.address);
+          app.canDoProposal = true;
         }
-        i++;
       }
+      console.log(app.providers);
       console.log("DEFAULT PROVIDERS:", app.dealProviders);
       app.log("Found " + app.providers.length + " active providers");
     },
@@ -928,7 +907,7 @@ export default {
           console.log("UPLOADED_FILE", app.fileToUpload);
           console.log("Size of FILE is: ", app.fileToUpload.size);
           console.log(
-            "provider policy price is: ",
+            "Provider policy price is: ",
             app.providersPolicy[app.dealProviders[0]].price
           );
           console.log("Deal duration is: ", app.dealDuration);
