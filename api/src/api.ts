@@ -99,6 +99,7 @@ app.get("/providers", async function (req, res) {
 
 // Add signup endpoint
 app.post("/upload", upload.single('file'), async function (req, res) {
+  console.log(req.body)
   if (req.body.address !== undefined) {
     const cid = await hash(req.file.buffer)
     if (cid !== false) {

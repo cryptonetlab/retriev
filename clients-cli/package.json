@@ -6,6 +6,9 @@
     "bin": "src/client.js",
     "scripts": {
         "test:identity": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 getidentity",
+        "test:deal:uri": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 createdeal --dealuri='ipfs://bafkreiaoeqvdretuu7mzr4kjrxvifiykfp73rk5rb7b62o7j5hvlmwg5ru' --provider='0x2489c48090523f37028f1e42454b7DD04943d0Bf' --duration=60 --value=0 --collateral=0",
+        "test:deal:file": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 createdeal --file=../shared/vps.txt --provider='0x2489c48090523f37028f1e42454b7DD04943d0Bf' --duration=60",
+        "test:deals": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 deals",
         "compile": "pkg . --out-path bin",
         "start": "./bin/pldr-client-linux --debug --name=client --port=8000"
     },
@@ -18,6 +21,7 @@
         "dotenv": "^10.0.0",
         "ethers": "^5.6.2",
         "express": "^4.17.1",
+        "form-data": "^4.0.0",
         "lodash": "^4.17.21",
         "minimist": "^1.2.6",
         "public-ip": "^4.0.4",
