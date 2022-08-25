@@ -1,11 +1,9 @@
 # Retrieval Pinning
-
+Last update: 21st July 2022
 
 
 ## Short Intro 
-:::info
-This section is ready to read :) 
-:::
+
  
 :globe_with_meridians: **Context**: We consider the setting of a decentralized storage network. That is, we have clients who delegate the storage of their file to a network of storage providers. 
 
@@ -31,10 +29,6 @@ In the following section we describe this idea in full details.
 
 
 ## Protocol Description
-:::info
-This section is ready to read :) 
-:::
-
 
 
 ### Parties:
@@ -42,6 +36,11 @@ This section is ready to read :)
 - **Clients**: A client is the user of our protocol, it has data stored on a storage network (ie, Filecoin or IPFS) and wants to get an assurance on the fact that retrieval requests will be successful. To do so, the client can propose a *retrievability deal* to the providers in the protocol. At the high level, with this kind of deal the client pays a provider to lock down a collateral that be "slashed" (ie, taken from the providers) if the provider misbehave (more details on the deal syntax in the next section).
 
 - **Providers**: In our protocol, a provider is the party in charge of the retrieval service (ie, the client asks for a file, the provider serves it). When a provider accepts a retrievability deal, it locks down a collateral as guarantee of the retrieval service. This means that if a retrieval request is not fulfilled later on, the collateral will be taken from the provider ("the providers is slashed").  In the current implementation the list of providers participating in the protocol is  part of the smart contract. In particular, this list is created and updated by the contract’s owners and a party that wants to act as provider in our protocol needs to communicate its intention to join to the owners. This can be done by filling the sign-up form available in the dapp.
+    - Each provider has a *deal policy* that states:
+        -  the `min_price`:  minimum price per second per byte, 
+        -  the `max_rate`:  maximum rate (collateral/payment) 
+        - the `max_size`: maximum file size accepted in a proposal  
+    - The default values are `min_price`= 0,  `max_rate` = `slashing_multiplier` (here `slashing_multiplier` is a protocol parameter, see "protocol parameters" section), and `max_size`= 20MB.
 
 
 - **Referees**: The referees are the core of our protocol, their role is to manage appeals from clients, to request file from providers and serve to clients, and eventually to agree on slashing a provider. The set of the referees has size $n$ (protocol parameter) and is chosen once for each instance of the protocol. In the current implementation, the list of referees is a part of the smart contract.
@@ -51,15 +50,23 @@ This section is ready to read :)
 
 ### Retrievability Deal:
 
+
 #### Create deal
 A client creates a  deal proposal (on-chain msg)  specifying: 
 - The identifier of the file (or folder of files) that is the subject of the deal;
 - The  list of providers that can accept it;
-- The `payment`: amount (in native tokens) paid by the client to the provider if the deal is not invalidated by an appeal (ie, deal ends with no slashing); at the moment of the proposal creation, the `payment` is "locked down" (ie, taken from the client's account and deposited to the smart contract); the proposal is valid only if `payment > 0`;
+- The list of addresses that can later on send the "create appeal" transactions (after the proposal is accepted);
+- The `payment`: amount (in native tokens) paid by the client to the provider if the deal is not invalidated by an appeal (ie, deal ends with no slashing); at the moment of the proposal creation, the `payment` is "locked down" (ie, taken from the client's account and deposited to the smart contract); ~~the proposal is valid only if `payment > 0`;~~
 - The `duration`: for how long the deal is active, starting from when it is accepted (expressed in seconds); the proposal is valid only if `duration` is in a range specified by the smart contract code (see "protocol parameters" section). 
-- The `collateral`: amount (in native tokens) required to be locked down from the provider account to accept the deal. The proposal is valid only if:
+- The `collateral`: amount (in native tokens) required to be locked down from the provider account to accept the deal. 
+
+
+Comment: In the current Client UI we designed two modes:
+- *Default mode*:  the UI sets the values for payment and collateral. In particular, for both the suggested value is `min_price * file_size *duration`. Then, the client can increase the two values as long as the following conditions are satisfied:
   - `payment` ≤ `collateral`
-  - `collateral` ≤ `slashing_multiplier` * `payment` (here `slashing_multiplier` is a protocol parameter, see "protocol parameters" section)
+  - `collateral` ≤ `max_rate` * `payment`.
+- *Expert mode*: the UI allows the client to choose any value for the payment and the collateral.
+
 
 A client can cancel a deal proposal at any time, and this action will unlock the `payment`. Moreover, a deal proposal has a timeout (currently set to 86400 seconds) after which it can not be accepted by providers anymore. 
 
@@ -71,6 +78,11 @@ A provider can accept a deal proposal if all the following is true:
 
 When the proposal is accepted, the `collateral` is "locked down" (ie, from the provider's account deposited to the smart contract). Also, we timestamp this on-chain, and we consider the deal active from this moment (`timestamp_start`).
 
+Comment: we designed the provider CLI in such a way then before automatically accepting a proposal, the followinf conditions are checked:
+- the file can be retrieved, it is of size `file_size` and `file_size` <= `max_size`;
+- the payment value is larger or equal to `min_price * file_size * duration`;
+- the collateral value is smaller of equal to `max_rate * payment`.
+
 
 #### Redeem deal
 
@@ -80,7 +92,7 @@ After a deal ends, if the provider was not slashed, then he can ask to get the `
 ### Appeal:
 
 #### Create appeal
-While the deal is active, the client can appeal to the referees at any instant on time for requesting the assured storage. To do so, the client creates an appeal  and the appeal is considered valid if all the following is true:
+While the deal is active, the client can appeal to the referees at any instant on time for requesting the assured storage. To do so, one of the appeal addresses specified in the deal creates an appeal  and the appeal is considered valid if all the following is true:
 - The deal is active (accepted by the provider and the on-chain appeal message timestamp is between `timestamp_start` and `deal_duration` + `timestamp_start`); 
 - For this deal, the number of appeals already created is less the the maximum allowed by the protocol (see `max_appeals` in the "protocol parameters" section);
 - There is no already an appeal active;
@@ -88,16 +100,20 @@ While the deal is active, the client can appeal to the referees at any instant o
     - `appeal_fee = committee_multiplier` * `payment` 
     - the contract splits the fee in $n$ equal parts and deposits a part in each referee's account.
 
-The moment the appeal is created on chain defines the `origin_timestamp`.
+The moment the appeal is created on chain defines the `request_timestamp`.
+
     
-#### Process appeal
-If an appeal is created, the referees start the "trial" protocol. This is made by $k$ rounds each one of duration `round_duration` (currently set to 300 seconds). In each rounds the referees try to retrieve the file in this way:
+#### Start and Process appeal
+If an appeal is created, any referee that is free can start the appeal process. 
+The moment the process is started on chain defines the `origin_timestamp`.
+
+The protocol to process an appeal is made by $k$ rounds each one of duration `round_duration` (currently set to 300 seconds). In each rounds the referees try to retrieve the file in this way:
     
 - Step 1: a retrieval leader is chosen at random. For example
     - Compute the hash of `(deal_id + appeal_id + round_number)`;
     - Interpret the hash output as an integer modulo $n$;
 - Step 2: the leader asks the file to the provider.
-    - Step 2.a:  If the leader does not get the correct file within `leader_waiting` time from when the round started, sends a “failure msg” on chain; the other referees see the message and no nothing for the remaining time of this round; in the next round all starts from Step 1;
+    - Step 2.a:  If the leader does not get the correct file within `leader_waiting` time from when the round started, sends a “failure msg” on chain; the other referees see the message and do nothing for the remaining time of this round; in the next round all starts from Step 1;
         - Note that, when a referee creates a “failure msg”, it needs to sign `(deal_id +  appeal_id + round_number + 0)`;
         - Currently we set`leader_waiting = 1/2 * round_duration`; 
     - Step 2.b: If the leader gets the file it forwards it to the client and to the other referees. Each referee does the following:
@@ -109,29 +125,24 @@ After the $k$ rounds are over, the contract checks the total number of “failur
 - If it is greater or equal to `slashes_threshold`, then the provider is  "slashed" (ie, the  `collateral` is deposited to the contract owner's account), the `payment` is returned to the client and the deal is deactivated. Currently, we have `slashes_threshold` = $k$.
 - Otherwise  nothing happen (in particular, the deal stays active).
 
-    
-![](https://i.imgur.com/C38Epss.png)
 
 
 #### List of events in the smart contract:
 1.    `DealProposalCreated(uint256 index, address[] providers, string deal_uri)`: Event emitted when new deal proposal is created by the client;
-2.  `DealProposalAccepted(uint256 index)`: Event emitted when a deal proposal is accepted by a provider;
+2.  `DealProposalAccepted(uint256 index)`: Event emitted when a deal proposal is accepted by a provider (defines `timestamp_start`);
 3.  `DealProposalCanceled(uint256 index)`: Event emitted when a deal proposal is canceled by the client before being accepted;
-4. `AppealCreated(uint256 index, address provider, string deal_uri)`: Event emitted when new appeal is created by the client;
-5. `RoundSlashed(uint256 index)`: Event emitted when a failure message is recorded during the process of an appeal; 
-6. `DealInvalidated(uint256 index)`: Event emitted when a deal is invalidated (ie the appeal process terminates with failure messages in each rounds);
-7. `DealRedeemed(uint256 index)`: Event emitted when a deal is redeemed by the provider (needed to get the `payment`).
+4. `AppealCreated(uint256 index, address provider, string deal_uri)`: Event emitted when new appeal is created by the client (defines `request_timestamp`);
+5. `AppealStarted(uint256 index, address provider, string deal_uri)`: Event emitted when an appeal process is started by a referee (defines `origin_timestamp`);
+6. `RoundSlashed(uint256 index)`: Event emitted when a failure message is recorded during the process of an appeal; 
+7. `DealInvalidated(uint256 index)`: Event emitted when a deal is invalidated (ie the appeal process terminates with failure messages in each rounds);
+8. `DealRedeemed(uint256 index)`: Event emitted when a deal is redeemed by the provider (needed to get the `payment`).
     
 
 ## Protocol Parameters
-:::info
-This section is ready to read :) 
-:::
 
-
-- $m_c$ (committee multiplier):  the amount (in native tokens) `appeal_fee` = $m_c$ `x payment` is paid by a client to the referees each time that an appeal is made; current value: 0.2.
-    - Why we need this? To prevent malicious client abusing the protocol. A malicious client create an appeal for honest provider making the provider working twice and not getting `payment`. Thanks the committee multiplier, this strategy has a cost that makes it irrational.
-    -  Comment: for now we assume that the fee is equally split among all referees, for the future we can investigate about giving an higher split to referee recovering the file.
+- $m_c$ (committee multiplier):  the amount (in native tokens) `appeal_fee` = $m_c$ `x payment` is paid to the referees each time that an appeal is made; current value: 0.2.
+    - Why we need this? To prevent malicious users abusing the protocol. For example, a malicious client can create an appeal for honest provider making the provider working twice. Thanks the committee multiplier, this strategy has a cost that makes it irrational.
+    -  Comment: for now we assume that the fee is equally split among all referees, for the future we can investigate about giving an higher share to referee recovering the file.
     - In the code we implement this using the variable `committee_divider = 5` and `appeal_fee = payment / committee_divider`.     
 - $m_s$ (`slashing_multiplier`): the amount (in native tokens)  `slashing_multiplier x payment` is the maximum of the collateral that a client can ask for; current value: 1000.    
 - `max_appeals`: maximum number of appeals per deal; current value is set to 5;
@@ -147,34 +158,38 @@ This section is ready to read :)
   
     
 ## Security analysis
-:::info
-This section is ready to read :) 
-:::
 
-**Assumption**: Let $h$ be the number of referees that  are always on-line and honest (ie follow the protocol instructions). We assume  $h\geq n/2$.
+
+**Assumptions**: 
+1. The n referees are all always on line;
+2. $h$ out of $n$ referees are honest (ie follow the protocol instructions).
   
      
     
 #### Security against a malicious client:
 
-We need to show that a even when the client acts maliciously and colludes with $n-h$ referees, an honest provider (who send the file to referees) is not slashed.
+We need to show that a even when the client acts maliciously and colludes with $n-h$ referees, an honest provider (who sends the file to referees) is not slashed (with overwhelming probability). 
 
-We can guarantee this with overwhelming probability. Indeed, if there is at least 1 round where the leader is among the honest referees, then the retrieval is successful and the there is no "failure msg" on chain. And this probability is:
+
+
+
+
+Note that if there is at least 1 round where the leader is among the honest referees, then the retrieval is successful and the there is no "failure msg" on chain (ie, indeed if **h > n/2**, then $n-h < n/2$ and there is no enough dishonest referees to sig the failure massage in step 2). The probability of "at least 1 round where the leader honest" is:
 - $P$= 1 - Pr(all $k$ leaders are malicious) = $1-(\frac{n-h}{n})^k$.
  
-Using the Assumption, we have $P \geq 1 - (1/2)^k$. If $k =12$, then $P\geq 0.999$.
+ 
+With $h> n/2$, we have $P \geq 1 - (1/2)^k$. If $k =12$, then $P\geq 0.999$.
 
 
 
-Comment: a malicious client sending the appeal request  makes the honest provider works twice. However this costs the `appeal_fee` to the client, making this strategy irrational for the client.
+Comment: a malicious user sending the appeal request  makes the honest provider works twice. However this costs the `appeal_fee` to the user, making this strategy irrational.
 
 
 #### Security against a malicious provider:
 We need to show that a provider that does not send the file during the appeal trial will get slashed even if $n-h$ referees are colluding with him.
 At each round, we have two cases:
 1. The leader is not among the colluding referees. Then in this round we collect a "failure msg", sent by the leader;
-2. The leader is among the colluding referees. Then the leader does no produce any "failure msg". In this case the other referees (non-leader in this round) get "activated", and each of the honest ones will broadcast the "failure vote". This implies that in total there will be at least $h$ votes and this round will produce "failure msg". 
-Since, we have a "failure msg" at each round, at the end of the trial we have at least $k$ = `slashes_threshold` messages and the provider is slashed.
+2. The leader is among the colluding referees. Then the leader does no produce any "failure msg". In this case the other referees (non-leader in this round) get "activated", and each of the h honest ones will broadcast the "failure vote". Since **h>n/2**, this implies that in total there will be at least $n/2$ votes and this round will produce "failure msg". Since, we have a "failure msg" at each round, at the end of the trial we have at least $k$ = `slashes_threshold` messages and the provider is slashed.
 
 ## Cryptoecon analysis
 :::info

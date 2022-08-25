@@ -1,12 +1,12 @@
-# Protocol Labs - Retrieval Pinning 
+# Protocol Labs - Retrieval Pinning
 
-Retrieval Pinning is a Protocol designed by CryptoNetLab that allows end users create retrieval deals with a subset of IPFS providers, it leverages on a reliable system of “missed retrieval” penalties that increases the confidence in decentralized storage networks.
+Retrieval Pinning is a Protocol designed by [CryptoNetLab](https://cryptonet.org/) and developed by [YOMI](https://yomi.digital) that allows end users create retrieval deals with a subset of IPFS providers, it leverages on a reliable system of “missed retrieval” penalties that increases the confidence in decentralized storage networks.
 
 If you want to go deeper on how the protocol works please read our [light paper](./PAPER.md).
 
-We have now an active deployment on Rinkeby network at [0xBc331A7bEa063DbCE8b3d16F77850B617Bc36cbA](https://rinkeby.etherscan.io/address/0xBc331A7bEa063DbCE8b3d16F77850B617Bc36cbA) and you can interact with the protocol using our dapp at [dapp.pldr.dev](https://dapp.pldr.dev). 
+We have now an active deployment on Rinkeby network at [0x5a10221Ba633354C0A06c7dbdeF532598539f489](https://rinkeby.etherscan.io/address/0x5a10221Ba633354C0A06c7dbdeF532598539f489) and you can interact with the protocol at [dapp.onchain.storage](https://dapp.onchain.storage). 
 
-If you want to learn more about the project please visit our [official website](https://pldr.dev).
+If you want to learn more about the project please visit our [official website](https://onchain.storage).
 # Architecture
 
 The protocol consists of three main elements:
@@ -14,7 +14,7 @@ The protocol consists of three main elements:
 - **Referee network**: which is the guarantee that the protocol is respected and from where appeal requests are processed. 
 - **Provider network**: which is the network of providers, where all data are stored and from where data should be retrieved.
 
-Of course the end users (who wants to store data and make deals) can interact directly with the protocol using the blockchain, however we created a simple interface to make deals. This interface can be found at [dapp.pldr.dev](https://dapp.pldr.dev).
+Of course the end users (who wants to store data and make deals) can interact directly with the protocol using the blockchain, however we created a simple interface to make deals. This interface can be found at [dapp.onchain.storage](https://dapp.onchain.storage).
 
 At the moment there's no interface for providers but we're working on Providers's part of the protocol and it will be available soon.
 
