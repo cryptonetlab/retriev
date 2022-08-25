@@ -1,10 +1,10 @@
 const argv = require('minimist')(process.argv.slice(2));
 const cwd = process.cwd()
 let homedir = require('os').homedir()
-const PldrNode = require('../../shared/pldr')
+const RetrievNode = require('../../shared/node')
 const commands = require('./libs/fn')
 const debug = argv.debug !== undefined ? argv.debug : false
-const name = argv.name !== undefined ? argv.name : "pldr-stress"
+const name = argv.name !== undefined ? argv.name : "rpp-stress"
 const port = argv.port !== undefined ? argv.port : 8000
 const daemon = argv.daemon !== undefined ? true : false
 if (argv.docker !== undefined) {
@@ -20,7 +20,7 @@ if (debug) {
     console.log('Node name is:', name)
 }
 // Init node folder and configs
-const node = new PldrNode(name, port, daemon)
+const node = new RetrievNode(name, port, daemon)
 if (daemon) {
     console.log('Loaded identity:', node.returnNodeIdentity())
 }

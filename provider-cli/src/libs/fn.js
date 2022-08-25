@@ -175,7 +175,7 @@ const subscribe = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     if (configs.api_url !== undefined) {
         if (argv._[1] !== undefined && argv._[1].indexOf('https') !== undefined) {
-            const message = "Sign me as PLDR provider."
+            const message = "Sign me as Retrieval Pinning provider."
             const signature = await node.sign(message)
             const { wallet } = await node.contract()
             console.log('Signature is:', signature)

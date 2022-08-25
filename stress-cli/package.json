@@ -1,5 +1,5 @@
 {
-    "name": "pldr-stresstest",
+    "name": "rpp-stresstest",
     "version": "0.0.1",
     "description": "",
     "main": "src/stress.js",

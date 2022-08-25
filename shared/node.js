@@ -7,9 +7,9 @@ const axios = require('axios')
 const argv = require('minimist')(process.argv.slice(2))
 const request = require('request')
 
-let mainPath = homedir + '/.pldr'
+let mainPath = homedir + '/.rpp'
 if (argv.docker !== undefined) {
-    mainPath = './pldr'
+    mainPath = './rpp'
     console.log('Docker mode active, using relative path.')
 }
 // Socket.io Server
@@ -39,7 +39,7 @@ global['nodes'] = {}
 global['feed'] = {}
 global['broadcasted'] = []
 global['authorized'] = []
-module.exports = class PldrNode {
+module.exports = class RetrievNode {
     configs
     nodePath
     port
@@ -83,7 +83,7 @@ module.exports = class PldrNode {
 
         if (daemon !== undefined && daemon === true) {
             // Handle server connections
-            const pldr = this
+            const rpp = this
             ioServer.on('connection', async (socket) => {
                 if (socket.handshake.query.identity !== undefined) {
                     let identity = socket.handshake.query.identity.toUpperCase()
@@ -100,18 +100,18 @@ module.exports = class PldrNode {
                         // Relay messages if received by socket
                         global['clients'][identity].on('message', async function (raw) {
                             console.log('[MESSAGE] New message from ' + identity + ': ' + raw)
-                            pldr.parse(raw, 'message')
+                            rpp.parse(raw, 'message')
                         })
-                    } else if (pldr.configs.address !== identity) {
+                    } else if (rpp.configs.address !== identity) {
                         console.log('-> Can\'t connect to ' + identity)
                     }
                 }
             })
             server.listen(port, () => {
                 console.log('Node listening at *:' + port)
-                pldr.bootstrap()
+                rpp.bootstrap()
                 setTimeout(function () {
-                    pldr.api()
+                    rpp.api()
                 }, 5000)
             })
         }
@@ -196,7 +196,7 @@ module.exports = class PldrNode {
 
     // Connnect to server
     async connect(node, identity) {
-        const pldr = this
+        const rpp = this
         let socket = ioClient(node, { query: { identity: this.configs.address } })
         socket.on("connect", () => {
             if (global['servers'][identity] === undefined && identity !== this.configs.address) {
@@ -215,7 +215,7 @@ module.exports = class PldrNode {
                 // Relay messages if received by socket
                 global['servers'][identity].on('message', async function (raw) {
                     console.log('[MESSAGE] New message from ' + identity + ': ' + raw)
-                    pldr.parse(raw, 'message')
+                    rpp.parse(raw, 'message')
                 })
             }
         })
@@ -294,17 +294,17 @@ module.exports = class PldrNode {
      * API functions
      */
     api() {
-        const pldr = this
+        const rpp = this
         app.get('/identity', async function (req, res) {
-            res.send({ address: pldr.configs.address })
+            res.send({ address: rpp.configs.address })
         })
         app.post('/broadcast', async function (req, res) {
-            const verified = await pldr.verify(req.body.message, req.body.signature)
-            if (verified.toUpperCase() === pldr.configs.address.toUpperCase()) {
-                pldr.broadcast(req.body.message)
+            const verified = await rpp.verify(req.body.message, req.body.signature)
+            if (verified.toUpperCase() === rpp.configs.address.toUpperCase()) {
+                rpp.broadcast(req.body.message)
                 res.send({ message: "Message broadcasted correctly", error: false })
             } else {
-                res.send({ message: "Can't verify signer", signer: verified, owner: pldr.configs.address })
+                res.send({ message: "Can't verify signer", signer: verified, owner: rpp.configs.address })
             }
         })
         app.get('/ipfs/:hash', async function (req, res) {

@@ -11,9 +11,9 @@ import "./libs/ERC721.sol";
 import "./functions/render/IRENDER.sol";
 
 /**
- * @title DataRetrievability
+ * @title Retrieval Pinning Protocol 
  */
-contract DataRetrievability is ERC721, Ownable, ReentrancyGuard {
+contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
 

@@ -1,10 +1,8 @@
 # Retrieval Pinning
 Last update: 21st July 2022
 
-
 ## Short Intro 
 
- 
 :globe_with_meridians: **Context**: We consider the setting of a decentralized storage network. That is, we have clients who delegate the storage of their file to a network of storage providers. 
 
 :bomb: **Problem**: We focus on the problem of having a  "retrievability assurance" for such storage service. Specifically, the key question we looked at is: how can clients delegating storage be confident that the data can be retrieved from the network (ie, the guaranteed retrieval problem)?

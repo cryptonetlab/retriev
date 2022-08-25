@@ -1,5 +1,5 @@
 {
-    "name": "pldr-client",
+    "name": "rpp-client",
     "version": "0.0.1",
     "description": "",
     "main": "src/client.js",
@@ -10,7 +10,7 @@
         "test:deal:file": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 createdeal --file=../shared/vps.txt --provider='0x2489c48090523f37028f1e42454b7DD04943d0Bf' --duration=60",
         "test:deals": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 deals",
         "compile": "pkg . --out-path bin",
-        "start": "./bin/pldr-client-linux --debug --name=client --port=8000"
+        "start": "./bin/rpp-client-linux --debug --name=client --port=8000"
     },
     "keywords": [],
     "author": "",

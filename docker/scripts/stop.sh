@@ -1,5 +1,5 @@
 #!/bin/bash
 
 echo 'Stopping docker..'
-docker stop pldr
+docker stop rpp
 echo 'Node Stopped'.

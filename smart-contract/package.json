@@ -1,5 +1,5 @@
 {
-  "name": "pldr-contract",
+  "name": "rpp-contract",
   "version": "1.0.0",
   "scripts": {
     "test": "npx hardhat test",

@@ -2,7 +2,7 @@
   "name": "shared",
   "version": "1.0.0",
   "description": "",
-  "main": "pldr.js",
+  "main": "shared.js",
   "scripts": {},
   "keywords": [],
   "author": "",

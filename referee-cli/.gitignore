@@ -1,4 +1,4 @@
 node_modules
-pldr-provider-*
+rpp-provider-*
 bootstrap_nodes
 .env

@@ -1,5 +1,5 @@
 {
-    "name": "pldr-provider",
+    "name": "rpp-provider",
     "version": "0.0.1",
     "description": "",
     "main": "src/provider.js",
@@ -21,7 +21,7 @@
         "test:subscribe": "node src/provider.js --debug --name=providerdev --port=8000 subscribe https://provider.pldr.dev",
         "test:pin": "node src/provider.js --debug --name=providerdev --port=8000 pin true",
         "compile": "pkg . --out-path bin",
-        "start": "./bin/pldr-provider-linux --debug --name=provider0 --port=8000 --daemon"
+        "start": "./bin/rpp-provider-linux --debug --name=provider0 --port=8000 --daemon"
     },
     "keywords": [],
     "author": "",

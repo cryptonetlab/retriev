@@ -51,7 +51,7 @@ app.get("/parse/:id", async function (req, res) {
 // Add signup endpoint
 app.post("/signup", async function (req, res) {
   if (req.body.address !== undefined && req.body.endpoint !== undefined && req.body.signature !== undefined) {
-    const verified = <any>await verify("Sign me as PLDR provider.", req.body.signature)
+    const verified = <any>await verify("Sign me as Retrieval Pinning provider.", req.body.signature)
     if (verified !== false && verified.toUpperCase() === req.body.address.toUpperCase()) {
       const db = new Database.default.Mongo();
       const provider = await db.find('providers', { address: req.body.address })

@@ -31,13 +31,10 @@ Project is divided by subfolders, any folder contains a different piece of the p
 - `shared`: which contains a shared library to bootstrap nodes, dial with web3 and communicate between peers.
 - `smart-contract`: which contains *smart contract* logic to create the deals and run the retrieval protocol if the *provider* doesn't provide the file. It will include the indexer too in order to process and store requests.
 - `clients-cli`: (WIP) which contains a basic CLI to interact with contract, create deals and appeals.
-- `clients-ui`: which contains UI to interact with contract, create deals and appeals.
 - `provider-cli`: which contains *provider* logic to accept deals published on-chain and serve deal files.
 - `referee-cli`: which contains *referee* logic to ask `providers` if some clients asks for a retrieval.
-- `website`: which contains public website, now deployed at `retriev.eth`.
 - `docker`: which contains the Docker image and the scripts to build / run the node.
 - `api`: which contains a *NodeJS* application that parses the blockchain and serves informations instantly.
-
 
 # Smart Contract Security
 
@@ -128,7 +125,7 @@ yarn start
 
 ## First launch
 
-After first launch the node will create a folder inside `~/.pldr` where you will find the configuration file, based on the `--name` argument you give. If you've followed exactly the guide you'll find a `provider0` folder.
+After first launch the node will create a folder inside `~/.rpp` where you will find the configuration file, based on the `--name` argument you give. If you've followed exactly the guide you'll find a `provider0` folder.
 
 This is what the terminal should show:
 ```
@@ -141,7 +138,7 @@ New identity is: 0x66Ed08Bd5067D2e1aEA20CB988FA594Db0F4b511
 Loaded identity: 0x66Ed08Bd5067D2e1aEA20CB988FA594Db0F4b511
 ```
 
-As you can see the node created a new identity (aka blockchain address) which will be used as identifier inside the network. You'll find the private key inside the `configs.json` file in the `~/.pldr/provider0` folder. Should be something like:
+As you can see the node created a new identity (aka blockchain address) which will be used as identifier inside the network. You'll find the private key inside the `configs.json` file in the `~/.rpp/provider0` folder. Should be something like:
 ```
 {
     "api_url": "https://api.pldr.dev",
@@ -192,7 +189,7 @@ If you completed this procedure to be included as provider inside the protocol y
 Please follow these basic steps, assuming you're in the main project's folder:
 ```
 cd provider-cli
-./bin/pldr-provider-linux subscribe https://YOUR_DOMAIN
+./bin/rpp-provider-linux subscribe https://YOUR_DOMAIN
 ```
 ## Tune your SLA
 
@@ -207,23 +204,23 @@ If you want to define your own strategy you can tune directly the `config.json` 
 Assuming you're in the main project's folder:
 ```
 cd provider-cli
-./bin/pldr-provider-linux setupminprice <AMOUNT_IN_WEI>
-./bin/pldr-provider-linux setupmaxsize <MAX_SIZE_IN_BYTE>
-./bin/pldr-provider-linux setupmaxduration <MAX_DURATION_IN_DAYS>
-./bin/pldr-provider-linux setupmaxcollateral <MAX_COLLATERAL_MULTIPLIER>
-./bin/pldr-provider-linux pin <TRUE_OR_FALSE>
+./bin/rpp-provider-linux setupminprice <AMOUNT_IN_WEI>
+./bin/rpp-provider-linux setupmaxsize <MAX_SIZE_IN_BYTE>
+./bin/rpp-provider-linux setupmaxduration <MAX_DURATION_IN_DAYS>
+./bin/rpp-provider-linux setupmaxcollateral <MAX_COLLATERAL_MULTIPLIER>
+./bin/rpp-provider-linux pin <TRUE_OR_FALSE>
 ```
 
 If you want a recap of your stored configuration you can run this command:
 
 ```
-./bin/pldr-provider-linux getstrategy
+./bin/rpp-provider-linux getstrategy
 ```
 
 When you're ready to publish your strategy on the API you run this commmand and wait for confirmation:
 
 ```
-./bin/pldr-provider-linux storestrategy
+./bin/rpp-provider-linux storestrategy
 ```
 
 # Support

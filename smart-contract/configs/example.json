@@ -1,6 +1,6 @@
 {
     "network": "localhost",
-    "contract_name": "DataRetrievability",
+    "contract_name": "RetrievalPinning",
     "constructor_arguments": ["0xProtocolAddress"],
     "contract_address": "",
     "owner_mnemonic": "",

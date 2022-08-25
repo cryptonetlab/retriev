@@ -1,5 +1,5 @@
 {
-    "name": "pldr-referee",
+    "name": "rpp-referee",
     "version": "0.0.1",
     "description": "",
     "main": "src/referee.js",
@@ -14,7 +14,7 @@
         "test:withdraw": "node src/referee.js --debug --name=refereedev --port=7000 withdraw",
         "test:getbalance": "node src/provider.js --debug --name=providerdev --7000=8001 getbalance",
         "compile": "pkg . --out-path bin",
-        "start": "./bin/pldr-referee-linux --debug --name=referee0 --port=7000 --daemon"
+        "start": "./bin/rpp-referee-linux --debug --name=referee0 --port=7000 --daemon"
     },
     "keywords": [],
     "author": "",

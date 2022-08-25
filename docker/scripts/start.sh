@@ -6,11 +6,11 @@ if [ $# -eq 0 ]
     else
         # Stop previous instance
         echo "Stopping previous docker instance.."
-        docker stop pldr
+        docker stop rpp
         echo "Starting new docker instance.."
-        docker start pldr
+        docker start rpp
 
         # Run IPFS daemon
-        docker exec pldr ipfs daemon &
-        docker exec -w /data/$1-cli pldr yarn dev --docker &
+        docker exec rpp ipfs daemon &
+        docker exec -w /data/$1-cli rpp yarn dev --docker &
 fi
