@@ -1,6 +1,7 @@
 import { run, add, hash, parseCache } from "./libs/ipfs"
+import { ethers } from "ethers"
 import * as Database from "./libs/database";
-import { parseDeals, parseAppeals, parseDeal, parseAppeal, contract, verify, listenEvents } from "./libs/web3";
+import { parseReferees, parseDeals, parseAppeals, parseDeal, parseAppeal, contract, verify, listenEvents } from "./libs/web3";
 import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
@@ -20,7 +21,7 @@ db.createDealsIndex();
 // Automatic parsers
 async function init() {
   run()
-  // TODO: Add a timeout which unpins all expired deal proposals
+  parseReferees()
   listenEvents()
   parseDeals()
   parseAppeals()
@@ -35,6 +36,7 @@ app.get("/deals/:address", async function (req, res) {
   res.send(deals)
 })
 
+// Force parsing of a specifc deal
 app.get("/parse/:id", async function (req, res) {
   const deal_id = parseInt(req.params.id)
   console.log('Manual parsing deal #' + deal_id)
@@ -91,15 +93,47 @@ app.post("/strategy", async function (req, res) {
   }
 })
 
+// Allow referees post activities to make logs
+app.post("/activity", async function (req, res) {
+  if (req.body.address !== undefined && req.body.activity !== undefined && req.body.signature !== undefined) {
+    const verified = <any>await verify("Store " + req.body.address + " activity.", req.body.signature)
+    const address = ethers.utils.getAddress(req.body.address)
+    if (verified !== false && verified.toUpperCase() === req.body.address.toUpperCase()) {
+      const db = new Database.default.Mongo();
+      const referee = await db.find('referees', { address: address })
+      if (referee !== null && referee.active === true) {
+        const activity = {
+          msg: req.body.activity,
+          timestamp: new Date().getTime(),
+          referee: address
+        }
+        await db.insert('activities', activity)
+        res.send({ message: "Activity added correctly", error: false })
+      } else {
+        res.send({ message: "You're not a referee", error: true })
+      }
+    } else {
+      res.send({ message: "Can't verify address", error: true })
+    }
+  } else {
+    res.send({ message: "Malformed request", error: true })
+  }
+})
+
 // Return all providers
 app.get("/providers", async function (req, res) {
   const providers = await db.find('providers', {}, { endpoint: 1 })
   res.send(providers)
 })
 
+// Return all referees
+app.get("/referees", async function (req, res) {
+  const referees = await db.find('referees', {}, { endpoint: 1 })
+  res.send(referees)
+})
+
 // Add signup endpoint
 app.post("/upload", upload.single('file'), async function (req, res) {
-  console.log(req.body)
   if (req.body.address !== undefined) {
     const cid = await hash(req.file.buffer)
     if (cid !== false) {

@@ -2,11 +2,10 @@ const { ethers } = require('ethers')
 const fs = require('fs')
 const crypto = require('crypto')
 const homedir = require('os').homedir()
-const { exec, execSync } = require('child_process')
 const getIP = require('external-ip')()
 const axios = require('axios')
-const argv = require('minimist')(process.argv.slice(2));
-const request = require('request');
+const argv = require('minimist')(process.argv.slice(2))
+const request = require('request')
 
 let mainPath = homedir + '/.pldr'
 if (argv.docker !== undefined) {
@@ -114,12 +113,10 @@ module.exports = class PldrNode {
                 setTimeout(function () {
                     pldr.api()
                 }, 5000)
-                setTimeout(function () {
-                    pldr.ipfs()
-                }, 10000)
             })
         }
     }
+
     returnPeers() {
         return this.peers
     }
@@ -294,40 +291,6 @@ module.exports = class PldrNode {
     }
 
     /**
-     * IPFS functions
-     */
-    async ipfs() {
-        if (argv.docker === undefined) {
-            console.log('Running IPFS daemon..')
-            try {
-                const ipfs_path = this.nodePath + '/ipfs'
-                if (!fs.existsSync(ipfs_path)) {
-                    fs.mkdirSync(ipfs_path)
-                    console.log("Init IPFS folder at:", ipfs_path)
-                    exec('IPFS_PATH=' + ipfs_path + ' ipfs init', { stdio: 'inherit' })
-                }
-                exec('IPFS_PATH=' + ipfs_path + ' ipfs daemon', { stdio: 'inherit' })
-                console.log('IPFS daemon is running correctly..')
-            } catch (e) {
-                console.log('Can\'t run IPFS daemon, please check your installation.')
-            }
-        }
-    }
-
-    runIpfsNativeCommand(command) {
-        const ipfs_path = this.nodePath + '/ipfs'
-        console.log('IPFS_PATH=' + ipfs_path + ' ' + command)
-        try {
-            execSync('IPFS_PATH=' + ipfs_path + ' ' + command, { stdio: 'inherit' })
-        } catch (e) {
-            console.log("Command failed:")
-            console.log("--")
-            console.log(e.message)
-            console.log("--")
-        }
-    }
-
-    /**
      * API functions
      */
     api() {
@@ -368,6 +331,14 @@ module.exports = class PldrNode {
         })
     }
 
+    async log(data) {
+        try {
+            const signature = await this.sign("Store " + this.configs.address + " activity.")
+            await axios.post(this.configs.api_url + "/activity", { activity: data, signature, address: this.configs.address })
+        } catch (e) {
+            console.log("[STATUS] Error posting activity")
+        }
+    }
     /**
      * Blockchain functions
      */

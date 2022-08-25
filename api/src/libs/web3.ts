@@ -16,7 +16,7 @@ export const verify = (message, signature) => {
       response(false);
     }
   });
-};
+}
 
 export const contract = async () => {
   const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER);
@@ -29,7 +29,43 @@ export const contract = async () => {
     wallet
   );
   return { contract, wallet, provider, ethers };
-};
+}
+
+export const parseReferees = async () => {
+  if (!isParsingAppeals) {
+    isParsingAppeals = true
+    const db = new Database.default.Mongo();
+    const instance = await contract()
+    let i = 0
+    let ended = false
+    while (!ended) {
+      try {
+        const referee = await instance.contract.active_referees(i)
+        const details = await instance.contract.referees(referee)
+        console.log("[REFEREES] Found referee: " + referee)
+        const parsed = {
+          address: referee,
+          active: details.active,
+          endpoint: details.endpoint
+        }
+        const checkDB = await db.find('referees', { address: referee })
+        if (checkDB === null) {
+          console.log("[REFEREES] Insert new referee.")
+          await db.insert('referees', parsed)
+        } else {
+          console.log("[REFEREES] Updating existing referee.")
+          await db.update('referees', { address: referee }, { $set: { endpoint: parsed.endpoint, active: parsed.active } })
+        }
+      } catch (e) {
+        ended = true;
+      }
+      i++;
+    }
+    return true
+  } else {
+    return false
+  }
+}
 
 export const parseDeal = async (deal_index) => {
   return new Promise(async response => {
@@ -102,7 +138,7 @@ export const parseDeals = async () => {
   } else {
     return false
   }
-};
+}
 
 export const parseAppeal = async (deal_index) => {
   return new Promise(async response => {
@@ -168,7 +204,7 @@ export const parseAppeals = async () => {
   } else {
     return false
   }
-};
+}
 
 export const listenEvents = async () => {
   const instance = await contract()
@@ -226,4 +262,4 @@ export const listenEvents = async () => {
     await parseDeal(deal_index)
     parseAppeal(deal_index)
   })
-};
+}

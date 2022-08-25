@@ -7,10 +7,6 @@ let processed = {}
 const MAX_CONCURRENT_APPEALS = 20
 let CONCURRENT_APPEALS = 0
 
-const ipfs = (node, ...args) => {
-    node.runIpfsNativeCommand(args.join(' '))
-}
-
 const getidentity = (node) => {
     console.log(node.returnNodeIdentity())
 }
@@ -93,6 +89,7 @@ const processappeal = async (node, index) => {
                             received: false,
                             proof: "SOME_KIND_OF_PROOF" // TODO: Add some kind of cryptographical proof to be sure referee received the file
                         })
+                        node.log("SLASH_" + index.toString())
                         await node.broadcast(message, "slash")
                         appealsProcessed.push(index.toString())
                     } catch (e) {
@@ -113,6 +110,7 @@ const processappeal = async (node, index) => {
                         received: true,
                         proof: "SOME_KIND_OF_PROOF" // TODO: Add some kind of cryptographical proof to be sure referee received the file
                     })
+                    node.log("RETRIEVE_" + index.toString())
                     await node.broadcast(message, "slash")
                     appealsProcessed.push(index.toString())
                     // Repeating process
@@ -166,6 +164,7 @@ const processappeal = async (node, index) => {
                                 received: true,
                                 proof: "SOME_KIND_OF_PROOF" // TODO: Add some kind of cryptographical proof to be sure referee received the file
                             })
+                            node.log("RETRIEVE_" + index.toString())
                             await node.broadcast(message, "slash")
                             appealsProcessed.push(index.toString())
                             // Repeating process
@@ -193,6 +192,7 @@ const startappeal = async (node, index) => {
         const { contract, wallet, ethers } = await node.contract()
         try {
             await contract.startAppeal(index)
+            node.log("START_" + index.toString())
             CONCURRENT_APPEALS++
         } catch (e) {
             console.log(e)
@@ -387,7 +387,6 @@ const returnappeal = async (node, appealIndex) => {
     return appeal
 }
 
-// Bootstrap referee listeners
 async function bootstrap(node) {
     if (Object.keys(global['servers']).length > 0 || Object.keys(global['clients']).length > 0) {
         setuplisteners(node)
@@ -403,12 +402,15 @@ const daemon = async (node) => {
     console.log("Running referee daemon..")
     bootstrap(node)
     const { contract, wallet, ethers } = await node.contract()
+    setInterval(function () {
+        node.log("PING")
+    }, 60000)
+
     // Process appeals at startup
     const appealsEvents = await returnappeals(node)
     for (let k in appealsEvents) {
         const appealEvent = appealsEvents[k]
         const appealIndex = appealEvent.args.index
-        // TODO: Be sure deal is started, if not started startappeal first
         const appeal = await returnappeal(node, appealIndex)
         if (appeal.origin_timestamp > 0) {
             console.log("Appeal #" + appealIndex + " already started, processing..")
@@ -434,4 +436,4 @@ const daemon = async (node) => {
     }, 20000)
 }
 
-module.exports = { setuplisteners, getidentity, ipfs, sendmessage, withdraw, getbalance, daemon }
+module.exports = { setuplisteners, getidentity, sendmessage, withdraw, getbalance, daemon }
