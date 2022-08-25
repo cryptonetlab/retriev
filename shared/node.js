@@ -44,6 +44,7 @@ module.exports = class RetrievNode {
     nodePath
     port
     peers = []
+    endpoints = []
     constructor(node, port, daemon) {
         this.port = port
         // Check if main folder exists
@@ -359,15 +360,14 @@ module.exports = class RetrievNode {
                 const provider = await contract.active_providers(i)
                 if (provider.toUpperCase() !== this.configs.address.toUpperCase()) {
                     const details = await contract.providers(provider)
-                    if (details.active) {
-                        if (details.endpoint.indexOf('https') !== -1) {
-                            console.log("Found provider: " + provider, details)
-                            this.peers.push({
-                                type: 'provider',
-                                identity: provider.toUpperCase(),
-                                endpoint: details.endpoint
-                            });
-                        }
+                    if (details.active && details.endpoint.indexOf('https') !== -1 && this.endpoints.indexOf(details.endpoint) === -1) {
+                        console.log("Found provider: " + provider)
+                        this.endpoints.push(details.endpoint)
+                        this.peers.push({
+                            type: 'provider',
+                            identity: provider.toUpperCase(),
+                            endpoint: details.endpoint
+                        });
                     }
                 }
             } catch (e) {
@@ -382,8 +382,9 @@ module.exports = class RetrievNode {
                 const referee = await contract.active_referees(i)
                 if (referee.toUpperCase() !== this.configs.address.toUpperCase()) {
                     const details = await contract.referees(referee)
-                    if (details.active) {
-                        console.log("Found referee: " + referee, details)
+                    if (details.active && details.endpoint.indexOf('https') !== -1 && this.endpoints.indexOf(details.endpoint) === -1) {
+                        this.endpoints.push(details.endpoint)
+                        console.log("Found referee: " + referee)
                         this.peers.push({
                             type: 'referee',
                             identity: referee.toUpperCase(),
