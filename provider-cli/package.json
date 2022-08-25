@@ -7,10 +7,6 @@
     "scripts": {
         "dev": "nodemon src/provider.js --debug --name=providerdev --port=8000 --daemon",
         "test:identity": "node src/provider.js --debug --name=providerdev --port=8000 getidentity",
-        "test:peers": "node src/provider.js --debug --name=providerdev --port=8000 ipfs swarm peers",
-        "test:pins": "node src/provider.js --debug --name=providerdev --port=8000 ipfs pin ls",
-        "test:cat": "node src/provider.js --debug --name=providerdev --port=8000 ipfs cat /ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/quick-start",
-        "test:filestats": "node src/provider.js --debug --name=providerdev --port=8000 ipfs files stat /ipfs/QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/quick-start --with-local",
         "test:broadcast": "node src/provider.js --debug --name=providerdev --port=8000 sendmessage",
         "test:deals": "node src/provider.js --debug --name=providerdev --port=8000 deals",
         "test:getbalance": "node src/provider.js --debug --name=providerdev --port=8000 getbalance",

@@ -2,7 +2,7 @@
   "name": "shared",
   "version": "1.0.0",
   "description": "",
-  "main": "web3.js",
+  "main": "pldr.js",
   "scripts": {},
   "keywords": [],
   "author": "",

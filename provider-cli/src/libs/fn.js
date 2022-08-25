@@ -4,11 +4,7 @@ const argv = require('minimist')(process.argv.slice(2));
 let proposalCache = []
 let isProcessing = false
 
-const ipfs = (node, ...args) => {
-    node.runIpfsNativeCommand(args.join(' '))
-}
-
-const ipfsApi = (method, endpoint, arguments) => {
+const ipfs = (method, endpoint, arguments) => {
     return new Promise(async response => {
         try {
             setTimeout(function () {
@@ -344,7 +340,7 @@ const processdeal = (node, deal_index) => {
                     let policyMet = false
                     // Retrive the file from IPFS
                     console.log("Retrieving file stats from:", proposal.deal_uri)
-                    const file_stats = await ipfsApi("post", "/files/stat?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/"))
+                    const file_stats = await ipfs("post", "/files/stat?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/"))
                     console.log("File stats:", file_stats)
                     if (file_stats !== false && file_stats.Size !== undefined) {
                         if (configs.min_price !== undefined && parseInt(configs.min_price) > 0) {
@@ -463,7 +459,7 @@ const processdeal = (node, deal_index) => {
                             })
                             // Check if pinning mode is active
                             if (configs.pin !== undefined && configs.pin === true) {
-                                const pinned = await ipfsApi("post", "/pin/add?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/") + '&recursive=true')
+                                const pinned = await ipfs("post", "/pin/add?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/") + '&recursive=true')
                                 console.log('Pinning status is:', pinned)
                             }
                             await node.broadcast(message, "message")
@@ -530,7 +526,7 @@ const daemon = async (node) => {
     for (let k in cacheId.data) {
         const identity = cacheId.data[k]
         console.log("Adding " + identity + " to swarm")
-        await ipfsApi("post", "/swarm/connect?arg=" + identity)
+        await ipfs("post", "/swarm/connect?arg=" + identity)
     }
 
     console.log("Running provider daemon..")
@@ -553,4 +549,4 @@ const daemon = async (node) => {
     })
 }
 
-module.exports = { daemon, getidentity, ipfs, sendmessage, deals, withdraw, getbalance, subscribe, setupminprice, getstrategy, setupmaxsize, setupmaxduration, setupmaxcollateral, setupendpoint, pin, storestrategy }
+module.exports = { daemon, getidentity, sendmessage, deals, withdraw, getbalance, subscribe, setupminprice, getstrategy, setupmaxsize, setupmaxduration, setupmaxcollateral, setupendpoint, pin, storestrategy }

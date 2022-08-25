@@ -51,7 +51,6 @@ export const parseCache = async () => {
     const db = new Database.default.Mongo();
     const instance = await contract()
     const proposal_timeout = parseInt((await instance.contract.proposal_timeout()).toString()) * 1000
-    console.log("Proposal timeout parameter is:", proposal_timeout)
     const cache = await db.find('cache', { expired: false }, { timestamp: 1 })
     const now = new Date().getTime()
     for (let k in cache) {

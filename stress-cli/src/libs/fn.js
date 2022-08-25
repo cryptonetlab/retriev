@@ -4,10 +4,6 @@ const _ = require('lodash')
 const { Web3Storage, File } = require('web3.storage')
 const axios = require('axios')
 
-const ipfs = (node, ...args) => {
-    node.runIpfsNativeCommand(args.join(' '))
-}
-
 const getidentity = (node) => {
     console.log(node.returnNodeIdentity())
 }
@@ -141,4 +137,4 @@ const appeals = async (node) => {
     }
 }
 
-module.exports = { getidentity, ipfs, deals, appeals }
+module.exports = { getidentity, deals, appeals }
