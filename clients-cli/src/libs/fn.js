@@ -18,6 +18,7 @@ const deals = async (node) => {
         console.log('Found ' + dealsApi.data.length + ' deals.')
         for (let k in dealsApi.data) {
             deals.push({
+                dealIndex: dealsApi.data[k].index,
                 dealUri: dealsApi.data[k].deal_uri,
                 value: dealsApi.data[k].value,
                 provider: dealsApi.data[k].provider,
@@ -153,27 +154,32 @@ function createdeal(node) {
     })
 }
 
-function makeappeal(node, deal_index) {
+function makeappeal(node) {
     return new Promise(async response => {
-        const { contract, wallet, ethers } = await node.contract()
-        console.log("🚩 Making appeal to deal #" + deal_index)
-        const can_create_appeal = await contract.canAddressAppeal(deal_index, wallet.address)
-        if (can_create_appeal) {
-            try {
-                const fee = await contract.returnAppealFee(deal_index)
-                console.log("Fee for appeal is:", ethers.utils.formatEther(fee.toString()))
-                const tx = await contract.createAppeal(deal_index, { value: fee })
-                console.log('⌛ Pending transaction at: ' + tx.hash)
-                await tx.wait()
-                console.log('🎉 Appeal created at ' + tx.hash + '!')
-                response(true)
-            } catch (e) {
-                console.log("💀 Can't create appeal for this deal.")
+        let deal_index = argv._[1]
+        if (deal_index !== undefined) {
+            const { contract, wallet, ethers } = await node.contract()
+            console.log("🚩 Making appeal to deal #" + deal_index)
+            const can_create_appeal = await contract.canAddressAppeal(deal_index, wallet.address)
+            if (can_create_appeal) {
+                try {
+                    const fee = await contract.returnAppealFee(deal_index)
+                    console.log("Fee for appeal is:", ethers.utils.formatEther(fee.toString()))
+                    const tx = await contract.createAppeal(deal_index, { value: fee })
+                    console.log('⌛ Pending transaction at: ' + tx.hash)
+                    await tx.wait()
+                    console.log('🎉 Appeal created at ' + tx.hash + '!')
+                    response(true)
+                } catch (e) {
+                    console.log("💀 Can't create appeal for this deal.")
+                    response(false)
+                }
+            } else {
+                console.log("💀 Can't create appeals for this deal.")
                 response(false)
             }
         } else {
-            console.log("💀 Can't create appeals for this deal.")
-            response(false)
+            console.log("Please provide a deal index.")
         }
     })
 }

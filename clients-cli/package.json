@@ -9,6 +9,7 @@
         "test:deal:uri": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 createdeal --dealuri='ipfs://bafkreiaoeqvdretuu7mzr4kjrxvifiykfp73rk5rb7b62o7j5hvlmwg5ru' --provider='0x2489c48090523f37028f1e42454b7DD04943d0Bf' --duration=60 --value=0 --collateral=0",
         "test:deal:file": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 createdeal --file=../shared/vps.txt --provider='0x2489c48090523f37028f1e42454b7DD04943d0Bf' --duration=60",
         "test:deals": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 deals",
+        "test:appeal": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 makeappeal",
         "compile": "pkg . --out-path bin",
         "start": "./bin/rpp-client-linux --debug --name=client --port=8000"
     },
