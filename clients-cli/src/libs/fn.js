@@ -184,4 +184,17 @@ function makeappeal(node) {
     })
 }
 
-module.exports = { getidentity, createdeal, deals, makeappeal }
+const withdraw = async (node, ...args) => {
+    const { contract, wallet, ethers } = await node.contract()
+    const balance = await contract.vault(wallet.address)
+    if (balance > 0) {
+        console.log("Starting withdraw of " + ethers.utils.formatEther(balance) + " ETH..")
+        const tx = await contract.withdrawFromVault(balance)
+        console.log('Pending transaction at: ' + tx.hash)
+        await tx.wait()
+    } else {
+        console.log("Nothing to withdraw..")
+    }
+}
+
+module.exports = { getidentity, createdeal, deals, makeappeal, withdraw }
