@@ -1,18 +1,20 @@
 {
     "name": "rpp-client",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "",
     "main": "src/client.js",
     "bin": "src/client.js",
     "scripts": {
-        "test:identity": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 getidentity",
-        "test:deal:uri": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 createdeal --dealuri='ipfs://bafkreiaoeqvdretuu7mzr4kjrxvifiykfp73rk5rb7b62o7j5hvlmwg5ru' --provider='0x2489c48090523f37028f1e42454b7DD04943d0Bf' --duration=60 --value=0 --collateral=0",
-        "test:deal:file": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 createdeal --file=../shared/vps.txt --provider='0x2489c48090523f37028f1e42454b7DD04943d0Bf' --duration=60",
-        "test:deals": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 deals",
-        "test:appeal": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 makeappeal",
-        "test:withdraw": "node --no-warnings src/client.js --debug --name=clientsdev --port=8000 withdraw",
         "compile": "pkg . --out-path bin",
-        "start": "./bin/rpp-client-linux --debug --name=client --port=8000"
+        "test:deal:uri": "node src/client.js createdeal --dealuri='ipfs://bafkreiaoeqvdretuu7mzr4kjrxvifiykfp73rk5rb7b62o7j5hvlmwg5ru' --provider='0x2489c48090523f37028f1e42454b7DD04943d0Bf' --duration=60 --value=0 --collateral=0",
+        "test:deal:file": "node src/client.js createdeal --file=../shared/vps.txt --provider='0x2489c48090523f37028f1e42454b7DD04943d0Bf' --duration=60",
+        "identity": "node src/client.js getidentity",
+        "providers": "node src/client.js providers",
+        "deal": "node src/client.js createdeal",
+        "deals": "node src/client.js deals",
+        "appeal": "node src/client.js makeappeal",
+        "retrieve": "node src/client.js retrieve",
+        "withdraw": "node src/client.js withdraw"
     },
     "keywords": [],
     "author": "",
@@ -23,11 +25,11 @@
         "dotenv": "^10.0.0",
         "ethers": "^5.6.2",
         "express": "^4.17.1",
+        "file-type": "16.5.3",
         "form-data": "^4.0.0",
         "lodash": "^4.17.21",
         "minimist": "^1.2.6",
-        "public-ip": "^4.0.4",
-        "web3.storage": "^4.3.0"
+        "public-ip": "^4.0.4"
     },
     "devDependencies": {
         "nodemon": "^2.0.14",

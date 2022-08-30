@@ -3,9 +3,34 @@ const _ = require('lodash')
 const axios = require('axios')
 const fs = require('fs')
 const FormData = require('form-data')
+const FileType = require('file-type')
 
 const getidentity = (node) => {
     console.log(node.returnNodeIdentity())
+}
+
+const providers = async (node) => {
+    const { wallet } = await node.contract()
+    const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
+    console.log('Asking deals to API..')
+    try {
+        let providers = []
+        const providersApi = await axios.get(configs.api_url + '/providers')
+        console.log('Found ' + providersApi.data.length + ' providers.')
+        for (let k in providersApi.data) {
+            providers.push({
+                endpoint: providersApi.data[k].endpoint,
+                address: providersApi.data[k].address,
+                min_price: providersApi.data[k].strategy.min_price,
+                max_size: providersApi.data[k].strategy.max_size,
+                max_collateral_multiplier: providersApi.data[k].strategy.max_collateral_multiplier,
+                max_duration: providersApi.data[k].strategy.max_duration,
+            })
+        }
+        console.table(providers)
+    } catch (e) {
+        console.log("Error while getting providers from API.")
+    }
 }
 
 const deals = async (node) => {
@@ -184,6 +209,83 @@ function makeappeal(node) {
     })
 }
 
+const retrieve = async (node) => {
+    const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
+    if (argv.dealuri !== undefined || argv._[1] !== undefined) {
+        try {
+            const { wallet, contract } = await node.contract()
+            let deal
+            if (argv._[1] !== undefined) {
+                console.log('Getting deal uri from contract..')
+                const details = await contract.deals(argv._[1])
+                const timestamp_end = (parseInt(details.timestamp_start) + parseInt(details.duration)) * 1000
+                if (details.deal_uri.length > 0 && timestamp_end >= new Date().getTime() && !details.canceled) {
+                    console.log("Obtaining provider from contract..")
+                    const provider = await contract.ownerOf(argv._[1])
+                    console.log("Provider is:", provider)
+                    deal = {
+                        deal_uri: details.deal_uri,
+                        timestamp_request: details.timestamp_request,
+                        timestamp_start: details.timestamp_start,
+                        duration: details.duration,
+                        provider: provider,
+                        canceled: details.canceled
+                    }
+
+                } else {
+                    console.log('Can\'t find deal, make sure deal index is valid.')
+                }
+            } else {
+                const dealsApi = await axios.get(configs.api_url + '/deals/' + wallet.address)
+                for (let k in dealsApi.data) {
+                    if (dealsApi.data[k].deal_uri.replace('ipfs://', '') === argv.dealuri.replace('ipfs://', '') && (parseInt(dealsApi.data[k].timestamp_end) * 1000) >= new Date().getTime() && dealsApi.data[k].canceled) {
+                        deal = dealsApi.data[k]
+                    }
+                }
+            }
+            if (deal !== undefined && deal.deal_uri !== undefined && deal.provider !== undefined) {
+                const provider = await contract.providers(deal.provider)
+                console.log('Retrieving ' + deal.deal_uri + ' from provider endpoint:', provider.endpoint)
+                const buffer = await axios({
+                    method: "get",
+                    url: provider.endpoint + deal.deal_uri.replace('ipfs://', '/ipfs/'),
+                    responseType: "arraybuffer"
+                })
+                if (buffer.data !== undefined) {
+                    let path
+                    if (argv.out !== undefined) {
+                        path = argv.out
+                    } else {
+                        path = node.nodePath + '/retrievals/'
+                        if (!fs.existsSync(node.nodePath + '/retrievals')) {
+                            fs.mkdirSync(node.nodePath + '/retrievals')
+                        }
+                    }
+                    const ft = await FileType.fromBuffer(buffer.data)
+                    if (ft !== undefined && ft.ext !== undefined) {
+                        path += deal.deal_uri.replace('ipfs://', '') + "." + ft.ext
+                    } else {
+                        path += deal.deal_uri.replace('ipfs://', '')
+                    }
+                    console.log("Saving file to:", path)
+                    fs.writeFileSync(path, buffer.data)
+                }
+            } else {
+                console.log("Can't find any active deal with that uri.")
+            }
+        } catch (e) {
+            console.log("Error while retrieving file.")
+            if (argv.debug !== undefined) {
+                console.log(e)
+            }
+        }
+    } else {
+        console.log('Please specify deal index or deal uri by typing:')
+        console.log('retrieve <DEAL_INDEX>')
+        console.log('retrieve --dealuri=<DEAL_URI>')
+    }
+}
+
 const withdraw = async (node, ...args) => {
     const { contract, wallet, ethers } = await node.contract()
     const balance = await contract.vault(wallet.address)
@@ -197,4 +299,4 @@ const withdraw = async (node, ...args) => {
     }
 }
 
-module.exports = { getidentity, createdeal, deals, makeappeal, withdraw }
+module.exports = { getidentity, createdeal, deals, makeappeal, retrieve, withdraw, providers }
