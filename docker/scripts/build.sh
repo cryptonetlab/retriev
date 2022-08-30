@@ -12,8 +12,8 @@ if [ $# -eq 0 ]
         # Create .env files
         cp ./provider-cli/.env.rinkeby ./provider-cli/.env
         cp ./referee-cli/.env.rinkeby ./referee-cli/.env
-        sed -i "s/PROJECT_ID/$1/" ./provider-cli/.env
-        sed -i "s/PROJECT_ID/$1/" ./referee-cli/.env
+        sed -i "s/API_KEY/$1/" ./provider-cli/.env
+        sed -i "s/API_KEY/$1/" ./referee-cli/.env
 
         # Building docker
         cd docker && docker build -t rpp .

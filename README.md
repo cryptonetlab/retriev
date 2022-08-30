@@ -24,13 +24,14 @@ We used a bunch of different technologies to create the protocol:
 - **Smart Contract:** we used `Solidity` to create the contract, so it will run on any EVM chain.
 - **Provider / Referee network:** is a `NodeJS` application that uses `socket.io` to establish a communication between peers. Final application is compiled using `pkg`.
 - **Client UI / Website:** both are static websites created with `VueJS`, deployment is done also using IPFS.
+- **Client CLI:** is a `NodeJS` application compiled using `pkg`.
 - **API:** is a `NodeJS` application built with `Express`.
 ## Project directories
 
 Project is divided by subfolders, any folder contains a different piece of the protocol:
 - `shared`: which contains a shared library to bootstrap nodes, dial with web3 and communicate between peers.
 - `smart-contract`: which contains *smart contract* logic to create the deals and run the retrieval protocol if the *provider* doesn't provide the file. It will include the indexer too in order to process and store requests.
-- `clients-cli`: (WIP) which contains a basic CLI to interact with contract, create deals and appeals.
+- `clients-cli`: which contains a basic CLI to interact with contract, create deals and appeals.
 - `provider-cli`: which contains *provider* logic to accept deals published on-chain and serve deal files.
 - `referee-cli`: which contains *referee* logic to ask `providers` if some clients asks for a retrieval.
 - `docker`: which contains the Docker image and the scripts to build / run the node.
@@ -67,11 +68,15 @@ ERCs: ERC165, ERC721
 +--------------------+-------------+---------------+------------+--------------+-------------+
 ```
 
+## Clients CLI
+
+If you're looking for specific documentation to interact with protocol as a client please go [here](./clients-cli/README.md).
+
 # Install Node
 
 Installing a node is required *only* if you want to be part of the referee consortium or you want to be a provider. There are very few requirements to run the node, it depends if you want to run it using [Docker](https://www.docker.com/) or you want to build from source using [NodeJS](https://nodejs.org/en/).
 
-Since we're using blockchain you need a web3 provider, in our case we need a `Rinkeby` provider and we suggest to signup for a free account at (Infura)[https://infura.io]. Please be sure to have your `PROJECT_ID` (it will be provided by Infura's interface) before can continue following this guide.
+Since we're using blockchain you need a web3 provider, in our case we need a `Rinkeby` provider and we suggest to signup for a free account at (Infura)[https://infura.io]. Please be sure to have your `API_KEY` (it will be provided by Infura's interface) before can continue following this guide.
 
 ## Install Node using Docker
 
@@ -79,10 +84,10 @@ To use docker follow these simple follow steps:
 
 ```
 # Clone repository
-git clone https://github.com/protocol/retriev
+git clone https://github.com/protocol/retrieval-pinning
 
 # Run first building script
-bash docker/scripts/build.sh PROJECT_ID
+bash docker/scripts/build.sh API_KEY
 
 # Run a node as referee
 bash docker/scripts/start.sh referee
@@ -98,7 +103,7 @@ bash docker/scripts/stop.sh
 
 If you want to build the node from the source you have to follow few steps, they're similar for both `provider` and `referee` so, assuming you're chosing one of them please change `NODE_TYPE` with `provider` or `referee`, depending on your choice.
 
-Please be also sure to change `YOUR_INFURA_PROJECT_ID` with your previously generated Infura Id.
+Please be also sure to change `YOUR_INFURA_API_KEY` with your previously generated Infura Id.
 
 ```
 # Clone repository
@@ -114,7 +119,7 @@ yarn
 
 # Create .env file
 cp .env.rinkeby .env
-sed -i "s/PROJECT_ID/YOUR_INFURA_PROJECT_ID/" ./.env
+sed -i "s/API_KEY/YOUR_INFURA_API_KEY/" ./.env
 
 # Compile node
 yarn compile
