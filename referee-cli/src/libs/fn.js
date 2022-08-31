@@ -201,9 +201,7 @@ const processappeal = async (node, index) => {
             console.log("Appeal #" + index + " terminated, caching and unpinning.")
             try {
                 await axios.post("http://localhost:5001/api/v0/pin/rm?arg=" + deal.deal_uri.replace('ipfs://', '/ipfs/'))
-            } catch (e) {
-                console.log("Can't unpin file from cache.")
-            }
+            } catch (e) {}
             appealsProcessed.push(index.toString())
             CONCURRENT_APPEALS--
         }
