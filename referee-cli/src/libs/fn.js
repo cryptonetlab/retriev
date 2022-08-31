@@ -212,11 +212,11 @@ const processappeal = async (node, index) => {
 
 const startappeal = async (node, index) => {
     if (CONCURRENT_APPEALS < MAX_CONCURRENT_APPEALS) {
-        console.log('Starting appeal #' + index + '..')
         const { contract, wallet, ethers } = await node.contract()
         const leader = await contract.getElectedLeader(index)
         // Check if referee is leader
         if (leader.toUpperCase() !== wallet.address.toUpperCase()) {
+            console.log('Starting appeal #' + index + '..')
             await contract.startAppeal(index)
             node.log("START_" + index.toString())
             CONCURRENT_APPEALS++
@@ -226,6 +226,7 @@ const startappeal = async (node, index) => {
                 try {
                     const appeal = await contract.appeals(index)
                     if (appeal.origin_timestamp.toString() == "0") {
+                        console.log('Starting appeal #' + index + '..')
                         await contract.startAppeal(index)
                         node.log("START_" + index.toString())
                     }
