@@ -232,7 +232,6 @@ const startappeal = async (node, index) => {
                     }
                     CONCURRENT_APPEALS++
                 } catch (e) {
-                    console.log(e)
                     console.log("Can't start appeal, probably already started..")
                 }
             }, (Math.floor(Math.random() * 60000) + 60000))
