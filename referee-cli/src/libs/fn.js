@@ -214,19 +214,28 @@ const startappeal = async (node, index) => {
     if (CONCURRENT_APPEALS < MAX_CONCURRENT_APPEALS) {
         console.log('Starting appeal #' + index + '..')
         const { contract, wallet, ethers } = await node.contract()
-        setTimeout(async function () {
-            try {
-                const appeal = await contract.appeals(index)
-                if (appeal.origin_timestamp.toString() == "0") {
-                    await contract.startAppeal(index)
-                    node.log("START_" + index.toString())
+        const leader = await contract.getElectedLeader(index)
+        // Check if referee is leader
+        if (leader.toUpperCase() !== wallet.address.toUpperCase()) {
+            await contract.startAppeal(index)
+            node.log("START_" + index.toString())
+            CONCURRENT_APPEALS++
+        } else {
+            // Else check after 60s + random time if didn't started (random time is needed to avoid concurrency and save gas fees)
+            setTimeout(async function () {
+                try {
+                    const appeal = await contract.appeals(index)
+                    if (appeal.origin_timestamp.toString() == "0") {
+                        await contract.startAppeal(index)
+                        node.log("START_" + index.toString())
+                    }
+                    CONCURRENT_APPEALS++
+                } catch (e) {
+                    console.log(e)
+                    console.log("Can't start appeal, probably already started..")
                 }
-                CONCURRENT_APPEALS++
-            } catch (e) {
-                console.log(e)
-                console.log("Can't start appeal, probably already started..")
-            }
-        }, Math.floor(Math.random() * 60000))
+            }, (Math.floor(Math.random() * 60000) + 60000))
+        }
     } else {
         console.log("Adding appeal to cache, will pick up later")
         appealCache.push(index)
