@@ -1,4 +1,6 @@
-const axios = require('axios');
+const axios = require('axios')
+const FormData = require('form-data')
+const { Readable } = require('stream')
 let appealsProcessed = []
 let appealCache = []
 let appealsProcessing = {}
@@ -45,10 +47,29 @@ const retrievefile = (provider, deal_uri) => {
         try {
             const hash = deal_uri.replace('ipfs://', "")
             console.log("Retrieving file from:", provider + "/ipfs/" + hash)
-            const file = await axios.get(provider + "/ipfs/" + hash)
-            // TODO: Performs some other security check on the file, 
-            // like hash again the file and check if CID is the same
-            response(file.data)
+            const file = await axios.get(provider + "/ipfs/" + hash, { responseType: "arraybuffer" })
+            const stream = Readable.from(file.data);
+            const formData = new FormData();
+            formData.append("file", stream, { filename: deal_uri });
+            let cidVersion = 1
+            if (hash.indexOf('Qm') === 0) {
+                cidVersion = 0
+            }
+            const pinned = await axios.post(
+                "http://localhost:5001/api/v0/add?cid-version=" + cidVersion,
+                formData,
+                {
+                    maxBodyLength: 'Infinity',
+                    headers: {
+                        "Content-Type": "multipart/form-data; boundary=" + formData._boundary
+                    },
+                }
+            )
+            if (pinned.data.Hash === hash) {
+                response(true)
+            } else {
+                response(false)
+            }
         } catch (e) {
             console.log("Can't retrieve file, error is:", e.message)
             response(false)
@@ -177,7 +198,12 @@ const processappeal = async (node, index) => {
                 }, halt_time)
             }
         } else {
-            console.log("Appeal #" + index + " terminated, caching.")
+            console.log("Appeal #" + index + " terminated, caching and unpinning.")
+            try {
+                await axios.post("http://localhost:5001/api/v0/pin/rm?arg=" + deal.deal_uri.replace('ipfs://', '/ipfs/'))
+            } catch (e) {
+                console.log("Can't unpin file from cache.")
+            }
             appealsProcessed.push(index.toString())
             CONCURRENT_APPEALS--
         }
@@ -190,14 +216,16 @@ const startappeal = async (node, index) => {
     if (CONCURRENT_APPEALS < MAX_CONCURRENT_APPEALS) {
         console.log('Starting appeal #' + index + '..')
         const { contract, wallet, ethers } = await node.contract()
-        try {
-            await contract.startAppeal(index)
-            node.log("START_" + index.toString())
-            CONCURRENT_APPEALS++
-        } catch (e) {
-            console.log(e)
-            console.log("Can't start appeal, probably already started..")
-        }
+        setTimeout(async function () {
+            try {
+                await contract.startAppeal(index)
+                node.log("START_" + index.toString())
+                CONCURRENT_APPEALS++
+            } catch (e) {
+                console.log(e)
+                console.log("Can't start appeal, probably already started..")
+            }
+        }, Math.floor(Math.random() * 5000))
     } else {
         console.log("Adding appeal to cache, will pick up later")
         appealCache.push(index)

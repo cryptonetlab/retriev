@@ -313,8 +313,7 @@ module.exports = class RetrievNode {
                 res.status(404).send("FILE_NOT_FOUND")
             }, 30000)
             try {
-                // Just for test purposes because deals are done with an invalid CID (Valid+index)
-                const hash = req.params.hash.split('-')[0]
+                const hash = req.params.hash
                 console.log("Downloading file from IPFS: " + hash)
                 const file = await axios.post("http://127.0.0.1:5001/api/v0/files/stat?arg=/ipfs/" + hash)
                 if (file.data.Hash === hash) {
