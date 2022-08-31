@@ -215,7 +215,7 @@ const startappeal = async (node, index) => {
         const { contract, wallet, ethers } = await node.contract()
         const leader = await contract.getElectedLeader(index)
         // Check if referee is leader
-        if (leader.toUpperCase() !== wallet.address.toUpperCase()) {
+        if (leader.toUpperCase() === wallet.address.toUpperCase()) {
             console.log('Starting appeal #' + index + '..')
             await contract.startAppeal(index)
             node.log("START_" + index.toString())
