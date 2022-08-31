@@ -201,7 +201,7 @@ const processappeal = async (node, index) => {
             console.log("Appeal #" + index + " terminated, caching and unpinning.")
             try {
                 await axios.post("http://localhost:5001/api/v0/pin/rm?arg=" + deal.deal_uri.replace('ipfs://', '/ipfs/'))
-            } catch (e) {}
+            } catch (e) { }
             appealsProcessed.push(index.toString())
             CONCURRENT_APPEALS--
         }
@@ -216,14 +216,17 @@ const startappeal = async (node, index) => {
         const { contract, wallet, ethers } = await node.contract()
         setTimeout(async function () {
             try {
-                await contract.startAppeal(index)
-                node.log("START_" + index.toString())
+                const appeal = await contract.appeals(index)
+                if (appeal.origin_timestamp.toString() == "0") {
+                    await contract.startAppeal(index)
+                    node.log("START_" + index.toString())
+                }
                 CONCURRENT_APPEALS++
             } catch (e) {
                 console.log(e)
                 console.log("Can't start appeal, probably already started..")
             }
-        }, Math.floor(Math.random() * 5000))
+        }, Math.floor(Math.random() * 60000))
     } else {
         console.log("Adding appeal to cache, will pick up later")
         appealCache.push(index)
