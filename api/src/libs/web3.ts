@@ -81,6 +81,13 @@ export const parseDeal = async (deal_index) => {
     }
 
     console.log('[DEALS] -> Provider is:', provider)
+    let appeal_requested = 0
+    try {
+      appeal_requested = await instance.contract.tot_appeals(deal_index)
+    } catch (e) {
+      console.log('[DEALS] -> Can\'t get number of requested appeals')
+    }
+
     let deal = {
       index: deal_index,
       timestamp_end: "0",
@@ -93,7 +100,8 @@ export const parseDeal = async (deal_index) => {
       collateral: onchain_deal.collateral.toString(),
       canceled: onchain_deal.canceled,
       provider: provider,
-      appeal: {}
+      appeal: {},
+      appeal_requested: appeal_requested
     }
     deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
     const checkDB = await db.find('deals', { index: deal_index })
@@ -105,7 +113,7 @@ export const parseDeal = async (deal_index) => {
       if (provider !== 'NOT_ACCEPTED') {
         await unpin(deal.deal_uri)
       }
-      await db.update('deals', { index: deal_index }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider } })
+      await db.update('deals', { index: deal_index }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider, appeal_requested: deal.appeal_requested } })
     }
     response(true)
   })
