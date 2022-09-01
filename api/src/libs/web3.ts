@@ -239,11 +239,12 @@ export const listenEvents = async () => {
     const halt_time = (round_duration / 2) * 1000
     let parserInterval = setInterval(async function () {
       const round = await instance.contract.getRound(appeal_index)
-      if (round.toString() !== "99") {
-        console.log('[APPEAL] Parsing round #' + round.toString() + ' of appeal #' + appeal_index.toString())
-        await parseDeal(deal_index)
-        parseAppeal(deal_index)
-      } else {
+      // Store appeal informations
+      console.log('[APPEAL] Parsing round #' + round.toString() + ' of appeal #' + appeal_index.toString())
+      await parseDeal(deal_index)
+      parseAppeal(deal_index)
+      // Clear interval because last round was processed
+      if (round.toString() === "99") {
         console.log('[APPEAL] Appeal #' + appeal_index.toString() + ' ended')
         clearInterval(parserInterval)
       }
