@@ -160,8 +160,12 @@ app.post("/upload", upload.single('file'), async function (req, res) {
 
 // Return IPFS identity
 app.get("/ipfs-id", async function (req, res) {
-  const multiAddrs = await global['ipfs'].swarm.localAddrs()
-  res.send(multiAddrs)
+  try {
+    const multiAddrs = await global['ipfs'].swarm.localAddrs()
+    res.send(multiAddrs)
+  } catch (e) {
+    res.send({ message: "Multiaddress not available", error: true })
+  }
 })
 
 // Default endpoint

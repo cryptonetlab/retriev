@@ -521,12 +521,22 @@ const processCache = async (node) => {
 const connectCacheNode = async (node) => {
     console.log("Adding cache node to swarm..")
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
-    const cacheId = await axios.get(configs.api_url + "/ipfs-id")
-    console.log("Found those identities for node:", cacheId.data)
-    for (let k in cacheId.data) {
-        const identity = cacheId.data[k]
-        console.log("Adding " + identity + " to swarm")
-        await ipfs("post", "/swarm/connect?arg=" + identity)
+    try {
+        const cacheId = await axios.get(configs.api_url + "/ipfs-id")
+        if (cacheId.data.error === undefined) {
+            console.log("Found those identities for node:", cacheId.data)
+            for (let k in cacheId.data) {
+                const identity = cacheId.data[k]
+                console.log("Adding " + identity + " to swarm")
+                await ipfs("post", "/swarm/connect?arg=" + identity)
+            }
+        } else {
+            console.log("Can't connect to cache node, retrying in 30s.")
+            setTimeout(function () { connectCacheNode() }, 30000)
+        }
+    } catch (e) {
+        console.log("Can't connect to cache node, retrying in 30s.")
+        setTimeout(function () { connectCacheNode() }, 30000)
     }
 }
 
