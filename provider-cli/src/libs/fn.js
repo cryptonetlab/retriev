@@ -532,11 +532,11 @@ const connectCacheNode = async (node) => {
             }
         } else {
             console.log("Can't connect to cache node, retrying in 30s.")
-            setTimeout(function () { connectCacheNode() }, 30000)
+            setTimeout(function () { connectCacheNode(node) }, 30000)
         }
     } catch (e) {
         console.log("Can't connect to cache node, retrying in 30s.")
-        setTimeout(function () { connectCacheNode() }, 30000)
+        setTimeout(function () { connectCacheNode(node) }, 30000)
     }
 }
 
