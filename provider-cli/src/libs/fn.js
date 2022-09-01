@@ -330,165 +330,170 @@ const processdeal = (node, deal_index) => {
             let canAccept = await contract.isProviderInDeal(deal_index, wallet.address)
             if (canAccept) {
                 const proposal = await contract.deals(deal_index)
-                const proposal_timeout = await contract.proposal_timeout()
-                // Check if deal was accepted or expired
-                const expires_at = (parseInt(proposal.timestamp_request.toString()) + parseInt(proposal_timeout.toString())) * 1000
-                const accepted = parseInt(proposal.timestamp_start.toString()) > 0
-                console.log("Deal expires at:", expires_at)
-                console.log("Deal accepted?", accepted)
-                if (new Date().getTime() < expires_at && !accepted) {
-                    let policyMet = false
-                    // Retrive the file from IPFS
-                    console.log("Retrieving file stats from:", proposal.deal_uri)
-                    const file_stats = await ipfs("post", "/files/stat?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/"))
-                    console.log("File stats:", file_stats)
-                    if (file_stats !== false && file_stats.Size !== undefined) {
-                        if (configs.min_price !== undefined && parseInt(configs.min_price) > 0) {
-                            let expected_price = file_stats.Size * parseInt(configs.min_price) * proposal.duration
-                            console.log('Expected price in wei is:', expected_price)
-                            console.log('Deal value is:', proposal.value.toString())
-                            if (parseInt(proposal.value.toString()) >= expected_price) {
-                                policyMet = true
+                if (proposal.canceled === false) {
+                    const proposal_timeout = await contract.proposal_timeout()
+                    // Check if deal was accepted or expired
+                    const expires_at = (parseInt(proposal.timestamp_request.toString()) + parseInt(proposal_timeout.toString())) * 1000
+                    const accepted = parseInt(proposal.timestamp_start.toString()) > 0
+                    console.log("Deal expires at:", expires_at)
+                    console.log("Deal accepted?", accepted)
+                    if (new Date().getTime() < expires_at && !accepted) {
+                        let policyMet = false
+                        // Retrive the file from IPFS
+                        console.log("Retrieving file stats from:", proposal.deal_uri)
+                        const file_stats = await ipfs("post", "/files/stat?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/"))
+                        console.log("File stats:", file_stats)
+                        if (file_stats !== false && file_stats.Size !== undefined) {
+                            if (configs.min_price !== undefined && parseInt(configs.min_price) > 0) {
+                                let expected_price = file_stats.Size * parseInt(configs.min_price) * proposal.duration
+                                console.log('Expected price in wei is:', expected_price)
+                                console.log('Deal value is:', proposal.value.toString())
+                                if (parseInt(proposal.value.toString()) >= expected_price) {
+                                    policyMet = true
+                                } else {
+                                    const message = JSON.stringify({
+                                        deal_index: deal_index.toString(),
+                                        owner: proposal.owner,
+                                        action: "DEAL_UNDERPRICED",
+                                        deal_uri: proposal.deal_uri,
+                                        timestamp: new Date().getTime()
+                                    })
+                                    await node.broadcast(message, "message")
+                                }
                             } else {
+                                policyMet = true
+                            }
+                            // Check if collateral is acceptable
+                            let slashing_multiplier = await contract.slashing_multiplier()
+                            if (configs.max_collateral_multiplier !== undefined) {
+                                slashing_multiplier = configs.max_collateral_multiplier
+                            }
+                            const maximum_collateral = parseInt(slashing_multiplier.toString()) * parseInt(proposal.value.toString());
+                            if (parseInt(proposal.collateral.toString()) > maximum_collateral) {
+                                console.log("Collateral is too high, can't accept.")
                                 const message = JSON.stringify({
                                     deal_index: deal_index.toString(),
                                     owner: proposal.owner,
-                                    action: "DEAL_UNDERPRICED",
+                                    action: "COLLATERAL_TOO_BIG",
                                     deal_uri: proposal.deal_uri,
                                     timestamp: new Date().getTime()
                                 })
                                 await node.broadcast(message, "message")
+                                policyMet = false
+                            }
+                            // Check if file size is lower than accepted one
+                            if (policyMet && configs.max_size !== undefined && parseInt(configs.max_size) > 0) {
+                                if (parseInt(file_stats.Size) > parseInt(configs.max_size)) {
+                                    const message = JSON.stringify({
+                                        deal_index: deal_index.toString(),
+                                        owner: proposal.owner,
+                                        action: "FILE_TOO_LARGE",
+                                        deal_uri: proposal.deal_uri,
+                                        timestamp: new Date().getTime()
+                                    })
+                                    await node.broadcast(message, "message")
+                                    console.log("File is too large, can't accept.")
+                                    policyMet = false
+                                }
+                            }
+                            // Check if duration matches policy
+                            if (policyMet && configs.max_duration !== undefined && parseInt(configs.max_duration) > 0) {
+                                const duration_days = parseInt(proposal.duration) / 86400
+                                if (duration_days > parseInt(configs.max_duration)) {
+                                    const message = JSON.stringify({
+                                        deal_index: deal_index.toString(),
+                                        owner: proposal.owner,
+                                        action: "DEAL_TOO_LONG",
+                                        deal_uri: proposal.deal_uri,
+                                        timestamp: new Date().getTime()
+                                    })
+                                    await node.broadcast(message, "message")
+                                    console.log("Deal is too long, can't accept.")
+                                    policyMet = false
+                                }
                             }
                         } else {
-                            policyMet = true
-                        }
-                        // Check if collateral is acceptable
-                        let slashing_multiplier = await contract.slashing_multiplier()
-                        if (configs.max_collateral_multiplier !== undefined) {
-                            slashing_multiplier = configs.max_collateral_multiplier
-                        }
-                        const maximum_collateral = parseInt(slashing_multiplier.toString()) * parseInt(proposal.value.toString());
-                        if (parseInt(proposal.collateral.toString()) > maximum_collateral) {
-                            console.log("Collateral is too high, can't accept.")
                             const message = JSON.stringify({
                                 deal_index: deal_index.toString(),
                                 owner: proposal.owner,
-                                action: "COLLATERAL_TOO_BIG",
+                                action: "UNRETRIEVABLE",
                                 deal_uri: proposal.deal_uri,
                                 timestamp: new Date().getTime()
                             })
                             await node.broadcast(message, "message")
-                            policyMet = false
-                        }
-                        // Check if file size is lower than accepted one
-                        if (policyMet && configs.max_size !== undefined && parseInt(configs.max_size) > 0) {
-                            if (parseInt(file_stats.Size) > parseInt(configs.max_size)) {
-                                const message = JSON.stringify({
-                                    deal_index: deal_index.toString(),
-                                    owner: proposal.owner,
-                                    action: "FILE_TOO_LARGE",
-                                    deal_uri: proposal.deal_uri,
-                                    timestamp: new Date().getTime()
-                                })
-                                await node.broadcast(message, "message")
-                                console.log("File is too large, can't accept.")
-                                policyMet = false
+                            if (proposalCache.indexOf(deal_index) === -1) {
+                                console.log('Adding deal in cache for future retrieval')
+                                proposalCache.push(deal_index)
                             }
+                            connectCacheNode(node)
                         }
-                        // Check if duration matches policy
-                        if (policyMet && configs.max_duration !== undefined && parseInt(configs.max_duration) > 0) {
-                            const duration_days = parseInt(proposal.duration) / 86400
-                            if (duration_days > parseInt(configs.max_duration)) {
-                                const message = JSON.stringify({
-                                    deal_index: deal_index.toString(),
-                                    owner: proposal.owner,
-                                    action: "DEAL_TOO_LONG",
-                                    deal_uri: proposal.deal_uri,
-                                    timestamp: new Date().getTime()
-                                })
-                                await node.broadcast(message, "message")
-                                console.log("Deal is too long, can't accept.")
-                                policyMet = false
-                            }
-                        }
-                    } else {
-                        const message = JSON.stringify({
-                            deal_index: deal_index.toString(),
-                            owner: proposal.owner,
-                            action: "UNRETRIEVABLE",
-                            deal_uri: proposal.deal_uri,
-                            timestamp: new Date().getTime()
-                        })
-                        await node.broadcast(message, "message")
-                        if (proposalCache.indexOf(deal_index) === -1) {
-                            console.log('Adding deal in cache for future retrieval')
-                            proposalCache.push(deal_index)
-                        }
-                        connectCacheNode(node)
-                    }
-                    if (policyMet) {
-                        const deposited = await contract.vault(wallet.address)
-                        console.log("Balance before accept is:", ethers.utils.formatEther(deposited.toString()))
-                        const deposit_needed = proposal.value * 100;
-                        console.log("Deposit needed is:", ethers.utils.formatEther(deposit_needed.toString()), "ETH")
-                        if (deposited < deposit_needed) {
-                            try {
-                                console.log('Need to deposit, not enough balance inside contract..')
-                                const tx = await contract.depositToVault({ value: deposit_needed.toString() })
-                                console.log("Depositing at " + tx.hash)
-                                await tx.wait()
-                            } catch (e) {
-                                console.log("Can't deposit..")
-                                canAccept = false
-                            }
-                        }
-                        // Be sure provider can accept deal
-                        if (canAccept) {
-                            console.log("Can accept, listed as provider in deal.")
-                            const tx = await contract.acceptDealProposal(deal_index)
-                            console.log('Pending transaction at: ' + tx.hash)
-                            await tx.wait()
-                            console.log('Deal accepted at ' + tx.hash + '!')
-                            const balance2 = await contract.vault(wallet.address)
-                            console.log("Balance after accept is:", ethers.utils.formatEther(balance2.toString()))
-                            const message = JSON.stringify({
-                                deal_index: deal_index.toString(),
-                                action: "ACCEPTED",
-                                owner: proposal.owner,
-                                deal_uri: proposal.deal_uri,
-                                txid: tx.hash
-                            })
-                            // Check if pinning mode is active
-                            if (configs.pin !== undefined && configs.pin === true) {
-                                const pinned = await ipfs("post", "/pin/add?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/") + '&recursive=true')
-                                console.log('Pinning status is:', pinned)
-                            }
-                            await node.broadcast(message, "message")
-                            // Be sure deal is not in cache anymore
-                            let temp = []
-                            for (let k in proposalCache) {
-                                if (proposalCache[k] !== deal_index) {
-                                    temp.push(proposalCache[k])
+                        if (policyMet) {
+                            const deposited = await contract.vault(wallet.address)
+                            console.log("Balance before accept is:", ethers.utils.formatEther(deposited.toString()))
+                            const deposit_needed = proposal.value * 100;
+                            console.log("Deposit needed is:", ethers.utils.formatEther(deposit_needed.toString()), "ETH")
+                            if (deposited < deposit_needed) {
+                                try {
+                                    console.log('Need to deposit, not enough balance inside contract..')
+                                    const tx = await contract.depositToVault({ value: deposit_needed.toString() })
+                                    console.log("Depositing at " + tx.hash)
+                                    await tx.wait()
+                                } catch (e) {
+                                    console.log("Can't deposit..")
+                                    canAccept = false
                                 }
                             }
-                            proposalCache = temp
-                            response(true)
+                            // Be sure provider can accept deal
+                            if (canAccept) {
+                                console.log("Can accept, listed as provider in deal.")
+                                const tx = await contract.acceptDealProposal(deal_index)
+                                console.log('Pending transaction at: ' + tx.hash)
+                                await tx.wait()
+                                console.log('Deal accepted at ' + tx.hash + '!')
+                                const balance2 = await contract.vault(wallet.address)
+                                console.log("Balance after accept is:", ethers.utils.formatEther(balance2.toString()))
+                                const message = JSON.stringify({
+                                    deal_index: deal_index.toString(),
+                                    action: "ACCEPTED",
+                                    owner: proposal.owner,
+                                    deal_uri: proposal.deal_uri,
+                                    txid: tx.hash
+                                })
+                                // Check if pinning mode is active
+                                if (configs.pin !== undefined && configs.pin === true) {
+                                    const pinned = await ipfs("post", "/pin/add?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/") + '&recursive=true')
+                                    console.log('Pinning status is:', pinned)
+                                }
+                                await node.broadcast(message, "message")
+                                // Be sure deal is not in cache anymore
+                                let temp = []
+                                for (let k in proposalCache) {
+                                    if (proposalCache[k] !== deal_index) {
+                                        temp.push(proposalCache[k])
+                                    }
+                                }
+                                proposalCache = temp
+                                response(true)
+                            } else {
+                                response(false)
+                            }
                         } else {
+                            console.log("Policy didn't met, can't accept automatically")
                             response(false)
                         }
                     } else {
-                        console.log("Policy didn't met, can't accept automatically")
+                        // Be sure deal is not in cache anymore
+                        let temp = []
+                        for (let k in proposalCache) {
+                            if (proposalCache[k] !== deal_index) {
+                                temp.push(proposalCache[k])
+                            }
+                        }
+                        console.log("Deal expired or accepted yet, can't accept anymore.")
                         response(false)
                     }
                 } else {
-                    // Be sure deal is not in cache anymore
-                    let temp = []
-                    for (let k in proposalCache) {
-                        if (proposalCache[k] !== deal_index) {
-                            temp.push(proposalCache[k])
-                        }
-                    }
-                    console.log("Deal expired or accepted yet, can't accept anymore.")
+                    console.log("Proposal canceled, ignoring.")
                     response(false)
                 }
             } else {
