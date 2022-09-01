@@ -415,7 +415,7 @@ const processdeal = (node, deal_index) => {
                         const message = JSON.stringify({
                             deal_index: deal_index.toString(),
                             owner: proposal.owner,
-                            action: "UNRETRIEVALABLE",
+                            action: "UNRETRIEVABLE",
                             deal_uri: proposal.deal_uri,
                             timestamp: new Date().getTime()
                         })
@@ -424,6 +424,7 @@ const processdeal = (node, deal_index) => {
                             console.log('Adding deal in cache for future retrieval')
                             proposalCache.push(deal_index)
                         }
+                        connectCacheNode(node)
                     }
                     if (policyMet) {
                         const deposited = await contract.vault(wallet.address)
@@ -517,18 +518,20 @@ const processCache = async (node) => {
     }
 }
 
-const daemon = async (node) => {
+const connectCacheNode = async (node) => {
     console.log("Adding cache node to swarm..")
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     const cacheId = await axios.get(configs.api_url + "/ipfs-id")
     console.log("Found those identities for node:", cacheId.data)
-
     for (let k in cacheId.data) {
         const identity = cacheId.data[k]
         console.log("Adding " + identity + " to swarm")
         await ipfs("post", "/swarm/connect?arg=" + identity)
     }
+}
 
+const daemon = async (node) => {
+    connectCacheNode(node)
     console.log("Running provider daemon..")
     const { contract, wallet, ethers } = await node.contract()
     // Parse proposals

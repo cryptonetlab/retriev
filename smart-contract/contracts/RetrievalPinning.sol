@@ -409,7 +409,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         );
         require(!deals[deal_index].canceled, "Deal canceled yet");
         require(
-            ownerOf(deal_index) == address(0),
+            deals[deal_index].timestamp_start == 0,
             "Deal was accepted, can't cancel"
         );
         deals[deal_index].canceled = true;

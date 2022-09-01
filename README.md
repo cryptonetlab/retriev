@@ -4,7 +4,7 @@ Retrieval Pinning is a Protocol designed by [CryptoNetLab](https://cryptonet.org
 
 If you want to go deeper on how the protocol works please read our [light paper](./PAPER.md).
 
-We have now an active deployment on Rinkeby network at [0x5a10221Ba633354C0A06c7dbdeF532598539f489](https://rinkeby.etherscan.io/address/0x5a10221Ba633354C0A06c7dbdeF532598539f489) and you can interact with the protocol at [dapp.onchain.storage](https://dapp.onchain.storage). 
+We have now an active deployment on Rinkeby network at [0x4539359FCB09D5F677d8F92a6126275177E7B430](https://rinkeby.etherscan.io/address/0x4539359FCB09D5F677d8F92a6126275177E7B430) and you can interact with the protocol at [dapp.onchain.storage](https://dapp.onchain.storage). 
 
 If you want to learn more about the project please visit our [official website](https://onchain.storage).
 # Architecture

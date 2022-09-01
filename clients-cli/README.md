@@ -31,7 +31,7 @@ nano .env
 
 you will see something like:
 ```
-CONTRACT_ADDRESS=0x5a10221Ba633354C0A06c7dbdeF532598539f489
+CONTRACT_ADDRESS=0x4539359FCB09D5F677d8F92a6126275177E7B430
 WEB3_PROVIDER=https://rinkeby.infura.io/v3/API_KEY
 API_URL=https://api.pldr.dev
 ```
