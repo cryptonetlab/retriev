@@ -114,6 +114,7 @@ const processappeal = async (node, index) => {
                         await node.broadcast(message, "slash")
                         appealsProcessed.push(index.toString())
                     } catch (e) {
+                        node.log("ERROR_SLASH_LEADER_" + index.toString(), e.message)
                         console.log("Can't send on-chain transaction..")
                         console.log("--")
                         console.log(e.message)
@@ -232,6 +233,7 @@ const startappeal = async (node, index) => {
                     }
                     CONCURRENT_APPEALS++
                 } catch (e) {
+                    node.log("ERROR_START_" + index.toString(), e.message)
                     console.log("Can't start appeal, probably already started..")
                 }
             }, (Math.floor(Math.random() * 60000) + 60000))
@@ -275,7 +277,7 @@ const parseslash = async (node, raw) => {
                     if (retrieved) {
                         console.log("File was retrieved correctly!")
                     } else {
-                        // QUESTION: What should we do in that case? Send a slash message to network?
+                        node.log("ERROR_RETRIEVE_LEADER_" + appeal.deal_index.toString(), deal.deal_uri)
                         console.log("File wasn't retrieved correctly, referee lies!")
                     }
                     appealsProcessed.push(slash.appeal.toString())
@@ -354,6 +356,7 @@ const parseslash = async (node, raw) => {
                                         console.log("Provider successfully slashed.")
                                         appealsProcessed.push(slash.appeal.toString())
                                     } catch (e) {
+                                        node.log("ERROR_SLASH_REFEREE_" + appeal.deal_index.toString(), e.message)
                                         console.log("Error while slashing provider, probably round processed yet..")
                                     }
                                 } else {

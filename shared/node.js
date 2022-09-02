@@ -331,10 +331,10 @@ module.exports = class RetrievNode {
         })
     }
 
-    async log(data) {
+    async log(activity, details = '') {
         try {
             const signature = await this.sign("Store " + this.configs.address + " activity.")
-            await axios.post(this.configs.api_url + "/activity", { activity: data, signature, address: this.configs.address })
+            await axios.post(this.configs.api_url + "/activity", { activity, details, signature, address: this.configs.address })
         } catch (e) {
             console.log("[STATUS] Error posting activity")
         }
