@@ -108,7 +108,14 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
     const checkDB = await db.find('deals', { index: deal_index })
     if (checkDB === null) {
       console.log('[DEALS] --> Inserting new deal')
-      await db.insert('deals', deal)
+      let inserted = false
+      while (!inserted) {
+        await db.insert('deals', deal)
+        const checkDB = await db.find('deals', { index: deal_index })
+        if (checkDB !== null) {
+          inserted = true
+        }
+      }
     } else {
       console.log('[DEALS] --> Updating deal')
       if (provider !== 'NOT_ACCEPTED') {
