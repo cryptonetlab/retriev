@@ -67,7 +67,7 @@ export const parseReferees = async () => {
   }
 }
 
-export const parseDeal = async (deal_index) => {
+export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', cancel_tx = '') => {
   return new Promise(async response => {
     const instance = await contract()
     console.log('[DEALS] Parsing deal #' + deal_index)
@@ -101,7 +101,8 @@ export const parseDeal = async (deal_index) => {
       canceled: onchain_deal.canceled,
       provider: provider,
       appeal: {},
-      appeal_requested: appeal_requested
+      appeal_requested: appeal_requested,
+      proposal_tx: proposal_tx
     }
     deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
     const checkDB = await db.find('deals', { index: deal_index })
@@ -113,7 +114,13 @@ export const parseDeal = async (deal_index) => {
       if (provider !== 'NOT_ACCEPTED') {
         await unpin(deal.deal_uri)
       }
-      await db.update('deals', { index: deal_index }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider, appeal_requested: deal.appeal_requested } })
+      if (accept_tx === '') {
+        accept_tx = checkDB.accept_tx
+      }
+      if (cancel_tx === '') {
+        cancel_tx = checkDB.cancel_tx
+      }
+      await db.update('deals', { index: deal_index }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider, appeal_requested: deal.appeal_requested, accept_tx: accept_tx, cancel_tx: cancel_tx } })
     }
     response(true)
   })
@@ -148,7 +155,7 @@ export const parseDeals = async () => {
   }
 }
 
-export const parseAppeal = async (deal_index) => {
+export const parseAppeal = async (deal_index, origin_tx = '') => {
   return new Promise(async response => {
     const instance = await contract()
     const onchain_deal = await instance.contract.deals(deal_index);
@@ -165,7 +172,8 @@ export const parseAppeal = async (deal_index) => {
             slashes: onchain_appeal.slashes.toString(),
             origin_timestamp: onchain_appeal.origin_timestamp.toString(),
             slashed: false,
-            appeal_index: active_appeal
+            appeal_index: active_appeal,
+            origin_tx: origin_tx
           }
           const round = await instance.contract.getRound(active_appeal);
           console.log("[APPEALS] --> Round is:", round.toString())
@@ -217,31 +225,31 @@ export const parseAppeals = async () => {
 export const listenEvents = async () => {
   const instance = await contract()
   console.log('Setting up on-chain event listeners..')
-  instance.contract.on("Transfer", async (from, to, index) => {
-    console.log('[EVENT] Transfer event from', from, 'to', to)
+  instance.contract.on("Transfer", async (from, to, index, event) => {
+    console.log('[EVENT] New provider', from, 'to', to)
     if (from === "0x0000000000000000000000000000000000000000") {
       console.log("[EVENT] Deal proposal accepted")
       const deal_index = parseInt(index.toString())
-      parseDeal(deal_index)
+      parseDeal(deal_index, '', event.transactionHash)
     }
   })
-  instance.contract.on("DealProposalCreated", async (index) => {
+  instance.contract.on("DealProposalCreated", async (index, providers, deal_uri, appeal_addresses, event) => {
     console.log("[EVENT] Deal proposal created")
     const deal_index = parseInt(index.toString())
-    parseDeal(deal_index)
+    parseDeal(deal_index, event.transactionHash)
   })
-  instance.contract.on("DealProposalCanceled", async (index) => {
+  instance.contract.on("DealProposalCanceled", async (index, event) => {
     console.log("[EVENT] Deal proposal canceled")
     const deal_index = parseInt(index.toString())
-    parseDeal(deal_index)
+    parseDeal(deal_index, '', '', event.transactionHash)
   })
-  instance.contract.on("AppealCreated", async (appeal_index) => {
+  instance.contract.on("AppealCreated", async (appeal_index, provider, deal_uri, event) => {
     console.log("[EVENT] Appeal created")
     const appeal = await instance.contract.appeals(appeal_index)
     const deal_index = parseInt(appeal.deal_index.toString())
     setTimeout(async function () {
       await parseDeal(deal_index)
-      parseAppeal(deal_index)
+      parseAppeal(deal_index, event.transactionHash)
     }, 5000)
     const round_duration = await instance.contract.round_duration()
     const halt_time = (round_duration / 2) * 1000

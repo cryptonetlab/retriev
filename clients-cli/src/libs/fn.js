@@ -10,7 +10,6 @@ const getidentity = (node) => {
 }
 
 const providers = async (node) => {
-    const { wallet } = await node.contract()
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     console.log('Asking deals to API..')
     try {
@@ -84,7 +83,7 @@ function createdeal(node) {
                 console.log("Provider " + providers + " is invalid, please check the address.")
                 process.exit()
             }
-            const { contract, wallet, ethers, provider } = await node.contract()
+            const { contract, wallet, provider } = await node.contract()
             console.log('📝 Reading state from contract..')
             // Get protocol's min and max duration
             const min_duration = parseInt((await contract.min_duration()).toString())
