@@ -177,7 +177,8 @@ app.get("/ipfs-id", async function (req, res) {
 app.get("/logs/:referee/:kind", async function (req, res) {
   try {
     const db = new Database.default.Mongo()
-    const logs = await db.find('activities', { referee: req.params.referee, msg: req.params.kind }, { timestamp: -1 })
+    const regex = new RegExp("^" + req.params.kind + "_");
+    const logs = await db.find('activities', { referee: req.params.referee, msg: { $regex: regex } }, { timestamp: -1 })
     res.send(logs)
   } catch (e) {
     res.send({ message: "Can't get logs", error: true })
