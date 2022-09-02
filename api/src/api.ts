@@ -19,7 +19,8 @@ app.use(bodyParser.json());
 
 // Init mongo database
 const db = new Database.default.Mongo()
-db.createDealsIndex();
+db.createDealsIndex()
+db.createActivitiesIndex()
 
 // Automatic parsers
 async function init() {

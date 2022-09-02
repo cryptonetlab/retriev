@@ -119,6 +119,33 @@ module Database {
       });
     }
 
+    public createActivitiesIndex() {
+      return new Promise(async (response) => {
+        try {
+          // let ssl = "?ssl=true";
+          // if (process.env.MONGODB_CONNECTION?.indexOf("localhost") !== -1) {
+          //   ssl = "";
+          // }
+          let client = new MongoClient(
+            process.env.MONGODB_CONNECTION || "",
+            this.dbOptions
+          );
+          await client.connect();
+          const db = await client.db(process.env.MONGODB_DBNAME);
+          await db.collection("activities").createIndex({
+            msg: "text",
+            referee: "text"
+          });
+          await client.close();
+          response(true);
+        } catch (e) {
+          console.log(e);
+          console.log("DB ERROR WHILE SEARCHING.");
+          response(false);
+        }
+      });
+    }
+
   }
 }
 
