@@ -172,6 +172,17 @@ app.get("/ipfs-id", async function (req, res) {
   }
 })
 
+// Get logs from api
+app.get("/logs/:referee/:kind", async function (req, res) {
+  try {
+    const db = new Database.default.Mongo()
+    const logs = await db.find('activities', { referee: req.params.referee, msg: req.params.kind })
+    res.send(logs)
+  } catch (e) {
+    res.send({ message: "Can't get logs", error: true })
+  }
+})
+
 // Default endpoint
 app.use((req, res, next) => {
   return res.status(404).json({
