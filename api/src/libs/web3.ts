@@ -73,63 +73,68 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
     console.log('[DEALS] Parsing deal #' + deal_index)
     const db = new Database.default.Mongo();
     const onchain_deal = await instance.contract.deals(deal_index);
-    let provider = 'NOT_ACCEPTED'
-    try {
-      provider = await instance.contract.ownerOf(deal_index);
-    } catch (e) {
-      console.log('[DEALS] -> Deal #', deal_index, 'not accepted yet.')
-    }
+    if (parseInt(onchain_deal.timestamp_request.toString()) > 0) {
+      let provider = 'NOT_ACCEPTED'
+      try {
+        provider = await instance.contract.ownerOf(deal_index);
+      } catch (e) {
+        console.log('[DEALS] -> Deal #', deal_index, 'not accepted yet.')
+      }
 
-    console.log('[DEALS] -> Provider is:', provider)
-    let appeal_requested = 0
-    try {
-      appeal_requested = await instance.contract.tot_appeals(deal_index)
-    } catch (e) {
-      console.log('[DEALS] -> Can\'t get number of requested appeals')
-    }
+      console.log('[DEALS] -> Provider is:', provider)
+      let appeal_requested = 0
+      try {
+        appeal_requested = await instance.contract.tot_appeals(deal_index)
+      } catch (e) {
+        console.log('[DEALS] -> Can\'t get number of requested appeals')
+      }
 
-    let deal = {
-      index: deal_index,
-      timestamp_end: "0",
-      timestamp_start: onchain_deal.timestamp_start.toString(),
-      timestamp_request: onchain_deal.timestamp_request.toString(),
-      duration: onchain_deal.duration.toString(),
-      deal_uri: onchain_deal.deal_uri,
-      owner: onchain_deal.owner,
-      value: onchain_deal.value.toString(),
-      collateral: onchain_deal.collateral.toString(),
-      canceled: onchain_deal.canceled,
-      provider: provider,
-      appeal: {},
-      appeal_requested: appeal_requested,
-      proposal_tx: proposal_tx
-    }
-    deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
-    const checkDB = await db.find('deals', { index: deal_index })
-    if (checkDB === null) {
-      console.log('[DEALS] --> Inserting new deal')
-      let inserted = false
-      while (!inserted) {
-        await db.insert('deals', deal)
-        const checkDB = await db.find('deals', { index: deal_index })
-        if (checkDB !== null) {
-          inserted = true
+      let deal = {
+        index: deal_index,
+        timestamp_end: "0",
+        timestamp_start: onchain_deal.timestamp_start.toString(),
+        timestamp_request: onchain_deal.timestamp_request.toString(),
+        duration: onchain_deal.duration.toString(),
+        deal_uri: onchain_deal.deal_uri,
+        owner: onchain_deal.owner,
+        value: onchain_deal.value.toString(),
+        collateral: onchain_deal.collateral.toString(),
+        canceled: onchain_deal.canceled,
+        provider: provider,
+        appeal: {},
+        appeal_requested: appeal_requested,
+        proposal_tx: proposal_tx
+      }
+      deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
+      const checkDB = await db.find('deals', { index: deal_index })
+      if (checkDB === null) {
+        console.log('[DEALS] --> Inserting new deal')
+        let inserted = false
+        while (!inserted) {
+          await db.insert('deals', deal)
+          const checkDB = await db.find('deals', { index: deal_index })
+          if (checkDB !== null) {
+            inserted = true
+          }
         }
+      } else {
+        console.log('[DEALS] --> Updating deal')
+        if (provider !== 'NOT_ACCEPTED') {
+          await unpin(deal.deal_uri)
+        }
+        if (accept_tx === '') {
+          accept_tx = checkDB.accept_tx
+        }
+        if (cancel_tx === '') {
+          cancel_tx = checkDB.cancel_tx
+        }
+        await db.update('deals', { index: deal_index }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider, appeal_requested: deal.appeal_requested, accept_tx: accept_tx, cancel_tx: cancel_tx } })
       }
+      response(true)
     } else {
-      console.log('[DEALS] --> Updating deal')
-      if (provider !== 'NOT_ACCEPTED') {
-        await unpin(deal.deal_uri)
-      }
-      if (accept_tx === '') {
-        accept_tx = checkDB.accept_tx
-      }
-      if (cancel_tx === '') {
-        cancel_tx = checkDB.cancel_tx
-      }
-      await db.update('deals', { index: deal_index }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider, appeal_requested: deal.appeal_requested, accept_tx: accept_tx, cancel_tx: cancel_tx } })
+      console.log("[DEALS] -> Deal index is not valid")
+      response(false)
     }
-    response(true)
   })
 }
 
