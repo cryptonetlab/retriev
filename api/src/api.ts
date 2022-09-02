@@ -107,6 +107,7 @@ app.post("/activity", async function (req, res) {
       if (referee !== null && referee.active === true) {
         const activity = {
           msg: req.body.activity,
+          details: req.body.details,
           timestamp: new Date().getTime(),
           referee: address
         }
