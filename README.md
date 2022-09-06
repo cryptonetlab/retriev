@@ -6,7 +6,7 @@ If you want to go deeper on how the protocol works please read our [light paper]
 
 We have now an active deployment on Rinkeby network at [0x4539359FCB09D5F677d8F92a6126275177E7B430](https://rinkeby.etherscan.io/address/0x4539359FCB09D5F677d8F92a6126275177E7B430) and you can interact with the protocol at [onchain.storage](https://onchain.storage). 
 
-If you want to learn more about the project please visit our [official website](https://onchain.storage).
+If you want to learn more about the project please visit our [official website](https://pldr.dev/#/).
 # Architecture
 
 The protocol consists of three main elements:
