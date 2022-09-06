@@ -4,7 +4,7 @@ Retrieval Pinning is a Protocol designed by [CryptoNetLab](https://cryptonet.org
 
 If you want to go deeper on how the protocol works please read our [light paper](./PAPER.md).
 
-We have now an active deployment on Rinkeby network at [0x4539359FCB09D5F677d8F92a6126275177E7B430](https://rinkeby.etherscan.io/address/0x4539359FCB09D5F677d8F92a6126275177E7B430) and you can interact with the protocol at [dapp.onchain.storage](https://dapp.onchain.storage). 
+We have now an active deployment on Rinkeby network at [0x4539359FCB09D5F677d8F92a6126275177E7B430](https://rinkeby.etherscan.io/address/0x4539359FCB09D5F677d8F92a6126275177E7B430) and you can interact with the protocol at [onchain.storage](https://onchain.storage). 
 
 If you want to learn more about the project please visit our [official website](https://onchain.storage).
 # Architecture
@@ -14,7 +14,7 @@ The protocol consists of three main elements:
 - **Referee network**: which is the guarantee that the protocol is respected and from where appeal requests are processed. 
 - **Provider network**: which is the network of providers, where all data are stored and from where data should be retrieved.
 
-Of course the end users (who wants to store data and make deals) can interact directly with the protocol using the blockchain, however we created a simple interface to make deals. This interface can be found at [dapp.onchain.storage](https://dapp.onchain.storage).
+Of course the end users (who wants to store data and make deals) can interact directly with the protocol using the blockchain, however we created a simple interface to make deals. This interface can be found at [onchain.storage](https://onchain.storage).
 
 At the moment there's no interface for providers but we're working on Providers's part of the protocol and it will be available soon.
 
