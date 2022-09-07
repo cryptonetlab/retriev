@@ -1,0 +1,78 @@
+// MOBILE GENERAL
+@media screen and (max-width: 767px) {
+  html,
+  body {
+    font-size: 13px;
+  }
+  .btn-primary,
+  .btn-secondary,
+  .custom_dropdown {
+    width: 100%;
+  }
+}
+
+// TABLET GENERAL
+@media only screen and (min-width: 768px) and (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) {
+  .btn-primary,
+  .btn-secondary,
+  .custom_dropdown {
+    width: 100%;
+  }
+  h2.pay-off {
+    font-size: 1rem;
+  }
+  .box-img {
+    img {
+      object-position: top;
+    }
+  }
+}
+
+// iPap Mini Portrait
+@media only screen and (min-width: 768px) and (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait) {
+  .hide {
+    display: none !important;
+  }
+  .card {
+    .card-header-title {
+      font-size: 0.59rem;
+    }
+    .card-header-icon {
+      font-size: 0.6rem;
+    }
+  }
+  .bordered-dashed {
+    .btn-secondary {
+      margin-top: 20px;
+    }
+  }
+}
+
+// iPad Mini Landscape
+@media only screen and (min-width: 768px) and (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+  .hide {
+    display: flex !important;
+  }
+}
+
+// iPad Air, Pro GENERAL
+@media only screen and (min-width: 820px) and (max-width: 1180px) and (-webkit-min-device-pixel-ratio: 2) {
+  .hide {
+    display: flex !important;
+  }
+}
+
+@media screen and (max-width: 1216px) {
+  .btn-primary,
+  .btn-secondary,
+  .custom_dropdown {
+    width: 100%;
+  }
+  .btn-minimal,
+  .btn-minimal-noHover {
+    padding: 10px 15px;
+  }
+  h2.pay-off {
+    font-size: 1rem;
+  }
+}

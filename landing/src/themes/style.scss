@@ -1,0 +1,270 @@
+// ================> BODY STYLE <==================
+html,
+body {
+  margin: 0;
+  box-sizing: border-box;
+  background-color: var(--bg-color-primary);
+  overflow-x: hidden;
+}
+
+.home {
+  background-color: var(--bg-color-primary);
+}
+
+@mixin padding-x-container {
+  padding: 0 5vw;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+@mixin style-font {
+  font-family: "JetBrains Mono", monospace;
+  color: var(--font-color);
+}
+
+.b-top {
+  border-top: 1px solid var(--font-color-primary);
+}
+
+.b-left {
+  border-left: 1px solid var(--font-color-primary);
+}
+
+.gap {
+  width: 100%;
+  height: 10vh;
+  background-color: var(--bg-color-primary);
+}
+
+.gap-smaller {
+  width: 100%;
+  height: 4vh;
+  background-color: var(--bg-color-primary);
+}
+.negative-left {
+  margin-left: 22px !important;
+}
+.negative-top {
+  margin-top: -1.125rem !important;
+}
+
+.wrapper-page {
+  position: relative;
+  padding: 160px 0;
+  background-color: var(--bg-color-primary);
+}
+
+.padding-5x {
+  padding: 0 5vw;
+}
+
+// ================> FONTS <==================
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap");
+
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+.header a,
+.footer a {
+  text-underline-offset: 10px !important;
+}
+
+h1 {
+  font-family: "IBM Plex Serif", serif;
+  font-weight: 300 !important;
+  font-size: 3.25rem !important;
+  line-height: 125%;
+  color: var(--font-color-primary);
+  b {
+    font-family: "Inter";
+    font-weight: 700 !important;
+  }
+}
+
+h3 {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  line-height: 283% !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--font-color-primary);
+  margin: 0;
+}
+
+h4 {
+  font-family: "Inter";
+  font-weight: 400 !important;
+  font-size: 0.938rem !important;
+  line-height: 125%;
+  color: var(--font-color-primary);
+}
+
+h6 {
+  font-family: "IBM Plex Serif";
+  font-style: normal;
+  font-weight: 300 !important;
+  font-size: 1.563rem !important;
+  line-height: 120% !important;
+  color: var(--font-color-primary);
+}
+
+p {
+  font-family: "IBM Plex Serif";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.2rem;
+  line-height: 150%;
+  color: var(--font-color-primary);
+}
+
+// ================>MAIN ELEMENTS<==================
+#custom-footer {
+  background-color: var(--bg-color-secondary);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  min-height: 161px;
+  height: auto;
+  @include padding-x-container();
+  ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    li {
+      a {
+        @include style-font();
+        text-decoration: none;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  z-index: 999;
+  padding: 0 0 100px 0;
+  background: rgba($color: #fef3ec, $alpha: 0.8);
+  .nav-link {
+    font-family: "Inter";
+    color: var(--font-color-primary);
+    font-size: 0.938rem;
+    font-weight: 600;
+    line-height: 125%;
+    text-align: start;
+    padding: 0 1rem;
+    &:hover {
+      text-decoration: underline;
+      color: var(--font-color);
+    }
+  }
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  z-index: 999;
+  background: rgba($color: #fef3ec, $alpha: 0.8);
+
+  .navbar-mobile {
+    background-color: var(--bg-color-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    transition: all 0.2s;
+    margin: 5px;
+  }
+  .navbar {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .navbar-brand {
+    padding-right: 3rem;
+    img {
+      height: 63px;
+    }
+  }
+  .nav-link {
+    font-family: "Inter";
+    font-size: 0.938rem;
+    color: var(--font-color-primary);
+    font-weight: 600;
+    line-height: 125%;
+    text-align: start;
+    padding: 0;
+    padding-top: 1.6rem;
+    &:hover {
+      text-decoration: underline;
+      color: var(--font-color);
+    }
+  }
+
+  i {
+    font-size: 1rem;
+    color: var(--font-color);
+  }
+
+  li a:before {
+    content: "";
+    margin-right: 5px;
+  }
+
+  li a.active:before {
+    // content: ">";
+    text-decoration: none !important;
+  }
+}
+
+.team {
+  a {
+    color: var(--font-color-primary);
+    text-decoration: none;
+    font-weight: 400;
+    transition: all 0.3s;
+    &:hover {
+      text-decoration: underline;
+      color: var(--font-color-primary);
+      transition: all 0.3s;
+      text-underline-offset: 5px;
+    }
+  }
+}
+
+// ================> BUTTONS <==================
+
+.custom-btn-primary {
+  border-radius: 5px;
+  vertical-align: middle;
+  display: inline-block;
+  line-height: 1;
+  text-align: center;
+  box-sizing: border-box;
+  background-color: var(--bg-color-contrast);
+  border: 1px solid var(--bg-color-darker);
+  padding: 8px 35px;
+  cursor: pointer;
+
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 0.938rem;
+  color: var(--font-color-complementar);
+
+  transition: all 0.3s;
+
+  &:hover {
+    color: var(--font-color-complementar);
+    background-color: var(--bg-color-darker);
+    border: 1px solid var(--bg-color-darker);
+    transition: all 0.3s;
+  }
+}
