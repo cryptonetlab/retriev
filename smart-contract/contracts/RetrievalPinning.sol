@@ -11,7 +11,7 @@ import "./libs/ERC721.sol";
 import "./functions/render/IRENDER.sol";
 
 /**
- * @title Retrieval Pinning Protocol 
+ * @title Retrieval Pinning Protocol
  */
 contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     using Counters for Counters.Counter;
@@ -108,6 +108,8 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     uint32 public max_duration = 31_536_000;
     uint8 public slashes_threshold = 12;
     uint8 public rounds_limit = 12;
+    // Circuit breaker for testing purposes
+    bool public contract_protected = true;
     // Event emitted when new deal is created
     event DealProposalCreated(
         uint256 index,
@@ -301,6 +303,13 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     }
 
     /*
+        This method will allow owner to enable or disable a provider
+    */
+    function setProtectionStatus(bool _state) external onlyOwner {
+        contract_protected = _state;
+    }
+
+    /*
         This method will allow owner to enable or disable a referee
     */
     function setRefereeStatus(
@@ -352,6 +361,12 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         address[] memory _providers,
         address[] memory _appeal_addresses
     ) external payable nonReentrant {
+        if (contract_protected) {
+            require(
+                msg.value == 0,
+                "Contract is protected, can't accept value"
+            );
+        }
         require(
             duration >= min_duration && duration <= max_duration,
             "Duration is out allowed range"
