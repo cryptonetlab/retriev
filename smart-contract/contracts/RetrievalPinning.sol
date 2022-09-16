@@ -68,6 +68,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         // Adding block timestamp to calculate timeout
         uint256 origin_timestamp;
     }
+
     // Render contract
     IRENDER private token_render;
     // Mapping referees addresses
@@ -110,6 +111,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     uint8 public rounds_limit = 12;
     // Circuit breaker for testing purposes
     bool public contract_protected = true;
+    
     // Event emitted when new deal is created
     event DealProposalCreated(
         uint256 index,

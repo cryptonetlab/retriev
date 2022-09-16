@@ -47,7 +47,7 @@ const pin = async (node) => {
         configs.pin = argv._[1] === 'true' ? true : false
         try {
             fs.writeFileSync(node.nodePath + "/configs.json", JSON.stringify(configs, null, 4))
-            console.log("Max size policy changed correctly to:", configs.pin)
+            console.log("Pinning policy changed correctly to:", configs.pin)
         } catch (e) {
             console.log("Can't save file to disk, retry.")
         }
