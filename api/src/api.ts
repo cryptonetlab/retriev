@@ -65,6 +65,11 @@ app.post("/signup", async function (req, res) {
         req.body.tx = tx
         await db.insert('providers', req.body)
         res.send({ message: "Provided added correctly", error: false, tx: tx })
+      } else if (req.body.endpoint !== provider.endpoint) {
+        const instance = await contract()
+        const tx = await instance.contract.setProviderStatus(req.body.address, true, req.body.endpoint)
+        await db.update('provider', { address: req.body.address }, { $set: { endpoint: req.body.endpoint, tx } })
+        res.send({ message: "Endpoint changed correctly", error: false, tx: tx })
       } else {
         res.send({ message: "Provider exists yet", error: true })
       }
