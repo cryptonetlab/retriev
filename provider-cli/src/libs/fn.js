@@ -167,7 +167,7 @@ const storestrategy = async (node) => {
         })
         console.log('Response is:', update.data.message)
     } else {
-        console.log('Can\'t signup, API URL is not configured.')
+        console.log('Can\'t update strategy, API URL is not configured.')
     }
 }
 
@@ -175,16 +175,30 @@ const subscribe = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     if (configs.api_url !== undefined) {
         if (argv._[1] !== undefined && argv._[1].indexOf('https') !== undefined) {
-            const message = "Sign me as Retrieval Pinning provider."
-            const signature = await node.sign(message)
-            const { wallet } = await node.contract()
-            console.log('Signature is:', signature)
-            console.log('Sending request to api..')
-            const subscription = await axios.post(configs.api_url + '/signup', {
-                endpoint: argv._[1],
-                address: wallet.address,
-                signature: signature
-            })
+            const { wallet, contract } = await node.contract()
+            const is_permissioned = await contract.permissioned_providers()
+            if (is_permissioned) {
+                const message = "Sign me as Retrieval Pinning provider."
+                const signature = await node.sign(message)
+                console.log('Signature is:', signature)
+                console.log('Sending request to backend..')
+                const subscription = await axios.post(configs.api_url + '/signup', {
+                    endpoint: argv._[1],
+                    address: wallet.address,
+                    signature: signature
+                })
+                console.log('Response is:', subscription.data.message)
+            } else {
+                try {
+                    console.log("Sending on-chain transaction..")
+                    const tx = await contract.setProviderStatus(wallet.address, true, argv._[1])
+                    console.log("Found pending transaction at:", tx.hash)
+                    await tx.wait()
+                    console.log("Subscribed successfully!")
+                } catch (e) {
+                    console.log("Can't send transaction..")
+                }
+            }
             try {
                 configs.endpoint = argv._[1]
                 fs.writeFileSync(node.nodePath + "/configs.json", JSON.stringify(configs, null, 4))
@@ -192,7 +206,6 @@ const subscribe = async (node) => {
             } catch (e) {
                 console.log("Can't save file to disk, retry.")
             }
-            console.log('Response is:', subscription.data.message)
         } else {
             console.log('You must provide an endpoint where referees and clients will contact you.')
         }

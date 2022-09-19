@@ -109,9 +109,9 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     uint32 public max_duration = 31_536_000;
     uint8 public slashes_threshold = 12;
     uint8 public rounds_limit = 12;
-    // Circuit breaker for testing purposes
+    // Contract state variables
     bool public contract_protected = true;
-    
+    bool public permissioned_providers = false;
     // Event emitted when new deal is created
     event DealProposalCreated(
         uint256 index,
@@ -305,13 +305,6 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     }
 
     /*
-        This method will allow owner to enable or disable a provider
-    */
-    function setProtectionStatus(bool _state) external onlyOwner {
-        contract_protected = _state;
-    }
-
-    /*
         This method will allow owner to enable or disable a referee
     */
     function setRefereeStatus(
@@ -339,7 +332,15 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         address _provider,
         bool _state,
         string memory _endpoint
-    ) external onlyOwner {
+    ) external {
+        if (permissioned_providers) {
+            require(msg.sender == owner(), "Only owner can manage providers");
+        } else {
+            require(
+                _provider == msg.sender || msg.sender == owner(),
+                "You can't manage another provider's state"
+            );
+        }
         providers[_provider].active = _state;
         providers[_provider].endpoint = _endpoint;
         if (_state) {
@@ -685,7 +686,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         require(success, "Withdraw to user failed");
     }
 
-    // Admin function to fine tune the protocol
+    // Admin functions to fine tune the protocol
     function tuneProtocol(
         uint8 kind,
         uint256 value256,
@@ -716,6 +717,16 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     function tuneAddresses(uint8 kind, address addy) external onlyOwner {
         if (kind == 0) {
             token_render = IRENDER(addy);
+        } else if(kind == 1) {
+            protocol_address = addy;
+        }
+    }
+
+    function tuneBools(uint8 kind, bool state) external onlyOwner {
+        if (kind == 0) {
+            contract_protected = state;
+        } else if(kind == 1) {
+            permissioned_providers = state;
         }
     }
 }

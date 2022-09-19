@@ -127,7 +127,7 @@ export default {
         try {
           const contractInstance = new app.web3.eth.Contract(app.abi, app.contract);
           const receipt = await contractInstance.methods
-            .fixVaultAddress(app.address)
+            .fixProtocolAddress(app.address)
             .send({ from: app.account })
             .on("transactionHash", (tx) => {
               app.printLog("Waiting for confirmation at: " + tx);
