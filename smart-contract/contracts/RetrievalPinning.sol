@@ -110,7 +110,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     uint8 public slashes_threshold = 12;
     uint8 public rounds_limit = 12;
     // Contract state variables
-    bool public contract_protected = true;
+    bool public contract_protected = false;
     bool public permissioned_providers = false;
     // Event emitted when new deal is created
     event DealProposalCreated(
