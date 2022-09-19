@@ -1,0 +1,236 @@
+@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;300;400;600;800;900&display=swap");
+
+$main_color: #48f723;
+$bg_page: black;
+
+.green {
+  color: $main_color;
+}
+
+// MAIN STYLE
+
+html,
+body {
+  overflow-x: hidden;
+  background-color: $bg_page;
+  font-family: "Inconsolata", monospace;
+}
+
+.console-margin {
+  margin-top: 8px;
+  transition: all 0.2;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+h1 {
+  margin: 0;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+h2 {
+  margin: 0;
+  line-height: 1;
+  font-weight: bold;
+}
+
+// END MAIN STYLE
+
+.active-btn {
+  color: black;
+  background: $main_color;
+}
+
+.btn-selection {
+  background: black;
+  border: 1px dashed rgba(137, 133, 158, 0.5);
+  box-sizing: border-box;
+  border-radius: 8px;
+  margin: 0 20px;
+  padding: 2rem 3rem;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 2.5rem;
+  line-height: 125%;
+  text-transform: lowercase;
+  color: $main_color;
+  cursor: pointer;
+  transform: scale(1);
+  transition: all 0.3s;
+  margin-top: 30px;
+  &:hover {
+    transform: scale(1.1);
+    transition: all 0.3s;
+  }
+}
+.active-btn {
+  color: black !important;
+  background: $main_color !important;
+}
+
+.btn {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid $main_color;
+  color: $main_color;
+  box-sizing: border-box;
+  cursor: pointer;
+  transform: scale(1);
+  transition: all 0.3s;
+}
+
+.btn:hover {
+  color: $main_color;
+  transform: scale(1.2);
+}
+
+.b-left {
+  border-left: 1px solid $main_color;
+}
+
+.divider {
+  height: 1px;
+  width: 100%;
+  background-color: $main_color;
+}
+
+.form-control,
+textarea {
+  background-color: black;
+  outline-width: 0;
+  border: 1px solid $main_color;
+  color: $main_color;
+}
+
+input {
+  background-color: black;
+  color: $main_color;
+  border: 1px solid $main_color;
+  outline-width: 0;
+  width: 50%;
+}
+
+.footer {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 10px 0;
+  border-top: 1px solid $main_color;
+  background-color: black;
+}
+
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: $main_color;
+  color: black;
+  position: relative;
+  * {
+    margin: 0;
+    box-sizing: border-box;
+  }
+  .back-button {
+    position: absolute;
+    left: 30px;
+    top: 25%;
+    padding: 10px 12px;
+    background-color: black;
+    color: $main_color;
+    border-color: 1px solid $main_color;
+    line-height: 1;
+  }
+}
+
+.home {
+  min-height: 75vh;
+  color: $main_color;
+  a {
+    text-decoration: none;
+  }
+  .cardbox {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid $main_color;
+    color: $main_color;
+    transform: scale(1);
+    transition: all 0.3s;
+    cursor: pointer;
+    &:hover {
+      background-color: $main_color;
+      color: black;
+      transform: scale(1.1);
+    }
+    h3{
+      font-size:20px
+    }
+  }
+}
+
+.nft-selection {
+  background: black;
+  border: 1px dashed rgba(137, 133, 158, 0.5);
+  box-sizing: border-box;
+  border-radius: 8px;
+  margin: 0;
+  padding: 1rem;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 2.5rem;
+  line-height: 125%;
+  text-transform: lowercase;
+  color: #48f723;
+  cursor: pointer;
+  transform: scale(1);
+  transition: all 0.3s;
+}
+
+#result {
+  word-break: break-all;
+}
+
+.structure {
+  color: $main_color;
+  height: 100vh;
+  .console-log {
+    height: 85.8vh;
+    overflow-y: auto;
+  }
+}
+
+.container {
+  max-width: 100vw !important;
+}
+
+.container-artifact {
+  overflow-y: auto;
+  max-height: 70vh;
+}
+// SCROLLBAR
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px black;
+  border-radius: 0;
+  border-left: 1px solid $main_color;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: $main_color;
+  border-radius: 0;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: $main_color;
+}
+
+// SCROLLBAR END
