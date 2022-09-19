@@ -8,7 +8,7 @@
         <div class="navbar-brand">
           <a href="/"><img src="../assets/img/logo.svg" alt="" /></a>
         </div>
-        <a href="https://v2.pldr.dev/#/" target="_blank"
+        <a href="http://app.retriev.org/" target="_blank"
           ><div class="custom-btn-primary">Launch dApp</div></a
         >
       </div>

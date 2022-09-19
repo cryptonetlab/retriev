@@ -15,7 +15,7 @@
                 <b>Retrieval Pinning</b> is part of an interoperable ecosystem
                 of on-chain storage products.
               </h1>
-              <a href="https://v2.pldr.dev/#/" target="_blank">
+              <a href="http://app.retriev.org/" target="_blank">
                 <div class="custom-btn-primary mt-5 mb-5">Launch dApp</div></a
               >
             </div>
