@@ -1,16 +1,16 @@
 <template>
   <div>
-    <!-- MOBILE BLOCKER DAPP -->
+    <!-- MOBILE BLOCKER APP -->
     <div v-if="isMobile" class="mobile-blocker">
       <div class="logo mb-3">
         <img src="../assets/img/logo.svg" alt="" />
       </div>
       <h2 class="pay-off-2 tertiary-light-text">Retrieval Pinning</h2>
       <p class="has-text-centered mt-5">
-        For a better experience, use dApp from Desktop.
+        For a better experience, use app from Desktop.
       </p>
     </div>
-    <!-- END MOBILE BLOCKER DAPP -->
+    <!-- END MOBILE BLOCKER APP -->
     <section v-if="!isMobile" class="hero" :class="{ 'no-scroll': isWorking }">
       <!-- TODO: INFO DEAL TUTTE IN NERO -->
       <div v-if="account">

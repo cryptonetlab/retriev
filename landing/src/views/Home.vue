@@ -16,7 +16,7 @@
                 of on-chain storage products.
               </h1>
               <a href="http://app.retriev.org/" target="_blank">
-                <div class="custom-btn-primary mt-5 mb-5">Launch dApp</div></a
+                <div class="custom-btn-primary mt-5 mb-5">Launch App</div></a
               >
             </div>
           </div>

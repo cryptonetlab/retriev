@@ -9,7 +9,7 @@
           <a href="/"><img src="../assets/img/logo.svg" alt="" /></a>
         </div>
         <a href="http://app.retriev.org/" target="_blank"
-          ><div class="custom-btn-primary">Launch dApp</div></a
+          ><div class="custom-btn-primary">Launch App</div></a
         >
       </div>
       <div class="row justify-content-end b-top">
