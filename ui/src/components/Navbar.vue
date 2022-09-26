@@ -24,8 +24,8 @@
               :class="{ 'is-justify-content-flex-end': !isMobile }"
             >
               <div class="btn-light" style="cursor: default">
-                <i class="fa-brands fa-ethereum mr-2"></i
-                ><span v-if="parseInt(network) === 4">Rinkeby</span>
+                <i class="fa-brands fa-ethereum mr-2"></i>
+                <span v-if="parseInt(network) === 5">Goerli</span>
                 <span v-if="parseInt(network) === 1">Ethereum</span>
               </div>
               <div
@@ -35,10 +35,10 @@
               >
                 <span>{{ accountBalance.substr(0, 4) }}</span>
                 <span
-                  v-if="parseInt(network) === 4"
+                  v-if="parseInt(network) === 5"
                   style="text-transform: lowercase"
                 >
-                  r</span
+                  g</span
                 >
                 <span>ETH</span>
               </div>
