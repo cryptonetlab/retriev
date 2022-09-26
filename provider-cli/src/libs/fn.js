@@ -453,6 +453,10 @@ const processdeal = (node, deal_index) => {
                                     await tx.wait()
                                 } catch (e) {
                                     console.log("Can't deposit..")
+                                    if (proposalCache.indexOf(deal_index) === -1) {
+                                        console.log('Adding deal in cache for future retrieval')
+                                        proposalCache.push(deal_index)
+                                    }
                                     canAccept = false
                                 }
                             }
