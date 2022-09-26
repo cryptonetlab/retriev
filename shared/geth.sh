@@ -13,7 +13,7 @@ Type=simple
 User=root
 Restart=always
 RestartSec=12
-ExecStart=/bin/geth --rinkeby --http
+ExecStart=/bin/geth --goerli --http
 
 [Install]
 WantedBy=default.target" > /etc/systemd/system/geth.service

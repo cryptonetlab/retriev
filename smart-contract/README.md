@@ -35,4 +35,4 @@ As you can easily understand you're now able to write your own scripts (or tests
 yarn task myscript hardhat
 ```
 
-or you can change the `hardhat` with `rinkeby` (for instance) and deploy to Rinkeby network. Of course you will need to setup your own `provider` inside the `configs/rinkeby.json` file adding an Alchemy, Infura or whatsoever provider.
+or you can change the `hardhat` with `goerli` (for instance) and deploy to goerli network. Of course you will need to setup your own `provider` inside the `configs/goerli.json` file adding an Alchemy, Infura or whatsoever provider.

@@ -10,8 +10,8 @@ if [ $# -eq 0 ]
         sudo rm ./referee-cli/.env
         
         # Create .env files
-        cp ./provider-cli/.env.rinkeby ./provider-cli/.env
-        cp ./referee-cli/.env.rinkeby ./referee-cli/.env
+        cp ./provider-cli/.env.goerli ./provider-cli/.env
+        cp ./referee-cli/.env.goerli ./referee-cli/.env
         sed -i "s/API_KEY/$1/" ./provider-cli/.env
         sed -i "s/API_KEY/$1/" ./referee-cli/.env
 

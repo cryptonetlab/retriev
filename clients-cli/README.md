@@ -25,14 +25,14 @@ yarn
 Now you need to configure your node following those steps:
 
 ```
-cp .env.rinkeby .env
+cp .env.goerli .env
 nano .env
 ```
 
 you will see something like:
 ```
-CONTRACT_ADDRESS=0x4539359FCB09D5F677d8F92a6126275177E7B430
-WEB3_PROVIDER=https://rinkeby.infura.io/v3/API_KEY
+CONTRACT_ADDRESS=0xD9CF6f95B2C3E9Dd5c787B464D78B400F0A984b5
+WEB3_PROVIDER=https://goerli.infura.io/v3/API_KEY
 API_URL=https://api.pldr.dev
 ```
 
@@ -81,7 +81,7 @@ In this case: `0xF941940Df2191B1354dBCF9160C2782bfF638378` is your identity and 
 nano $HOME/.rpp/rpp-client/configs.json
 ```
 
-Please make sure to make a backup of this key and never share it. You will be able to import it in Metamask or other wallets. You will probably need some spare `rETH` and you can ask them from [Alchemy's Rinkeby faucet](https://rinkebyfaucet.com/).
+Please make sure to make a backup of this key and never share it. You will be able to import it in Metamask or other wallets. You will probably need some spare `rETH` and you can ask them from [Alchemy's goerli faucet](https://goerlifaucet.com/).
 
 ## Interact with protocol
 

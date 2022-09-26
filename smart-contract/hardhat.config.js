@@ -11,6 +11,9 @@ let hardhatConfigs = {
         interval: 500
       }
     },
+    goerli: {
+      url: provider
+    },
     rinkeby: {
       url: provider
     },

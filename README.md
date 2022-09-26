@@ -4,7 +4,7 @@ Retrieval Pinning is a Protocol designed by [CryptoNetLab](https://cryptonet.org
 
 If you want to go deeper on how the protocol works please read our [light paper](./PAPER.md).
 
-We have now an active deployment on Rinkeby network at [0x4539359FCB09D5F677d8F92a6126275177E7B430](https://rinkeby.etherscan.io/address/0x4539359FCB09D5F677d8F92a6126275177E7B430) and you can interact with the protocol at [onchain.storage](https://onchain.storage). 
+We have now an active deployment on Rinkeby network at [0xD9CF6f95B2C3E9Dd5c787B464D78B400F0A984b5](https://goerli.etherscan.io/address/0xD9CF6f95B2C3E9Dd5c787B464D78B400F0A984b5) and you can interact with the protocol at [onchain.storage](https://onchain.storage). 
 
 If you want to learn more about the project please visit our [official website](https://pldr.dev/#/).
 # Architecture
@@ -118,7 +118,7 @@ cd NODE_TYPE-cli
 yarn
 
 # Create .env file
-cp .env.rinkeby .env
+cp .env.goerli .env
 sed -i "s/API_KEY/YOUR_INFURA_API_KEY/" ./.env
 
 # Compile node
@@ -152,7 +152,7 @@ As you can see the node created a new identity (aka blockchain address) which wi
     "price_strategy": 0,
     "key": "0x1087e6f2fc70ab1a4ecd30b0782c6aaf69c38bf98e719cc618e191ea1e80d386",
     "address": "0x66Ed08Bd5067D2e1aEA20CB988FA594Db0F4b511",
-    "provider": "https://eth-rinkeby.alchemyapi.io/v2/YOUR_INFURA_ID",
+    "provider": "https://goerli.infura.io/v3/YOUR_INFURA_ID",
     "contract_address": "0xBc331A7bEa063DbCE8b3d16F77850B617Bc36cbA"
 }
 ```

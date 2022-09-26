@@ -24,6 +24,6 @@ ufw allow 4002
 ufw --force enable
 
 yarn
-cp .env.rinkeby .env
+cp .env.goerli .env
 
 pm2 start npm -- start
