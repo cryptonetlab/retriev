@@ -135,7 +135,7 @@
                                 class="hover-underline"
                                 style="display: block"
                                 :href="
-                                  'https://rinkeby.etherscan.io/address/' +
+                                  'https://goerli.etherscan.io/address/' +
                                   referee
                                 "
                                 target="_blank"

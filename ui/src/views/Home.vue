@@ -342,7 +342,7 @@ export default {
       abi: ABI,
       balance: 0,
       infuraURL: "https://ipfs.infura.io:5001/api/v0/add",
-      currentNetwork: { icon: "fa-solid fa-user-secret", text: "Rinkeby" },
+      currentNetwork: { icon: "fa-solid fa-user-secret", text: "Goerli" },
       appealsByUri: {},
       isUploadingIPFS: false,
       slashingMultiplier: 10,
@@ -427,7 +427,7 @@ export default {
           }, 100);
         } catch (e) {
           app.log(
-            "Can't automatically switch to rinkeby, please do it manually."
+            "Can't automatically switch to Goerli, please do it manually."
           );
         }
       }

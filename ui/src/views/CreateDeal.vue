@@ -707,7 +707,7 @@ export default {
       termsOfService: "",
       abi: ABI,
       balance: 0,
-      currentNetwork: { icon: "fa-solid fa-user-secret", text: "Rinkeby" },
+      currentNetwork: { icon: "fa-solid fa-user-secret", text: "Goerli" },
       fileToUpload: {},
       isUploadingIPFS: false,
       slashingMultiplier: 1000,
@@ -847,7 +847,7 @@ export default {
           }, 100);
         } catch (e) {
           app.log(
-            "Can't automatically switch to rinkeby, please do it manually."
+            "Can't automatically switch to goerli, please do it manually."
           );
         }
       }

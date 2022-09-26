@@ -228,7 +228,7 @@ export default {
           }, 100);
         } catch (e) {
           app.log(
-            "Can't automatically switch to rinkeby, please do it manually."
+            "Can't automatically switch to Goerli, please do it manually."
           );
         }
       }
