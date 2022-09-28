@@ -28,7 +28,7 @@
       {
         "indexed": false,
         "internalType": "string",
-        "name": "deal_uri",
+        "name": "data_uri",
         "type": "string"
       }
     ],
@@ -142,7 +142,7 @@
       {
         "indexed": false,
         "internalType": "string",
-        "name": "deal_uri",
+        "name": "data_uri",
         "type": "string"
       },
       {
@@ -451,7 +451,7 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "_deal_uri",
+        "name": "_data_uri",
         "type": "string"
       },
       {
@@ -492,7 +492,7 @@
     "outputs": [
       {
         "internalType": "string",
-        "name": "deal_uri",
+        "name": "data_uri",
         "type": "string"
       },
       {

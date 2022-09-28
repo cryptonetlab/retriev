@@ -87,7 +87,7 @@
               <div>
                 <h5>File name:</h5>
                 <p>{{ fileToUpload.name }}</p>
-                <h5>Deal URI:</h5>
+                <h5>Data URI:</h5>
                 <p v-if="dealUri">{{ dealUri }}</p>
                 <p v-if="!dealUri">Calculating...</p>
               </div>
@@ -108,7 +108,7 @@
           </div>
           <!-- END | Upload File -->
 
-          <!-- Appeal address & Deal URI -->
+          <!-- Appeal address & Data URI -->
           <div v-if="expertMode" class="columns is-mobile mt-6">
             <div class="column">
               <h5 class="mb-3">Appeal Address</h5>
@@ -137,7 +137,7 @@
               </div>
             </div>
             <div class="column">
-              <h5 class="mb-3">Deal URI</h5>
+              <h5 class="mb-3">Data URI</h5>
               <b-field class="mb-0" type="is-info">
                 <b-input
                   :disabled="isWorking || fileToUpload.name"
@@ -155,7 +155,7 @@
               <!-- ALERT BANNER PAYMENT -->
             </div>
           </div>
-          <!-- END | Appeal address & Deal URI -->
+          <!-- END | Appeal address & Data URI -->
 
           <div v-if="providers.length > 0" class="mt-6">
             <!-- TITLES TABLE -->

@@ -3,7 +3,7 @@
 Client's CLI is intended to be used as terminal tool to interact with the protocol so you can expect to do following things:
 
 - **Obtain providers list**: you can ask current providers list to deal with
-- **Create deals**: you can create deals with providers by passing a deal uri or reading a local file
+- **Create deals**: you can create deals with providers by passing a data uri or reading a local file
 - **Retrieve files**: you can retrieve files from provider and download them
 - **Make appeals**: you can make appeals for a specific deal, asking the referees to check file and eventually get a refund
 - **Withdraw funds**: you can withdraw funds if they got unlocked by the protocol

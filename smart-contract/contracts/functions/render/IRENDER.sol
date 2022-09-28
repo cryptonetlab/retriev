@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 interface IRENDER is IERC165 {
     struct Deal {
         // subject of the deal
-        string deal_uri;
+        string data_uri;
         // Timestamp request
         uint256 timestamp_request;
         // Starting timestamp
@@ -28,7 +28,7 @@ interface IRENDER is IERC165 {
 
     function render(
         uint256 deal_index,
-        string memory deal_uri,
+        string memory data_uri,
         uint256 value,
         uint256 timestamp_start,
         uint256 duration,

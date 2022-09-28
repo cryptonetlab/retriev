@@ -28,7 +28,7 @@ export const ABI = [
             {
                 "indexed": false,
                 "internalType": "string",
-                "name": "deal_uri",
+                "name": "data_uri",
                 "type": "string"
             }
         ],
@@ -155,7 +155,7 @@ export const ABI = [
             {
                 "indexed": false,
                 "internalType": "string",
-                "name": "deal_uri",
+                "name": "data_uri",
                 "type": "string"
             },
             {
@@ -422,7 +422,7 @@ export const ABI = [
         "inputs": [
             {
                 "internalType": "string",
-                "name": "_deal_uri",
+                "name": "_data_uri",
                 "type": "string"
             },
             {
@@ -471,7 +471,7 @@ export const ABI = [
         "outputs": [
             {
                 "internalType": "string",
-                "name": "deal_uri",
+                "name": "data_uri",
                 "type": "string"
             },
             {

@@ -32,7 +32,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     // Defining deal struct
     struct Deal {
         // subject of the deal
-        string deal_uri;
+        string data_uri;
         // Timestamp request
         uint256 timestamp_request;
         // Starting timestamp
@@ -81,9 +81,9 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     mapping(uint256 => Deal) public deals;
     // Mapping appeals
     mapping(uint256 => Appeal) public appeals;
-    // Mapping pending appeals using deal_uri as index
+    // Mapping pending appeals using data_uri as index
     mapping(string => uint256) public pending_appeals;
-    // Mapping active appeals using deal_uri as index
+    // Mapping active appeals using data_uri as index
     mapping(string => uint256) public active_appeals;
     // Mapping all appeals using deal_index as index
     mapping(uint256 => uint8) public tot_appeals;
@@ -118,7 +118,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     event DealProposalCreated(
         uint256 index,
         address[] providers,
-        string deal_uri,
+        string data_uri,
         address[] appeal_addresses
     );
     // Event emitted when a deal is canceled before being accepted
@@ -126,7 +126,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     // Event emitted when a deal is redeemed
     event DealRedeemed(uint256 index);
     // Event emitted when new appeal is created
-    event AppealCreated(uint256 index, address provider, string deal_uri);
+    event AppealCreated(uint256 index, address provider, string data_uri);
     // Event emitted when new appeal started
     event AppealStarted(uint256 index);
     // Event emitted when a slash message is recorded
@@ -159,7 +159,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         Deal storage deal = deals[tokenId];
         string memory output = token_render.render(
             tokenId,
-            deal.deal_uri,
+            deal.data_uri,
             deal.value,
             deal.timestamp_start,
             deal.duration,
@@ -346,7 +346,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         This method will allow client to create a deal
     */
     function createDealProposal(
-        string memory _deal_uri,
+        string memory _data_uri,
         uint256 duration,
         uint256 collateral,
         address[] memory _providers,
@@ -378,7 +378,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         // Creating the deal mapping
         deals[index].timestamp_request = block.timestamp;
         deals[index].owner = msg.sender;
-        deals[index].deal_uri = _deal_uri;
+        deals[index].data_uri = _data_uri;
         deals[index].duration = duration;
         deals[index].collateral = collateral;
         deals[index].value = msg.value;
@@ -400,7 +400,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         emit DealProposalCreated(
             index,
             _providers,
-            _deal_uri,
+            _data_uri,
             _appeal_addresses
         );
     }
@@ -483,11 +483,11 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
             deals[deal_index].duration;
         require(block.timestamp > timeout, "Deal didn't ended, can't redeem");
         require(
-            pending_appeals[deals[deal_index].deal_uri] == 0,
+            pending_appeals[deals[deal_index].data_uri] == 0,
             "Found a pending appeal, can't redeem"
         );
         require(
-            getRound(active_appeals[deals[deal_index].deal_uri]) >= 99,
+            getRound(active_appeals[deals[deal_index].data_uri]) >= 99,
             "Found an active appeal, can't redeem"
         );
 
@@ -524,14 +524,14 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         );
         // Check if there's a pending appeal request
         require(
-            pending_appeals[deals[deal_index].deal_uri] == 0,
+            pending_appeals[deals[deal_index].data_uri] == 0,
             "There's a pending appeal request"
         );
         // Check if appeal exists or is expired
         require(
-            active_appeals[deals[deal_index].deal_uri] == 0 ||
+            active_appeals[deals[deal_index].data_uri] == 0 ||
                 // Check if appeal is expired
-                getRound(active_appeals[deals[deal_index].deal_uri]) >= 99,
+                getRound(active_appeals[deals[deal_index].data_uri]) >= 99,
             "Appeal exists yet for provided hash"
         );
         // Be sure sent amount is exactly the appeal fee
@@ -550,7 +550,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         appealCounter.increment();
         uint256 index = appealCounter.current();
         // Storing appeal status
-        pending_appeals[deals[deal_index].deal_uri] = index;
+        pending_appeals[deals[deal_index].data_uri] = index;
         // Creating appeal
         appeals[index].deal_index = deal_index;
         appeals[index].active = true;
@@ -559,7 +559,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         emit AppealCreated(
             index,
             ownerOf(deal_index),
-            deals[deal_index].deal_uri
+            deals[deal_index].data_uri
         );
     }
 
@@ -574,10 +574,10 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         require(referees[msg.sender].active, "Only referees can start appeals");
         appeals[appeal_index].origin_timestamp = block.timestamp;
         // Reset pending appeal state
-        pending_appeals[deals[appeals[appeal_index].deal_index].deal_uri] = 0;
+        pending_appeals[deals[appeals[appeal_index].deal_index].data_uri] = 0;
         // Set active appeal state
         active_appeals[
-            deals[appeals[appeal_index].deal_index].deal_uri
+            deals[appeals[appeal_index].deal_index].data_uri
         ] = appeal_index;
         // Emit appeal created event
         emit AppealStarted(appeal_index);
@@ -591,7 +591,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         address[] memory _referees,
         bytes[] memory _signatures
     ) external {
-        uint256 appeal_index = active_appeals[deals[deal_index].deal_uri];
+        uint256 appeal_index = active_appeals[deals[deal_index].data_uri];
         uint256 round = getRound(appeal_index);
         require(deals[deal_index].timestamp_start > 0, "Deal is not active");
         require(appeals[appeal_index].active, "Appeal is not active");

@@ -44,8 +44,8 @@ function createDeal(node, nonce) {
         const { contract, wallet, ethers } = await node.contract()
         console.log("🔢 Creating deal #" + nonce)
         const ipfs_hash = await createRandomIPFS()
-        const deal_uri = "ipfs://" + ipfs_hash
-        console.log('🤙 Creating deal with URI:', deal_uri)
+        const data_uri = "ipfs://" + ipfs_hash
+        console.log('🤙 Creating deal with URI:', data_uri)
         // Setup deal parameters
         const value = "0"
         console.log('💸 Paying ' + value + ' wei for the deal.')
@@ -58,7 +58,7 @@ function createDeal(node, nonce) {
         const appeal_addresses = [wallet.address]
         try {
             const tx = await contract.createDealProposal(
-                deal_uri,
+                data_uri,
                 duration,
                 collateral,
                 ipfs_providers,

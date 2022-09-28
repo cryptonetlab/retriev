@@ -43,7 +43,7 @@ const deals = async (node) => {
         for (let k in dealsApi.data) {
             deals.push({
                 dealIndex: dealsApi.data[k].index,
-                dealUri: dealsApi.data[k].deal_uri,
+                dealUri: dealsApi.data[k].data_uri,
                 value: dealsApi.data[k].value,
                 provider: dealsApi.data[k].provider,
                 start_at: new Date(dealsApi.data[k].timestamp_start * 1000),
@@ -60,7 +60,7 @@ function createdeal(node) {
     return new Promise(async response => {
         const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
         if ((argv.dealuri !== undefined || argv.file !== undefined) && argv.provider !== undefined && argv.duration !== undefined) {
-            let deal_uri = argv.dealuri
+            let data_uri = argv.dealuri
             // TODO: Handle multi provider case
             let providers = [argv.provider]
             let providerStrategy = {}
@@ -118,8 +118,8 @@ function createdeal(node) {
                         },
                         data: form_data
                     });
-                    deal_uri = 'ipfs://' + uploaded.data.cid
-                    console.log('🤙 Creating deal with URI:', deal_uri)
+                    data_uri = 'ipfs://' + uploaded.data.cid
+                    console.log('🤙 Creating deal with URI:', data_uri)
                     value = file_size * duration * parseInt(providerStrategy.min_price)
                     collateral = value
                 } catch (e) {
@@ -128,9 +128,9 @@ function createdeal(node) {
                     process.exit()
                 }
             } else {
-                console.log('🤙 Creating deal with URI:', deal_uri)
+                console.log('🤙 Creating deal with URI:', data_uri)
             }
-            if (deal_uri !== undefined) {
+            if (data_uri !== undefined) {
                 console.log('💸 Paying ' + value + ' wei for the deal.')
                 const balance = await provider.getBalance(wallet.address)
                 console.log("💰 Wallet's balance is:", balance.toString(), 'wei')
@@ -140,7 +140,7 @@ function createdeal(node) {
                         let tx
                         if (parseInt(value) > 0) {
                             tx = await contract.createDealProposal(
-                                deal_uri,
+                                data_uri,
                                 duration,
                                 collateral,
                                 providers,
@@ -148,7 +148,7 @@ function createdeal(node) {
                                 , { value: value.toString() })
                         } else {
                             tx = await contract.createDealProposal(
-                                deal_uri,
+                                data_uri,
                                 duration,
                                 collateral,
                                 providers,
@@ -166,7 +166,7 @@ function createdeal(node) {
                     console.log("💀 Not enough funds to run transaction.")
                 }
             } else {
-                console.log("💀 Deal URI is undefined, please check.")
+                console.log("💀 Data URI is undefined, please check.")
             }
         } else {
             console.log('Please provide all required arguments running command using basic mode like:')
@@ -215,15 +215,15 @@ const retrieve = async (node) => {
             const { wallet, contract } = await node.contract()
             let deal
             if (argv._[1] !== undefined) {
-                console.log('Getting deal uri from contract..')
+                console.log('Getting data uri from contract..')
                 const details = await contract.deals(argv._[1])
                 const timestamp_end = (parseInt(details.timestamp_start) + parseInt(details.duration)) * 1000
-                if (details.deal_uri.length > 0 && timestamp_end >= new Date().getTime() && !details.canceled) {
+                if (details.data_uri.length > 0 && timestamp_end >= new Date().getTime() && !details.canceled) {
                     console.log("Obtaining provider from contract..")
                     const provider = await contract.ownerOf(argv._[1])
                     console.log("Provider is:", provider)
                     deal = {
-                        deal_uri: details.deal_uri,
+                        data_uri: details.data_uri,
                         timestamp_request: details.timestamp_request,
                         timestamp_start: details.timestamp_start,
                         duration: details.duration,
@@ -237,17 +237,17 @@ const retrieve = async (node) => {
             } else {
                 const dealsApi = await axios.get(configs.api_url + '/deals/' + wallet.address)
                 for (let k in dealsApi.data) {
-                    if (dealsApi.data[k].deal_uri.replace('ipfs://', '') === argv.dealuri.replace('ipfs://', '') && (parseInt(dealsApi.data[k].timestamp_end) * 1000) >= new Date().getTime() && dealsApi.data[k].canceled) {
+                    if (dealsApi.data[k].data_uri.replace('ipfs://', '') === argv.dealuri.replace('ipfs://', '') && (parseInt(dealsApi.data[k].timestamp_end) * 1000) >= new Date().getTime() && dealsApi.data[k].canceled) {
                         deal = dealsApi.data[k]
                     }
                 }
             }
-            if (deal !== undefined && deal.deal_uri !== undefined && deal.provider !== undefined) {
+            if (deal !== undefined && deal.data_uri !== undefined && deal.provider !== undefined) {
                 const provider = await contract.providers(deal.provider)
-                console.log('Retrieving ' + deal.deal_uri + ' from provider endpoint:', provider.endpoint)
+                console.log('Retrieving ' + deal.data_uri + ' from provider endpoint:', provider.endpoint)
                 const buffer = await axios({
                     method: "get",
-                    url: provider.endpoint + deal.deal_uri.replace('ipfs://', '/ipfs/'),
+                    url: provider.endpoint + deal.data_uri.replace('ipfs://', '/ipfs/'),
                     responseType: "arraybuffer"
                 })
                 if (buffer.data !== undefined) {
@@ -262,9 +262,9 @@ const retrieve = async (node) => {
                     }
                     const ft = await FileType.fromBuffer(buffer.data)
                     if (ft !== undefined && ft.ext !== undefined) {
-                        path += deal.deal_uri.replace('ipfs://', '') + "." + ft.ext
+                        path += deal.data_uri.replace('ipfs://', '') + "." + ft.ext
                     } else {
-                        path += deal.deal_uri.replace('ipfs://', '')
+                        path += deal.data_uri.replace('ipfs://', '')
                     }
                     console.log("Saving file to:", path)
                     fs.writeFileSync(path, buffer.data)
@@ -279,7 +279,7 @@ const retrieve = async (node) => {
             }
         }
     } else {
-        console.log('Please specify deal index or deal uri by typing:')
+        console.log('Please specify deal index or data uri by typing:')
         console.log('retrieve <DEAL_INDEX>')
         console.log('retrieve --dealuri=<DEAL_URI>')
     }

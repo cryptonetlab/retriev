@@ -32,7 +32,7 @@
             downloadFile(
               providerEndpoints[deal.provider] +
                 '/ipfs/' +
-                deal.deal_uri.replace('ipfs://', '')
+                deal.data_uri.replace('ipfs://', '')
             )
           "
           :disabled="
@@ -231,7 +231,7 @@
               <div class="column is-three-quarter-tablet is-half-desktop">
                 <div>
                   <div
-                    v-if="deal.deal_uri !== undefined"
+                    v-if="deal.data_uri !== undefined"
                     class="b-top-colored-grey b-bottom-colored-grey bg-pink-light px-2"
                     :class="{
                       'pb-3 pt-3': isDesktop,
@@ -239,7 +239,7 @@
                     }"
                   >
                     <p>
-                      <b>Deal URI: </b>
+                      <b>Data URI: </b>
                       <a
                         v-if="providerEndpoints[deal.provider] !== undefined"
                         style="word-wrap: break-word"
@@ -247,10 +247,10 @@
                         :href="
                           providerEndpoints[deal.provider] +
                           '/ipfs/' +
-                          deal.deal_uri.replace('ipfs://', '')
+                          deal.data_uri.replace('ipfs://', '')
                         "
                         target="_blank"
-                        >{{ deal.deal_uri }}</a
+                        >{{ deal.data_uri }}</a
                       >
                       <a
                         v-if="providerEndpoints[deal.provider] === undefined"
@@ -258,10 +258,10 @@
                         class="link-primary"
                         :href="
                           'https://ipfs.io/ipfs/' +
-                          deal.deal_uri.replace('ipfs://', '')
+                          deal.data_uri.replace('ipfs://', '')
                         "
                         target="_blank"
-                        >{{ deal.deal_uri }}</a
+                        >{{ deal.data_uri }}</a
                       >
                     </p>
                   </div>
@@ -493,7 +493,7 @@
                     :src="
                       providerEndpoints[deal.provider] +
                       '/ipfs/' +
-                      deal.deal_uri.replace('ipfs://', '')
+                      deal.data_uri.replace('ipfs://', '')
                     "
                   />
                 </div>
@@ -551,12 +551,12 @@ export default {
         const uri =
           app.providerEndpoints[app.deal.provider] +
           "/ipfs/" +
-          app.deal.deal_uri.replace("ipfs://", "");
+          app.deal.data_uri.replace("ipfs://", "");
         try {
           console.log("Downloading file from:", uri);
           const downloaded = await axios.get(uri);
           if (downloaded.data !== undefined) {
-            // app.download[app.deal.deal_uri] = true;
+            // app.download[app.deal.data_uri] = true;
             app.download = true;
             console.log("download became", app.download);
           }
@@ -620,7 +620,7 @@ export default {
         app.isWorking = true;
         app.workingMessage = "Creating Appeal...";
         const active_appeal = await contract.methods
-          .active_appeals(app.deal.deal_uri)
+          .active_appeals(app.deal.data_uri)
           .call();
         const round = await contract.methods.getRound(active_appeal).call();
         console.log("active appeal is:", active_appeal);

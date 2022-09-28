@@ -353,8 +353,8 @@ const processdeal = (node, deal_index) => {
                     if (new Date().getTime() < expires_at && !accepted) {
                         let policyMet = false
                         // Retrive the file from IPFS
-                        console.log("Retrieving file stats from:", proposal.deal_uri)
-                        const file_stats = await ipfs("post", "/files/stat?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/"))
+                        console.log("Retrieving file stats from:", proposal.data_uri)
+                        const file_stats = await ipfs("post", "/files/stat?arg=" + proposal.data_uri.replace("ipfs://", "/ipfs/"))
                         console.log("File stats:", file_stats)
                         if (file_stats !== false && file_stats.Size !== undefined) {
                             if (configs.min_price !== undefined && parseInt(configs.min_price) > 0) {
@@ -368,7 +368,7 @@ const processdeal = (node, deal_index) => {
                                         deal_index: deal_index.toString(),
                                         owner: proposal.owner,
                                         action: "DEAL_UNDERPRICED",
-                                        deal_uri: proposal.deal_uri,
+                                        data_uri: proposal.data_uri,
                                         timestamp: new Date().getTime()
                                     })
                                     await node.broadcast(message, "message")
@@ -388,7 +388,7 @@ const processdeal = (node, deal_index) => {
                                     deal_index: deal_index.toString(),
                                     owner: proposal.owner,
                                     action: "COLLATERAL_TOO_BIG",
-                                    deal_uri: proposal.deal_uri,
+                                    data_uri: proposal.data_uri,
                                     timestamp: new Date().getTime()
                                 })
                                 await node.broadcast(message, "message")
@@ -401,7 +401,7 @@ const processdeal = (node, deal_index) => {
                                         deal_index: deal_index.toString(),
                                         owner: proposal.owner,
                                         action: "FILE_TOO_LARGE",
-                                        deal_uri: proposal.deal_uri,
+                                        data_uri: proposal.data_uri,
                                         timestamp: new Date().getTime()
                                     })
                                     await node.broadcast(message, "message")
@@ -417,7 +417,7 @@ const processdeal = (node, deal_index) => {
                                         deal_index: deal_index.toString(),
                                         owner: proposal.owner,
                                         action: "DEAL_TOO_LONG",
-                                        deal_uri: proposal.deal_uri,
+                                        data_uri: proposal.data_uri,
                                         timestamp: new Date().getTime()
                                     })
                                     await node.broadcast(message, "message")
@@ -430,7 +430,7 @@ const processdeal = (node, deal_index) => {
                                 deal_index: deal_index.toString(),
                                 owner: proposal.owner,
                                 action: "UNRETRIEVABLE",
-                                deal_uri: proposal.deal_uri,
+                                data_uri: proposal.data_uri,
                                 timestamp: new Date().getTime()
                             })
                             await node.broadcast(message, "message")
@@ -473,12 +473,12 @@ const processdeal = (node, deal_index) => {
                                     deal_index: deal_index.toString(),
                                     action: "ACCEPTED",
                                     owner: proposal.owner,
-                                    deal_uri: proposal.deal_uri,
+                                    data_uri: proposal.data_uri,
                                     txid: tx.hash
                                 })
                                 // Check if pinning mode is active
                                 if (configs.pin !== undefined && configs.pin === true) {
-                                    const pinned = await ipfs("post", "/pin/add?arg=" + proposal.deal_uri.replace("ipfs://", "/ipfs/") + '&recursive=true')
+                                    const pinned = await ipfs("post", "/pin/add?arg=" + proposal.data_uri.replace("ipfs://", "/ipfs/") + '&recursive=true')
                                     console.log('Pinning status is:', pinned)
                                 }
                                 await node.broadcast(message, "message")

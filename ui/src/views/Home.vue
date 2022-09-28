@@ -67,7 +67,7 @@
                           <input
                             class="input is-info"
                             type="text"
-                            placeholder=" Search Deal URI"
+                            placeholder=" Search Data URI"
                             v-model="searcher"
                           />
                           <span class="icon is-small is-left">
@@ -503,7 +503,7 @@ export default {
       // TODO: Optimize contract
       const contract = new app.web3.eth.Contract(app.abi, app.contract);
       const appeal_index = await contract.methods
-        .active_appeals(deal.deal_uri)
+        .active_appeals(deal.data_uri)
         .call();
       const round = await contract.methods.getRound(appeal_index).call();
       console.log(
@@ -517,7 +517,7 @@ export default {
         parseInt(deal.appeal.round) < 99
       ) {
         deal.canAppeal = false;
-        app.appealsByUri[deal.deal_uri] = deal.appeal;
+        app.appealsByUri[deal.data_uri] = deal.appeal;
       }
       // Check if deal ended
       if (deal.timestamp_end * 1000 < new Date().getTime() || deal.canceled) {
@@ -527,7 +527,7 @@ export default {
       if (deal.appeal === undefined || Object.keys(deal.appeal) === 0) {
         deal.canAppeal = true;
       }
-      if (app.appealsByUri[deal.deal_uri] !== undefined) {
+      if (app.appealsByUri[deal.data_uri] !== undefined) {
         deal.canAppeal = false;
       }
       // Set expiration timestamp
@@ -907,7 +907,7 @@ export default {
               parseInt(deal.appeal.round) < 99
             ) {
               deal.canAppeal = false;
-              appealsByUri[deal.deal_uri] = deal.appeal;
+              appealsByUri[deal.data_uri] = deal.appeal;
             }
             // Check if deal ended
             if (
@@ -936,7 +936,7 @@ export default {
             if (deal.appeal === undefined || Object.keys(deal.appeal) === 0) {
               deal.canAppeal = true;
             }
-            if (appealsByUri[deal.deal_uri] !== undefined) {
+            if (appealsByUri[deal.data_uri] !== undefined) {
               deal.canAppeal = false;
             }
             console.log(
@@ -999,7 +999,7 @@ export default {
               parseInt(deal.appeal.round) < 99
             ) {
               deal.canAppeal = false;
-              appealsByUri[deal.deal_uri] = deal.appeal;
+              appealsByUri[deal.data_uri] = deal.appeal;
             }
             // Check if deal ended
             if (deal.timestamp_end * 1000 < new Date().getTime()) {
@@ -1009,7 +1009,7 @@ export default {
             if (deal.appeal === undefined || Object.keys(deal.appeal) === 0) {
               deal.canAppeal = true;
             }
-            if (appealsByUri[deal.deal_uri] !== undefined) {
+            if (appealsByUri[deal.data_uri] !== undefined) {
               deal.canAppeal = false;
             }
 
@@ -1028,12 +1028,12 @@ export default {
       }
     },
     searchDealURI() {
-      // filter deal by deal_uri by v-model "searcher"
+      // filter deal by data_uri by v-model "searcher"
       console.log("Starting search...");
       const app = this;
       if (app.searcher.length > 0) {
         app.deals = app.deals.filter((deal) => {
-          return deal.deal_uri
+          return deal.data_uri
             .toLowerCase()
             .includes(app.searcher.toLowerCase());
         });
@@ -1050,8 +1050,8 @@ export default {
     //   return this.deals.filter((deal) => {
     //     if (this.searcher.length > 0) {
     //       return (
-    //         deal.deal_uri !== undefined &&
-    //         deal.deal_uri.toLowerCase().includes(this.searcher.toLowerCase())
+    //         deal.data_uri !== undefined &&
+    //         deal.data_uri.toLowerCase().includes(this.searcher.toLowerCase())
     //       );
     //     } else {
     //       return Object.keys(deal).sort(); // Do your custom sorting here

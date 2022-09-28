@@ -42,15 +42,15 @@ const getbalance = async (node) => {
     console.log("Balance is " + ethers.utils.formatEther(balance) + " ETH")
 }
 
-const retrievefile = (provider, deal_uri) => {
+const retrievefile = (provider, data_uri) => {
     return new Promise(async response => {
         try {
-            const hash = deal_uri.replace('ipfs://', "")
+            const hash = data_uri.replace('ipfs://', "")
             console.log("Retrieving file from:", provider + "/ipfs/" + hash)
             const file = await axios.get(provider + "/ipfs/" + hash, { responseType: "arraybuffer" })
             const stream = Readable.from(file.data);
             const formData = new FormData();
-            formData.append("file", stream, { filename: deal_uri });
+            formData.append("file", stream, { filename: data_uri });
             let cidVersion = 1
             if (hash.indexOf('Qm') === 0) {
                 cidVersion = 0
@@ -94,7 +94,7 @@ const processappeal = async (node, index) => {
                 console.log("Provider is:", ownerOf)
                 const provider = await contract.providers(ownerOf)
                 console.log("Asking file to provider at", provider.endpoint)
-                const retrieved = await retrievefile(provider.endpoint, deal.deal_uri)
+                const retrieved = await retrievefile(provider.endpoint, deal.data_uri)
                 console.log("Processing appeal as leader.")
                 if (retrieved === false) {
                     console.log("Slashing provider on-chain for appeal " + index + "..")
@@ -151,7 +151,7 @@ const processappeal = async (node, index) => {
                         console.log("Provider is:", ownerOf)
                         const provider = await contract.providers(ownerOf)
                         console.log("Asking file to provider at", provider.endpoint)
-                        const retrieved = await retrievefile(provider.endpoint, deal.deal_uri)
+                        const retrieved = await retrievefile(provider.endpoint, deal.data_uri)
                         if (retrieved === false) {
                             const prefix = await contract.getPrefix(index)
                             // Create hashed version of message
@@ -201,7 +201,7 @@ const processappeal = async (node, index) => {
         } else {
             console.log("Appeal #" + index + " terminated, caching and unpinning.")
             try {
-                await axios.post("http://localhost:5001/api/v0/pin/rm?arg=" + deal.deal_uri.replace('ipfs://', '/ipfs/'))
+                await axios.post("http://localhost:5001/api/v0/pin/rm?arg=" + deal.data_uri.replace('ipfs://', '/ipfs/'))
             } catch (e) { }
             appealsProcessed.push(index.toString())
             CONCURRENT_APPEALS--
@@ -273,11 +273,11 @@ const parseslash = async (node, raw) => {
                     console.log("Retrieving again the file to check if leader is not corrupted..")
                     // Process positive slash
                     // This means leader found the file so try to retrieve the file from leader to double-check
-                    const retrieved = await retrievefile(leaderDetails.endpoint, deal.deal_uri)
+                    const retrieved = await retrievefile(leaderDetails.endpoint, deal.data_uri)
                     if (retrieved) {
                         console.log("File was retrieved correctly!")
                     } else {
-                        node.log("ERROR_RETRIEVE_LEADER_" + appeal.deal_index.toString(), deal.deal_uri)
+                        node.log("ERROR_RETRIEVE_LEADER_" + appeal.deal_index.toString(), deal.data_uri)
                         console.log("File wasn't retrieved correctly, referee lies!")
                     }
                     appealsProcessed.push(slash.appeal.toString())
@@ -304,7 +304,7 @@ const parseslash = async (node, raw) => {
                                 })
                             }
                         }
-                        const retrieved = await retrievefile(leaderDetails.endpoint, deal.deal_uri)
+                        const retrieved = await retrievefile(leaderDetails.endpoint, deal.data_uri)
                         if (retrieved) {
                             console.log("File was retrieved correctly!")
                         } else {

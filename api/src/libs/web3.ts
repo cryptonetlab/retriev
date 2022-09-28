@@ -46,7 +46,8 @@ export const parseReferees = async () => {
         const parsed = {
           address: referee,
           active: details.active,
-          endpoint: details.endpoint
+          endpoint: details.endpoint,
+          contract: process.env.CONTRACT_ADDRESS
         }
         const checkDB = await db.find('referees', { address: referee })
         if (checkDB === null) {
@@ -95,7 +96,7 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
         timestamp_start: onchain_deal.timestamp_start.toString(),
         timestamp_request: onchain_deal.timestamp_request.toString(),
         duration: onchain_deal.duration.toString(),
-        deal_uri: onchain_deal.deal_uri,
+        data_uri: onchain_deal.data_uri,
         owner: onchain_deal.owner,
         value: onchain_deal.value.toString(),
         collateral: onchain_deal.collateral.toString(),
@@ -103,7 +104,8 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
         provider: provider,
         appeal: {},
         appeal_requested: appeal_requested,
-        proposal_tx: proposal_tx
+        proposal_tx: proposal_tx,
+        contract: process.env.CONTRACT_ADDRESS
       }
       deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
       const checkDB = await db.find('deals', { index: deal_index })
@@ -120,7 +122,7 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
       } else {
         console.log('[DEALS] --> Updating deal')
         if (provider !== 'NOT_ACCEPTED') {
-          await unpin(deal.deal_uri)
+          await unpin(deal.data_uri)
         }
         if (accept_tx === '') {
           accept_tx = checkDB.accept_tx
@@ -171,7 +173,7 @@ export const parseAppeal = async (deal_index, origin_tx = '') => {
   return new Promise(async response => {
     const instance = await contract()
     const onchain_deal = await instance.contract.deals(deal_index);
-    const active_appeal = await instance.contract.active_appeals(onchain_deal.deal_uri)
+    const active_appeal = await instance.contract.active_appeals(onchain_deal.data_uri)
     const db = new Database.default.Mongo();
     if (active_appeal > 0) {
       console.log("[APPEALS] Found appeal for deal #" + deal_index + ", asking details..");
@@ -245,7 +247,7 @@ export const listenEvents = async () => {
       parseDeal(deal_index, '', event.transactionHash)
     }
   })
-  instance.contract.on("DealProposalCreated", async (index, providers, deal_uri, appeal_addresses, event) => {
+  instance.contract.on("DealProposalCreated", async (index, providers, data_uri, appeal_addresses, event) => {
     console.log("[EVENT] Deal proposal created")
     const deal_index = parseInt(index.toString())
     parseDeal(deal_index, event.transactionHash)
@@ -255,7 +257,7 @@ export const listenEvents = async () => {
     const deal_index = parseInt(index.toString())
     parseDeal(deal_index, '', '', event.transactionHash)
   })
-  instance.contract.on("AppealCreated", async (appeal_index, provider, deal_uri, event) => {
+  instance.contract.on("AppealCreated", async (appeal_index, provider, data_uri, event) => {
     console.log("[EVENT] Appeal created")
     const appeal = await instance.contract.appeals(appeal_index)
     const deal_index = parseInt(appeal.deal_index.toString())

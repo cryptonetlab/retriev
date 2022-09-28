@@ -126,11 +126,11 @@ After the $k$ rounds are over, the contract checks the total number of “failur
 
 
 #### List of events in the smart contract:
-1.    `DealProposalCreated(uint256 index, address[] providers, string deal_uri)`: Event emitted when new deal proposal is created by the client;
+1.    `DealProposalCreated(uint256 index, address[] providers, string data_uri)`: Event emitted when new deal proposal is created by the client;
 2.  `DealProposalAccepted(uint256 index)`: Event emitted when a deal proposal is accepted by a provider (defines `timestamp_start`);
 3.  `DealProposalCanceled(uint256 index)`: Event emitted when a deal proposal is canceled by the client before being accepted;
-4. `AppealCreated(uint256 index, address provider, string deal_uri)`: Event emitted when new appeal is created by the client (defines `request_timestamp`);
-5. `AppealStarted(uint256 index, address provider, string deal_uri)`: Event emitted when an appeal process is started by a referee (defines `origin_timestamp`);
+4. `AppealCreated(uint256 index, address provider, string data_uri)`: Event emitted when new appeal is created by the client (defines `request_timestamp`);
+5. `AppealStarted(uint256 index, address provider, string data_uri)`: Event emitted when an appeal process is started by a referee (defines `origin_timestamp`);
 6. `RoundSlashed(uint256 index)`: Event emitted when a failure message is recorded during the process of an appeal; 
 7. `DealInvalidated(uint256 index)`: Event emitted when a deal is invalidated (ie the appeal process terminates with failure messages in each rounds);
 8. `DealRedeemed(uint256 index)`: Event emitted when a deal is redeemed by the provider (needed to get the `payment`).

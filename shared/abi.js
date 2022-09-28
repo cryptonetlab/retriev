@@ -28,7 +28,7 @@ exports.abi = [
       {
         "indexed": false,
         "internalType": "string",
-        "name": "deal_uri",
+        "name": "data_uri",
         "type": "string"
       }
     ],
@@ -142,7 +142,7 @@ exports.abi = [
       {
         "indexed": false,
         "internalType": "string",
-        "name": "deal_uri",
+        "name": "data_uri",
         "type": "string"
       },
       {
@@ -438,7 +438,7 @@ exports.abi = [
     "inputs": [
       {
         "internalType": "string",
-        "name": "_deal_uri",
+        "name": "_data_uri",
         "type": "string"
       },
       {
@@ -479,7 +479,7 @@ exports.abi = [
     "outputs": [
       {
         "internalType": "string",
-        "name": "deal_uri",
+        "name": "data_uri",
         "type": "string"
       },
       {
