@@ -71,6 +71,8 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
 
     // Render contract
     IRENDER private token_render;
+    // Mapping admin roles
+    mapping(uint8 => mapping(address => bool)) public admins;
     // Mapping referees addresses
     mapping(address => Referee) public referees;
     // Mapping referees providers
@@ -220,20 +222,6 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     }
 
     /*
-        This method will return the amount of slashes needed to close the appeal
-    */
-    function returnSlashesThreshold() public view returns (uint8) {
-        return slashes_threshold;
-    }
-
-    /*
-        This method will return the amount of rounds needed to positive timeout
-    */
-    function returnRoundsLimit() public view returns (uint8) {
-        return rounds_limit;
-    }
-
-    /*
         This method will return the amount in ETH needed to create an appeal
     */
     function returnAppealFee(uint256 deal_index) public view returns (uint256) {
@@ -276,13 +264,13 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         This method will return the round for provided appeal
     */
     function getRound(uint256 appeal_index) public view returns (uint256) {
-        uint256 appeal_duration = round_duration * returnRoundsLimit();
+        uint256 appeal_duration = round_duration * rounds_limit;
         uint256 appeal_end = appeals[appeal_index].origin_timestamp +
             appeal_duration;
         if (appeal_end >= block.timestamp) {
             uint256 remaining_time = appeal_end - block.timestamp;
             uint256 remaining_rounds = remaining_time / round_duration;
-            uint256 round = returnRoundsLimit() - remaining_rounds;
+            uint256 round = rounds_limit - remaining_rounds;
             return round;
         } else {
             // Means appeal is ended
@@ -612,7 +600,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
             "Only referees can process appeals"
         );
         require(
-            round <= returnRoundsLimit(),
+            round <= rounds_limit,
             "This appeal can't be processed anymore"
         );
         require(
@@ -644,7 +632,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
             "Appeal wasn't slashed, not the leader or no consensus"
         );
         emit RoundSlashed(appeal_index);
-        if (appeals[appeal_index].slashes >= returnSlashesThreshold()) {
+        if (appeals[appeal_index].slashes >= slashes_threshold) {
             deals[deal_index].timestamp_start = 0;
             appeals[appeal_index].active = false;
             // Return value of deal back to owner
@@ -686,46 +674,87 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         require(success, "Withdraw to user failed");
     }
 
-    // Admin functions to fine tune the protocol
-    function tuneProtocol(
+    /*
+        Admin function to setup roles
+    */
+
+    function setRole(
+        uint8 kind,
+        bool status,
+        address admin
+    ) external onlyOwner {
+        // Set specified role, using:
+        // 1 - Protocol managers
+        // 2 - Referees managers
+        // 3 - Providers managers
+        admins[kind][admin] = status;
+    }
+
+    /*
+        Admin functions to fine tune protocol
+    */
+    function tuneRefereesVariables(
         uint8 kind,
         uint256 value256,
         uint8 value8,
         uint32 value32
-    ) external onlyOwner {
+    ) external {
+        require(
+            msg.sender == owner() || admins[2][msg.sender],
+            "Can't manage referees variables"
+        );
         if (kind == 0) {
             committee_divider = value8;
         } else if (kind == 1) {
-            slashing_multiplier = value256;
-        } else if (kind == 2) {
-            proposal_timeout = value32;
-        } else if (kind == 3) {
-            round_duration = value32;
-        } else if (kind == 4) {
-            min_duration = value32;
-        } else if (kind == 5) {
-            max_duration = value32;
-        } else if (kind == 6) {
-            slashes_threshold = value8;
-        } else if (kind == 7) {
-            rounds_limit = value8;
-        } else if (kind == 8) {
             max_appeals = value8;
+        } else if (kind == 2) {
+            round_duration = value32;
+        } else if (kind == 3) {
+            rounds_limit = value8;
+        } else if (kind == 4) {
+            slashes_threshold = value8;
         }
     }
 
-    function tuneAddresses(uint8 kind, address addy) external onlyOwner {
+    function tuneProvidersVariables(
+        uint8 kind,
+        uint256 value256,
+        uint8 value8,
+        uint32 value32
+    ) external {
+        require(
+            msg.sender == owner() || admins[3][msg.sender],
+            "Can't manage providers variables"
+        );
+        if (kind == 0) {
+            proposal_timeout = value32;
+        } else if (kind == 1) {
+            min_deal_value = value256;
+        } else if (kind == 2) {
+            slashing_multiplier = value256;
+        } else if (kind == 3) {
+            min_duration = value32;
+        } else if (kind == 4) {
+            max_duration = value32;
+        }
+    }
+
+    function tuneProtocolVariables(
+        uint8 kind,
+        address addy,
+        bool state
+    ) external {
+        require(
+            msg.sender == owner() || admins[1][msg.sender],
+            "Can't manage protocol variables"
+        );
         if (kind == 0) {
             token_render = IRENDER(addy);
-        } else if(kind == 1) {
+        } else if (kind == 1) {
             protocol_address = addy;
-        }
-    }
-
-    function tuneBools(uint8 kind, bool state) external onlyOwner {
-        if (kind == 0) {
+        } else if (kind == 2) {
             contract_protected = state;
-        } else if(kind == 1) {
+        } else if (kind == 3) {
             permissioned_providers = state;
         }
     }
