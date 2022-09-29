@@ -329,9 +329,13 @@ const getbalance = async (node) => {
 }
 
 const getproposals = async (node) => {
-    const { contract, wallet, ethers } = await node.contract()
-    const filter = await contract.filters.DealProposalCreated()
-    const appealsEvents = await contract.queryFilter(filter)
+    const { contract, provider } = await node.contract()
+    const dealCounter = parseInt((await contract.totalSupply()).toString())
+    console.log("Found", dealCounter, "deals to parse.")
+    let appealsEvents = []
+    for (let k = 0; k <= dealCounter; k++) {
+        appealsEvents.push({ args: { index: k } })
+    }
     return appealsEvents
 }
 
