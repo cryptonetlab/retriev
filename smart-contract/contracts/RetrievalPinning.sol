@@ -390,7 +390,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
             );*/
             deals[index].providers[_providers[i]] = true;
         }
-        // CAdd appeal addresses to deal
+        // Add appeal addresses to deal
         for (uint256 i = 0; i < _appeal_addresses.length; i++) {
             deals[index].appeal_addresses[_appeal_addresses[i]] = true;
         }
@@ -518,6 +518,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
                     deals[deal_index].duration),
             "Deal ended, can't create appeals"
         );
+        // Check if appeal address was listed
         require(
             deals[deal_index].appeal_addresses[msg.sender],
             "Only authorized addresses can create appeal"
