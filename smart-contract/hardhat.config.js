@@ -20,6 +20,9 @@ let hardhatConfigs = {
     ropsten: {
       url: provider
     },
+    mumbai: {
+      url: provider
+    },
     mainnet: {
       url: provider
     }
@@ -63,7 +66,7 @@ if (process.env.POLYGONSCAN !== undefined && process.env.POLYGONSCAN !== '') {
   hardhatConfigs.etherscan = { apiKey: { polygonMumbai: process.env.POLYGONSCAN } }
 }
 
-if (process.env.ETHERSCAN !== undefined && process.env.ETHERSCAN !== '') {
+if (process.env.ETHERSCAN !== undefined && process.env.ETHERSCAN !== '' && process.env.POLYGONSCAN === undefined) {
   hardhatConfigs.etherscan = { apiKey: { mainnet: process.env.ETHERSCAN, rinkeby: process.env.ETHERSCAN, ropsten: process.env.ETHERSCAN, goerli: process.env.ETHERSCAN } }
 }
 

@@ -24,6 +24,7 @@ async function run() {
             fs.writeFileSync('./artifacts/arguments.js', `module.exports = [` + arguments + `]`)
             child_process.execSync(
                 'ETHERSCAN="' + configs.etherscan_key + '" ' +
+                'POLYGONSCAN="' + configs.polygonscan_key + '" ' +
                 'PROVIDER="' + configs.provider + '" ' +
                 'npx hardhat verify --show-stack-traces --network ' + configs.network +
                 ' ' + configs.contract_address +
