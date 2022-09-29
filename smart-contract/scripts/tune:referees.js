@@ -11,20 +11,20 @@ async function main() {
     const contract = new ethers.Contract(configs.contract_address, ABI.abi, wallet)
 
     const tune = {
-        committee_divider: { v256: 0, v8: 4, v32: 0 },
-        max_appeals: { v256: 0, v8: 5, v32: 0 },
-        round_duration: { v256: 0, v8: 0, v32: 300 },
-        rounds_limit: { v256: 0, v8: 12, v32: 0 },
-        slashes_threshold: { v256: 0, v8: 12, v32: 0 }
+        committee_divider: { v8: 4, v32: 0 },
+        max_appeals: { v8: 5, v32: 0 },
+        round_duration: { v8: 0, v32: 300 },
+        rounds_limit: { v8: 12, v32: 0 },
+        slashes_threshold: { v8: 12, v32: 0 }
     }
-    
+
     try {
         let i = 0
         for (let k in tune) {
             console.log("Changing parameter " + k + " to:", tune[k])
             const before = await contract[k]()
             console.log("Value before change is:", before.toString())
-            const receipt = await contract.tuneRefereesVariables(i, tune[k].v256, tune[k].v8, tune[k].v32)
+            const receipt = await contract.tuneRefereesVariables(i, tune[k].v8, tune[k].v32)
             await receipt.wait()
             console.log(receipt)
             const changed = await contract[k]()

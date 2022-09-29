@@ -696,7 +696,6 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     */
     function tuneRefereesVariables(
         uint8 kind,
-        uint256 value256,
         uint8 value8,
         uint32 value32
     ) external {
@@ -720,7 +719,6 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     function tuneProvidersVariables(
         uint8 kind,
         uint256 value256,
-        uint8 value8,
         uint32 value32
     ) external {
         require(
