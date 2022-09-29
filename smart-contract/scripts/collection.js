@@ -14,14 +14,17 @@ async function main() {
     let ended = false
     let i = 1
     let errors = 0
+    if (!fs.existsSync('./preview_nft')) {
+        fs.mkdirSync('./preview_nft')
+    }
     while (!ended) {
         try {
             const owner = await contract.ownerOf(i)
             const uri = await contract.tokenURI(i)
             console.log('TOKENID: ' + i, 'OWNER IS', owner)
-            console.log(Buffer.from(uri.split('base64,')[1], 'base64').toString())
+            // console.log(Buffer.from(uri.split('base64,')[1], 'base64').toString())
             const decodedStr = JSON.parse(Buffer.from(uri.split('base64,')[1], 'base64').toString());
-            console.log(JSON.parse(decodedStr))
+            fs.writeFileSync('./preview_nft/' + i + '.html', '<img width="1300" src="' + decodedStr.image + '" />')
             console.log('--')
             i++
             errors = 0
