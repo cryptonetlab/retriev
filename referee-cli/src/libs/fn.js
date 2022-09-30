@@ -415,10 +415,14 @@ const processcache = (node) => {
     }
 }
 
-const returnappeals = async (node) => {
-    const { contract, wallet, ethers } = await node.contract()
-    const filter = await contract.filters.AppealCreated()
-    const appealsEvents = await contract.queryFilter(filter)
+const getappeals = async (node) => {
+    const { contract, provider } = await node.contract()
+    const dealCounter = parseInt((await contract.totalAppeals()).toString())
+    console.log("Found", dealCounter, "appeals to parse.")
+    let appealsEvents = []
+    for (let k = 0; k <= dealCounter; k++) {
+        appealsEvents.push({ args: { index: k } })
+    }
     return appealsEvents
 }
 
@@ -448,7 +452,7 @@ const daemon = async (node) => {
     }, 60000)
 
     // Process appeals at startup
-    const appealsEvents = await returnappeals(node)
+    const appealsEvents = (await getappeals(node)).reverse()
     for (let k in appealsEvents) {
         const appealEvent = appealsEvents[k]
         const appealIndex = appealEvent.args.index

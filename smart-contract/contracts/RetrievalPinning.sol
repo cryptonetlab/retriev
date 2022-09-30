@@ -150,6 +150,10 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
         return dealCounter.current();
     }
 
+    function totalAppeals() external view returns (uint256) {
+        return appealCounter.current();
+    }
+
     function tokenURI(uint256 tokenId)
         public
         view

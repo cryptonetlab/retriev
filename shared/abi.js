@@ -298,6 +298,30 @@ exports.abi = [
   {
     "inputs": [
       {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "admins",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
@@ -416,6 +440,19 @@ exports.abi = [
         "internalType": "uint8",
         "name": "",
         "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "contract_protected",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -790,6 +827,38 @@ exports.abi = [
   {
     "inputs": [
       {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "name": "pending_appeals",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "permissioned_providers",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "deal_index",
         "type": "uint256"
@@ -918,32 +987,6 @@ exports.abi = [
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "returnRoundsLimit",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "returnSlashesThreshold",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
       }
     ],
     "stateMutability": "view",
@@ -1091,6 +1134,29 @@ exports.abi = [
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "kind",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bool",
+        "name": "status",
+        "type": "bool"
+      },
+      {
+        "internalType": "address",
+        "name": "admin",
+        "type": "address"
+      }
+    ],
+    "name": "setRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "slashes_threshold",
     "outputs": [
@@ -1201,6 +1267,19 @@ exports.abi = [
   },
   {
     "inputs": [],
+    "name": "totalAppeals",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "totalDeals",
     "outputs": [
       {
@@ -1272,9 +1351,14 @@ exports.abi = [
         "internalType": "address",
         "name": "addy",
         "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "state",
+        "type": "bool"
       }
     ],
-    "name": "tuneAddresses",
+    "name": "tuneProtocolVariables",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1292,6 +1376,24 @@ exports.abi = [
         "type": "uint256"
       },
       {
+        "internalType": "uint32",
+        "name": "value32",
+        "type": "uint32"
+      }
+    ],
+    "name": "tuneProvidersVariables",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "kind",
+        "type": "uint8"
+      },
+      {
         "internalType": "uint8",
         "name": "value8",
         "type": "uint8"
@@ -1302,7 +1404,7 @@ exports.abi = [
         "type": "uint32"
       }
     ],
-    "name": "tuneProtocol",
+    "name": "tuneRefereesVariables",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
