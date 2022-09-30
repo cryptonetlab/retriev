@@ -109,13 +109,13 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
         contract: process.env.CONTRACT_ADDRESS
       }
       deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
-      const checkDB = await db.find('deals', { index: deal_index })
+      const checkDB = await db.find('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS })
       if (checkDB === null) {
         console.log('[DEALS] --> Inserting new deal')
         let inserted = false
         while (!inserted) {
           await db.insert('deals', deal)
-          const checkDB = await db.find('deals', { index: deal_index })
+          const checkDB = await db.find('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS })
           if (checkDB !== null) {
             inserted = true
           }
@@ -150,7 +150,7 @@ export const parseDeals = async () => {
     const db = new Database.default.Mongo();
     for (let k = totalDeals; k >= 1; k--) {
       const deal_index = parseInt(k.toString())
-      const checkDB = await db.find('deals', { index: deal_index })
+      const checkDB = await db.find('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS })
       if (checkDB === null) {
         await parseDeal(deal_index)
       } else if (checkDB.canceled === false) {
@@ -196,7 +196,7 @@ export const parseAppeal = async (deal_index, origin_tx = '') => {
           if (appeal.round === 12 && parseInt(appeal.slashes) === 12) {
             appeal.slashed = true
           }
-          const checkDB = await db.find('deals', { index: deal_index })
+          const checkDB = await db.find('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS })
           if (checkDB !== null) {
             console.log('[APPEALS] ---> Saving appeal details to db')
             await db.update('deals', { index: deal_index }, { $set: { appeal: appeal } })
@@ -218,7 +218,7 @@ export const parseAppeals = async () => {
   if (!isParsingAppeals) {
     isParsingAppeals = true
     const db = new Database.default.Mongo();
-    const deals = await db.find('deals', {}, { timestamp_start: -1 })
+    const deals = await db.find('deals', { contract: process.env.CONTRACT_ADDRESS }, { timestamp_start: -1 })
     for (let k in deals) {
       const deal = deals[k]
       const now = new Date().getTime() / 1000
