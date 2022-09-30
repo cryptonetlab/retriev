@@ -22,10 +22,18 @@ async function run() {
                 arguments += '"' + configs.constructor_arguments[k] + '"'
             }
             fs.writeFileSync('./artifacts/arguments.js', `module.exports = [` + arguments + `]`)
+            let etherscan_key = ''
+            if(configs.etherscan_key !== undefined){
+                etherscan_key = 'ETHERSCAN="' + configs.etherscan_key + '" '
+            }
+            let polygonscan_key = ''
+            if(configs.polygonscan_key !== undefined){
+                polygonscan_key = 'POLYGONSCAN="' + configs.polygonscan_key + '" '
+            }
             child_process.execSync(
-                'ETHERSCAN="' + configs.etherscan_key + '" ' +
-                'POLYGONSCAN="' + configs.polygonscan_key + '" ' +
-                'PROVIDER="' + configs.provider + '" ' +
+                etherscan_key +
+                polygonscan_key +
+                ' PROVIDER="' + configs.provider + '" ' +
                 'npx hardhat verify --show-stack-traces --network ' + configs.network +
                 ' ' + configs.contract_address +
                 ' --constructor-args ./artifacts/arguments.js', { stdio: 'inherit' }
