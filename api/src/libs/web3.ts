@@ -131,7 +131,7 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
         if (cancel_tx === '') {
           cancel_tx = checkDB.cancel_tx
         }
-        await db.update('deals', { index: deal_index }, { $set: { identifier: deal.identifier, canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider, appeal_requested: deal.appeal_requested, accept_tx: accept_tx, cancel_tx: cancel_tx, contract: deal.contract } })
+        await db.update('deals', { index: deal_index }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider, appeal_requested: deal.appeal_requested, accept_tx: accept_tx, cancel_tx: cancel_tx } })
       }
       response(true)
     } else {
