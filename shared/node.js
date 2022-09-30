@@ -74,7 +74,7 @@ module.exports = class RetrievNode {
                 contract_address: process.env.CONTRACT_ADDRESS,
                 min_price: 0,
                 max_size: 20000000,
-                max_collateral: 1000,
+                max_collateral_multiplier: 1000,
                 max_duration: 365,
                 api_url: process.env.API_URL,
                 pin: true
