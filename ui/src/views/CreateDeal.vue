@@ -901,6 +901,9 @@ export default {
               provider.strategy.max_collateral_multiplier,
             endpoint: provider.endpoint,
           };
+          if (app.providersPolicy[provider.address].maxSize === undefined) {
+            app.providersPolicy[provider.address].maxSize = 20000000;
+          }
           app.dealProviders.push(provider.address);
           app.canDoProposal = true;
         }
@@ -931,8 +934,9 @@ export default {
       if (app.fileToUpload.name && !app.isUploadingIPFS) {
         // TODO: Handle case where providers > 1
         if (
+          app.providersPolicy[app.dealProviders[0]].maxSize !== undefined &&
           app.fileToUpload.size <
-          app.providersPolicy[app.dealProviders[0]].maxSize
+            app.providersPolicy[app.dealProviders[0]].maxSize
         ) {
           app.showLoadingToast("Uploading file on IPFS, please wait..");
           app.isUploadingIPFS = true;
@@ -971,12 +975,19 @@ export default {
               app.alertCustomError("Error while uploading file, please retry!");
             }
           });
-        } else if (!app.expertMode) {
+        } else if (
+          app.providersPolicy[app.dealProviders[0]].maxSize !== undefined &&
+          !app.expertMode
+        ) {
           app.alertCustomError(
             "File is too big, provider will not accept the deal!"
           );
           app.fileToUpload = "";
           app.canDoProposal = false;
+        } else {
+          setTimeout(function () {
+            app.uploadFile();
+          }, 5000);
         }
       }
     },

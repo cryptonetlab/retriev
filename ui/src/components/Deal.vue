@@ -19,7 +19,7 @@
         <!-- create appeal button -->
         <b-button
           @click="createAppeal()"
-          :disabled="isWorking"
+          :disabled="isWorking || deal.contract !== contract"
           class="btn-tertiary btn-active"
         >
           <i class="fa-solid fa-bell mr-3"></i>REQUEST APPEAL

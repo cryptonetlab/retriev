@@ -91,7 +91,7 @@
                       </div>
                       <div class="nav-container">
                         <div class="logo-navbar mb-3">
-                          <img src="../assets/img/icon-tr.svg" alt="" />
+                          <img src="../assets/img/logo.svg" alt="" />
                         </div>
                         <p class="navbar-text">
                           Retrieval Pinning is part of an interoperable
@@ -252,7 +252,7 @@
                       </div>
                       <div class="nav-container">
                         <div class="logo-navbar mb-3">
-                          <img src="../assets/img/icon-tr.svg" alt="" />
+                          <img src="../assets/img/logo.svg" alt="" />
                         </div>
                         <div v-if="allDeals !== undefined">
                           <h5 class="pb-2 b-bottom-colored-dark">

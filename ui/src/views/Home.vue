@@ -195,12 +195,12 @@
 
                     <!-- DEALS -->
                     <div>
-                      <div v-for="(deal, index) in deals" :key="deal.index">
+                      <div v-for="deal in deals" :key="deal.identifier">
                         <Deal
                           :web3="web3"
                           :account="account"
                           :storedDeal="deal"
-                          :index="index"
+                          :index="deal.index"
                           :opensea="opensea"
                           :contract="contract"
                           :abi="abi"
@@ -262,7 +262,7 @@
       <!-- Connect Wallet container -->
       <div v-if="!account" class="connect-container">
         <div class="grid-img">
-          <img src="../assets/img/grid.svg" alt="">
+          <img src="../assets/img/grid.svg" alt="" />
         </div>
         <div>
           <div class="logo">
@@ -500,6 +500,13 @@ export default {
     async parseDeal(deal) {
       const app = this;
       deal.canAppeal = true;
+      // Fix needed to be compatible to old contract
+      if (deal.deal_uri === undefined) {
+        deal.deal_uri = deal.data_uri;
+      }
+      if (deal.data_uri === undefined) {
+        deal.data_uri = deal.deal_uri;
+      }
       // TODO: Optimize contract
       const contract = new app.web3.eth.Contract(app.abi, app.contract);
       const appeal_index = await contract.methods
@@ -553,7 +560,6 @@ export default {
       app.isWorking = false;
       app.log("Reading state from blockchain..");
       const contract = new app.web3.eth.Contract(app.abi, app.contract);
-      // const totalDeals = await contract.methods.totalDeals().call();
       app.balance = await contract.methods.vault(app.account).call();
       app.balance = app.web3.utils.fromWei(app.balance);
       app.slashingMultiplier = parseInt(
@@ -574,6 +580,7 @@ export default {
         let keys = [];
         for (let k in deals.data) {
           let deal = await app.parseDeal(deals.data[k]);
+          console.log("PARSED", deal);
           if (deal.proposal_tx !== undefined && deal.proposal_tx !== null) {
             app.txids.push(deal.proposal_tx);
           }
@@ -603,9 +610,7 @@ export default {
         // app.activeDeals();
       } catch (e) {
         console.log(e);
-        app.alertCustomError(
-          "Can't fetch deals from blockchain, please retry!"
-        );
+        app.alertCustomError("2 h deals from blockchain, please retry!");
       }
 
       app.minDuration = parseInt(await contract.methods.min_duration().call());
@@ -638,7 +643,7 @@ export default {
               app.log("Found provider " + provider);
               unique.push(providerDetails.endpoint);
               app.providers.push(providerDetails);
-              app.connectSocket(providerDetails.endpoint);
+              // app.connectSocket(providerDetails.endpoint);
               app.providerEndpoints[provider] = providerDetails.endpoint;
             }
           }
@@ -660,7 +665,7 @@ export default {
               .call();
             if (unique.indexOf(refereeDetails.endpoint) === -1) {
               unique.push(refereeDetails.endpoint);
-              app.connectSocket(refereeDetails.endpoint);
+              // app.connectSocket(refereeDetails.endpoint);
             }
           }
         } catch (e) {
@@ -960,7 +965,7 @@ export default {
           console.log("Expired Deals", app.deals);
         } catch (e) {
           app.alertCustomError(
-            "Can't fetch deals from blockchain, please retry!"
+            "1 Can't fetch deals from blockchain, please retry!"
           );
         }
       }
@@ -1022,7 +1027,7 @@ export default {
           console.log("All Deals", app.deals);
         } catch (e) {
           app.alertCustomError(
-            "Can't fetch deals from blockchain, please retry!"
+            "3 Can't fetch deals from blockchain, please retry!"
           );
         }
       }

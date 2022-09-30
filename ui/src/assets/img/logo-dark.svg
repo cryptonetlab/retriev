@@ -3,19 +3,18 @@
 <svg version="1.1" id="Livello_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
 <style type="text/css">
-	.st0{clip-path:url(#SVGID_00000146464936101073598500000015128502772993997496_);}
-	.st1{fill:#FFFFFF;}
+	.st0{clip-path:url(#SVGID_00000082327800382392134080000003223924954737657016_);}
 </style>
 <g>
 	<defs>
 		<rect id="SVGID_1_" width="512" height="512"/>
 	</defs>
-	<clipPath id="SVGID_00000112626568304819892050000013687390879046544022_">
+	<clipPath id="SVGID_00000003799133975037271430000011744894392026420352_">
 		<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
 	</clipPath>
-	<g style="clip-path:url(#SVGID_00000112626568304819892050000013687390879046544022_);">
-		<path class="st1" d="M0,0v511.6h217.6v-88.2H88.3V88.2H358l65.7,65.7v181.3H512V124.6L387.1-0.1L0,0z"/>
-		<path class="st1" d="M217.6,335.4h206.1V512h-88.1v-88.6h-118V335.4z"/>
+	<g style="clip-path:url(#SVGID_00000003799133975037271430000011744894392026420352_);">
+		<path d="M0,0v511.6h217.6v-88.2H88.3V88.2H358l65.7,65.7v181.3H512V124.6L387.1-0.1L0,0z"/>
+		<path d="M217.6,335.4h206.1V512h-88.1v-88.6h-118V335.4z"/>
 	</g>
 </g>
 </svg>
