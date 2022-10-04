@@ -41,14 +41,16 @@ app.get("/deals/:address", async function (req, res) {
 })
 
 // Force parsing of a specifc deal
-app.get("/parse/:id", async function (req, res) {
+app.get("/parse/:contract/:id", async function (req, res) {
   const deal_id = parseInt(req.params.id)
-  console.log('Manual parsing deal #' + deal_id)
-  await parseDeal(deal_id)
-  console.log('Manual parsing appeal for deal #' + deal_id)
-  await parseAppeal(deal_id)
   const db = new Database.default.Mongo()
-  const deal = await db.find('deals', { index: deal_id })
+  if (req.params.contract === process.env.CONTRACT_ADDRESS) {
+    console.log('Manual parsing deal #' + deal_id)
+    await parseDeal(deal_id)
+    console.log('Manual parsing appeal for deal #' + deal_id)
+    await parseAppeal(deal_id)
+  }
+  const deal = await db.find('deals', { contract: process.env.CONTRACT_ADDRESS, index: deal_id })
   res.send(deal)
 })
 
