@@ -194,7 +194,7 @@
             >
               <div class="columns is-mobile m-0">
                 <div class="column is-3-tablet is-4-desktop">
-                  {{ provider.substr(0, 4) + "..." + provider.substr(-4) }}
+                 <b> {{ provider.substr(0, 4) + "..." + provider.substr(-4) }}</b>
                 </div>
 
                 <div
@@ -272,7 +272,7 @@
                       v-model="dealDurationDays"
                       :disabled="isWorking"
                       :native-value="7"
-                      type="is-info is-light is-outlined"
+                      type="is-primary is-dark"
                     >
                       <span>Week</span>
                     </b-radio-button>
@@ -282,7 +282,7 @@
                       v-model="dealDurationDays"
                       :disabled="isWorking"
                       :native-value="31"
-                      type="is-info is-light is-outlined"
+                      type="is-primary is-dark"
                     >
                       <span>Month</span>
                     </b-radio-button>
@@ -292,7 +292,7 @@
                       v-model="dealDurationDays"
                       :disabled="isWorking"
                       :native-value="365"
-                      type="is-info is-light is-outlined"
+                      type="is-primary is-dark"
                     >
                       <span>Year</span>
                     </b-radio-button>
@@ -378,28 +378,28 @@
                     <b-button
                       class="btn-transparent fixed-width mr-4"
                       :disabled="isWorking"
-                      :type="{ 'is-info': selectedPriority === 0 }"
+                      :type="{ 'is-primary': selectedPriority === 0 }"
                       @click="calculateDealValue(0)"
                       >Free</b-button
                     >
                     <b-button
                       class="btn-transparent fixed-width mr-4"
                       :disabled="isWorking"
-                      :type="{ 'is-info': selectedPriority === 1 }"
+                      :type="{ 'is-primary': selectedPriority === 1 }"
                       @click="calculateDealValue(1)"
                       >Low</b-button
                     >
                     <b-button
                       class="btn-transparent fixed-width mr-4"
                       :disabled="isWorking"
-                      :type="{ 'is-info': selectedPriority === 2 }"
+                      :type="{ 'is-primary': selectedPriority === 2 }"
                       @click="calculateDealValue(2)"
                       >Medium</b-button
                     >
                     <b-button
                       class="btn-transparent fixed-width"
                       :disabled="isWorking"
-                      :type="{ 'is-info': selectedPriority === 5 }"
+                      :type="{ 'is-primary': selectedPriority === 5 }"
                       @click="calculateDealValue(5)"
                       >High</b-button
                     >
@@ -532,7 +532,7 @@
                       :disabled="dealValue === 0 || isWorking"
                       class="btn-transparent fixed-width mr-4"
                       :type="{
-                        'is-info':
+                        'is-primary':
                           dealCollateral ===
                             parseInt(dealValue) * (slashingMultiplier / 10) &&
                           dealValue > 0,
@@ -547,7 +547,7 @@
                       :disabled="dealValue === 0 || isWorking"
                       class="btn-transparent fixed-width"
                       :type="{
-                        'is-info':
+                        'is-primary':
                           dealCollateral ===
                             parseInt(dealValue) * slashingMultiplier &&
                           dealValue > 0,

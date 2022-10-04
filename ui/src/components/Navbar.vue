@@ -1,5 +1,18 @@
 <template>
   <div>
+    <!-- ALERT BANNER TESTNET -->
+    <div class="alert-banner py-3" :class="{ 'px-3': !isDesktop }">
+      <div class="container">
+        <p>
+          <i class="fa-solid fa-circle-exclamation mr-3"></i>
+          <b
+            >Retrieval Pinning is in testnet. This is an alpha version and
+            storage is at your own risk.</b
+          >
+        </p>
+      </div>
+    </div>
+    <!-- ALERT BANNER TESTNET -->
     <div class="header py-5" :class="{ 'px-3': !isDesktop }">
       <div class="container">
         <div
@@ -281,19 +294,6 @@
         </div>
       </div>
     </div>
-    <!-- ALERT BANNER TESTNET -->
-    <div class="alert-banner py-3 mb-4" :class="{ 'px-3': !isDesktop }">
-      <div class="container">
-        <p>
-          <i class="fa-solid fa-circle-exclamation mr-3"></i>
-          <b
-            >Retrieval Pinning is in testnet. This is an alpha version and
-            storage is at your own risk.</b
-          >
-        </p>
-      </div>
-    </div>
-    <!-- ALERT BANNER TESTNET -->
 
     <!-- Application Logs -->
     <Transition

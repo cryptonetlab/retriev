@@ -1,0 +1,66 @@
+:root {
+  --primary-color: #000000;
+  --primary-color-contrast: #fff;
+  --primary-color-light: #e9e9e9;
+  --secondary-color: #9a77ff;
+  --secondary-color-light: #d9cefc;
+  --secondary-color-highcontrast: #f1f9ff;
+  --tertiary-color: #1eeffd;
+  --tertiary-color-light: #fef3ec;
+  --fourth-color: #edcfb9;
+  --fourth-color-light: #fef3ec;
+  --light-color: white;
+  --error-color: #cc3d3d;
+  --disabled-color: #ceccc0;
+  --color-grey: #7d7c77;
+}
+
+@import "~bulma/sass/utilities/_all";
+$primary: #1eeffd;
+$info: #9a77ff;
+$primary-invert: findColorInvert($primary);
+$colors: (
+  "white": (
+    $white,
+    $black,
+  ),
+  "black": (
+    $black,
+    $white,
+  ),
+  "light": (
+    $light,
+    $light-invert,
+  ),
+  "dark": (
+    $dark,
+    $dark-invert,
+  ),
+  "primary": (
+    $primary,
+    $primary-invert,
+  ),
+  "info": (
+    $info,
+    $info-invert,
+  ),
+  "success": (
+    $success,
+    $success-invert,
+  ),
+  "warning": (
+    $warning,
+    $warning-invert,
+  ),
+  "danger": (
+    $danger,
+    $danger-invert,
+  ),
+);
+$link: $primary;
+$link-invert: $primary-invert;
+$link-focus-border: $primary;
+
+// Import Bulma and Buefy styles
+@import "~bulma";
+@import "~buefy/src/scss/buefy";

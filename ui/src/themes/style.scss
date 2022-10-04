@@ -1,23 +1,6 @@
-/* ==============> FONTS <============== */
-:root {
-  --primary-color: #002b4d;
-  --secondary-color: #1569e8;
-  --secondary-color-light: #cce7ff;
-  --secondary-color-highcontrast: #f1f9ff;
-  --tertiary-color: #edd2be;
-  --tertiary-color-light: #fef3ec;
-  --fourth-color: #edcfb9;
-  --fourth-color-light: #fef3ec;
-  --light-color: white;
-  --error-color: #cc3d3d;
-  --disabled-color: #ceccc0;
-  --color-grey: #7d7c77;
-}
-
 /* ==============> MIXINS AND GENERAL STYLE <============== */
 html,
 body {
-  background-color: var(--secondary-color-highcontrast);
 }
 
 @mixin badge {
@@ -46,13 +29,13 @@ body {
   display: inline-block;
   cursor: pointer;
   transition: all 0.3s;
-  @include font-plex;
+  @include font-inter;
   letter-spacing: 0.04em;
   font-size: 0.813rem;
   font-weight: 500;
   color: var(--tertiary-color-light);
   border: 1px solid var(--tertiary-color-light);
-  border-radius: 0px !important;
+  border-radius: 5px !important;
   transition: all 0.3s;
 }
 
@@ -65,13 +48,13 @@ body {
   display: inline-block;
   cursor: pointer;
   transition: all 0.3s;
-  @include font-plex;
+  @include font-inter;
   letter-spacing: 0.04em;
   font-size: 0.813rem;
   font-weight: 500;
   color: var(--tertiary-color-light);
   border: 1px solid var(--tertiary-color-light);
-  border-radius: 0px !important;
+  border-radius: 5px !important;
   transition: all 0.3s;
   &:hover {
     background-color: var(--secondary-color);
@@ -90,12 +73,11 @@ body {
 }
 
 @mixin btn-dark {
-  background-color: var(--secondary-color);
-  border: 1px solid var(--primary-color);
+  background-color: var(--tertiary-color);
   &:hover {
     -webkit-box-shadow: 6px 6px 0px 1px var(--primary-color);
     box-shadow: 6px 6px 0px 1px var(--primary-color);
-    color: var(--tertiary-color-light);
+    color: var(--primary-color);
   }
 }
 
@@ -117,8 +99,9 @@ body {
   display: inline-block;
   cursor: pointer;
   transition: all 0.3s;
-  color: var(--tertiary-color-light);
-  @include font-plex;
+  border-radius: 5px;
+  color: var(--priamary-color);
+  @include font-inter;
   letter-spacing: 0.04em;
   font-size: 0.813rem;
   font-weight: 500;
@@ -131,16 +114,12 @@ body {
   font-family: "Inter", sans-serif !important;
 }
 
-@mixin font-plex {
-  font-family: "IBM Plex Mono", monospace !important;
-}
-
 /* ==============> FONTS <============== */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 a {
   color: var(--secondary-color);
-  @include font-plex();
+  @include font-inter();
 }
 
 a.hover-underline {
@@ -228,12 +207,12 @@ h5 {
 }
 
 p.small {
-  @include font-plex();
+  @include font-inter();
   font-size: 0.7rem;
 }
 
 span.small {
-  @include font-plex();
+  @include font-inter();
   font-size: 0.7rem;
 }
 
@@ -300,6 +279,10 @@ span.small {
     @include font-inter();
   }
 }
+.bordered {
+  border: 1px solid var(--primary-color);
+  border-radius: 5px;
+}
 
 .color-secondary {
   color: var(--secondary-color);
@@ -312,6 +295,7 @@ span.small {
 .control.has-icons-right .input,
 .control.has-icons-right .select select {
   padding-right: 30px !important;
+  background-color: var(--primary-color-light);
 }
 
 .fixed-width {
@@ -336,13 +320,13 @@ span.small {
 }
 
 .notices .toast.is-warning {
-  border-radius: 0;
+  border-radius: 5px;
 }
 
 .placeholder-input {
   position: absolute;
   top: 10px;
-  right: 30px;
+  right: 55px;
   font-size: 0.9rem;
   color: #7d7c77;
   @include font-inter();
@@ -394,14 +378,14 @@ button.dropdown-item.is-active {
 
 input,
 .upload .upload-draggable.is-expanded {
-  @include font-plex();
-  border-radius: 0 !important;
+  @include font-inter();
+  border-radius: 5px !important;
 }
 
 .b-checkbox.checkbox input[type="checkbox"] + .check,
 .b-slider .b-slider-thumb-wrapper .b-slider-thumb,
 .b-slider .b-slider-track {
-  border-radius: 0;
+  border-radius: 5px;
 }
 
 .b-tooltip.is-info .tooltip-content {
@@ -447,11 +431,11 @@ input,
   height: 42px;
   cursor: pointer;
   transition: all 0.3s;
-  @include font-plex;
+  @include font-inter;
   font-size: 0.813rem;
   color: var(--tertiary-color-light);
   border: 1px solid var(--tertiary-color-light);
-  border-radius: 0px !important;
+  border-radius: 5px !important;
   transition: all 0.3s;
   &:hover {
     background-color: var(--secondary-color);
@@ -485,7 +469,7 @@ input,
   display: inline-block;
   cursor: pointer;
   transition: all 0.3s;
-  @include font-plex;
+  @include font-inter;
   letter-spacing: 0.04em;
   font-size: 1rem;
   font-weight: 500;
@@ -532,6 +516,7 @@ input,
 .btn-secondary {
   @include btn;
   @include btn-dark;
+  color: var(--primary-color);
   &:disabled {
     background-color: var(--disabled-color);
     color: #fff;
@@ -542,7 +527,8 @@ input,
 }
 
 .btn-tertiary {
-  background-color: transparent;
+  background-color: var(--secondary-color);
+  color: var(--priamary-color);
   text-transform: uppercase;
   padding: 10px 30px;
   vertical-align: middle;
@@ -571,7 +557,7 @@ input,
   cursor: pointer;
   transition: all 0.3s;
   z-index: 999;
-  @include font-plex();
+  @include font-inter();
 }
 
 .btn-sidebar:hover {
@@ -582,16 +568,16 @@ input,
 
 .button {
   height: unset !important;
-  border-radius: 0;
+  border-radius: 5px;
 }
 
 button.button.is-rounded.is-dark {
-  @include font-plex();
+  @include font-inter();
   transition: all 0.3s;
 }
 
 button.button.is-rounded.is-dark:hover {
-  @include font-plex();
+  @include font-inter();
   background-color: #ced4da;
   border: 1px solid black;
   color: black;
@@ -599,11 +585,15 @@ button.button.is-rounded.is-dark:hover {
 }
 
 .button.is-info.is-light {
-  background-color: #167df0;
-  color: white;
+  background-color: var(--secondary-color);
+  color: var(--priamary-color);
   &:hover {
-    background-color: #167df0;
-    color: white;
+    background-color: var(--priamary-color);
+    color: var(--secondary-color);
+  }
+  &:focus {
+    background-color: var(--secondary-color);
+    color: var(--priamary-color);
   }
 }
 
@@ -640,12 +630,12 @@ button.button.is-rounded.is-dark:hover {
 }
 
 .custom_dropdown__face {
-  background-color: white;
   display: block;
   position: relative;
-  padding: 14px 20px;
+  padding: 14px 15px;
   color: black;
   border: 1px solid black;
+  border-radius: 5px;
   cursor: pointer;
 }
 
@@ -703,13 +693,13 @@ button.button.is-rounded.is-dark:hover {
 
 .field {
   .is-info {
-    border-color: var(--primary-color);
+    border-color: var(--primary-color-light);
   }
   .input {
     height: unset;
     padding-top: 9px;
     padding-bottom: 9px;
-    border-radius: 0;
+    border-radius: 5px !important;
   }
 }
 
@@ -745,9 +735,9 @@ button.button.is-rounded.is-dark:hover {
 }
 
 .switch input[type="checkbox"] + .check {
-  border-radius: 0;
+  border-radius: 5px;
   &::before {
-    border-radius: 0;
+    border-radius: 5px;
   }
 }
 
@@ -772,10 +762,10 @@ button.button.is-rounded.is-dark:hover {
 }
 
 .alert-banner {
-  background-color: #f2cfcf;
+  background-color: var(--secondary-color);
   p,
   i {
-    color: #cc3d3d;
+    color: var(--priamary-color);
   }
   p,
   b {
@@ -789,23 +779,23 @@ button.button.is-rounded.is-dark:hover {
 }
 
 .badge-pending {
-  background: #fff6bd;
+  background: #f0ff45;
   span {
-    color: #ae9700;
+    color: #000000;
   }
 }
 
 .badge-success {
-  background: #d2eac0;
+  background: #33ff94;
   span {
-    color: #4baa00;
+    color: #000000;
   }
 }
 
 .badge-ended {
   background: #dedcd0;
   span {
-    color: #7d7c77;
+    color: #000000;
   }
 }
 
@@ -817,7 +807,7 @@ button.button.is-rounded.is-dark:hover {
 }
 
 .badge-slashed {
-  background: #002b4d;
+  background: #000000;
   span {
     color: white;
   }
@@ -887,7 +877,7 @@ button.button.is-rounded.is-dark:hover {
     flex-wrap: wrap;
 
     button {
-      border-radius: 0;
+      border-radius: 5px;
     }
   }
 }
@@ -1012,7 +1002,7 @@ img.network-logo {
 
 .custom-card-hover {
   &:hover {
-    background-color: var(--secondary-color-light);
+    background-color: var(--primary-color-light);
   }
 }
 
@@ -1074,7 +1064,7 @@ img.network-logo {
     background-color: var(--tertiary-color-light);
   }
   p {
-    @include font-plex();
+    @include font-inter();
   }
 }
 
@@ -1086,7 +1076,7 @@ img.network-logo {
 /* ==============> LOGS & NOTIFICATIONS <============== */
 
 .modal-card .modal-card-title {
-  @include font-plex();
+  @include font-inter();
 }
 
 hr {
@@ -1115,7 +1105,7 @@ hr {
   z-index: 9;
   background-color: white;
   a {
-    @include font-plex();
+    @include font-inter();
     font-weight: 400;
     font-size: 0.813rem;
     color: var(--primary-color);
@@ -1152,8 +1142,8 @@ hr {
 }
 
 .Vue-Toastification__toast {
-  @include font-plex();
-  border-radius: 0;
+  @include font-inter();
+  border-radius: 5px;
 }
 
 .Vue-Toastification__toast--warning {
@@ -1162,7 +1152,7 @@ hr {
 }
 
 .Vue-Toastification__toast-body {
-  @include font-plex();
+  @include font-inter();
 }
 
 .workingMessage {
@@ -1172,7 +1162,7 @@ hr {
   background-color: rgba(0, 43, 77, 0.7);
   color: var(--tertiary-color-light);
   font-size: 1.6rem;
-  @include font-plex();
+  @include font-inter();
   word-break: break-word;
   line-height: 1;
   height: 100vh;

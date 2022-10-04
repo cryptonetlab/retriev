@@ -194,7 +194,7 @@
                     <!-- END TITLES TABLE -->
 
                     <!-- DEALS -->
-                    <div class="bordered">
+                    <div>
                       <div v-for="deal in deals" :key="deal.identifier">
                         <Deal
                           :web3="web3"
@@ -500,7 +500,6 @@ export default {
     async parseDeal(deal) {
       const app = this;
       deal.canAppeal = true;
-
       // Fix needed to be compatible to old contract
       if (deal.deal_uri === undefined) {
         deal.deal_uri = deal.data_uri;
@@ -508,50 +507,16 @@ export default {
       if (deal.data_uri === undefined) {
         deal.data_uri = deal.deal_uri;
       }
-
       // TODO: Optimize contract
       const contract = new app.web3.eth.Contract(app.abi, app.contract);
-      let proposalTimeout = await contract.methods.proposal_timeout().call();
       const appeal_index = await contract.methods
-        .active_appeals(deal.deal_uri)
+        .active_appeals(deal.data_uri)
         .call();
       const round = await contract.methods.getRound(appeal_index).call();
-
       console.log(
         "deal " + deal.index + " with appeal index ",
         appeal_index + " have a round " + round
       );
-
-      // Check STATUS ACTIVE Deal
-
-      if (
-        (parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0 &&
-          deal.appeal !== undefined &&
-          deal.appeal.round === undefined) ||
-        (parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0 &&
-          deal.appeal !== undefined &&
-          deal.appeal.round !== undefined &&
-          deal.appeal.round === 99 &&
-          deal.appeal.slashed !== undefined &&
-          deal.appeal.slashed === false)
-      ) {
-        deal.status_active = true;
-      } else {
-        deal.status_active = false;
-      }
-
-      // Check Pending deal
-      if (
-        deal.timestamp_start !== undefined &&
-        parseInt(deal.timestamp_start) === 0 &&
-        !deal.canceled
-      ) {
-        deal.pending = true;
-        deal.canAppeal = false;
-      } else {
-        deal.pending = false;
-      }
-
       // Check if appeal ended
       if (
         deal.appeal !== undefined &&
@@ -559,36 +524,30 @@ export default {
         parseInt(deal.appeal.round) < 99
       ) {
         deal.canAppeal = false;
+        app.appealsByUri[deal.data_uri] = deal.appeal;
       }
-
       // Check if deal ended
       if (deal.timestamp_end * 1000 < new Date().getTime() || deal.canceled) {
         deal.canAppeal = false;
-        deal.status_active = false;
       }
-
       // Check if appeal doesn't exists
       if (deal.appeal === undefined || Object.keys(deal.appeal) === 0) {
         deal.canAppeal = true;
       }
-
+      if (app.appealsByUri[deal.data_uri] !== undefined) {
+        deal.canAppeal = false;
+      }
       // Set expiration timestamp
       const expires_at =
-        (parseInt(deal.timestamp_request) + parseInt(proposalTimeout)) * 1000;
-
+        (parseInt(deal.timestamp_request) + parseInt(app.proposalTimeout)) *
+        1000;
       // Check if expired
-      if (new Date().getTime() > expires_at && deal.timestamp_start === 0) {
+      if (new Date().getTime() > expires_at) {
         deal.expired = true;
-        deal.canAppeal = false;
       } else {
         deal.expired = false;
-        deal.status_active = false;
       }
-
-      // Check Contract Deal
-      if (deal.contract !== contract) {
-        deal.canAppeal = false;
-      }
+      // Getting round appel
       return deal;
     },
     async loadState() {

@@ -232,7 +232,7 @@
                 <div>
                   <div
                     v-if="deal.data_uri !== undefined"
-                    class="b-top-colored-grey b-bottom-colored-grey bg-pink-light px-2"
+                    class="b-top-colored-grey b-bottom-colored-grey px-2"
                     :class="{
                       'pb-3 pt-3': isDesktop,
                       'pb-1 pt-1': isTablet,
@@ -241,7 +241,10 @@
                     <p>
                       <b>Data URI: </b>
                       <a
-                        v-if="providerEndpoints[deal.provider] !== undefined"
+                        v-if="
+                          providerEndpoints[deal.provider] !== undefined &&
+                          deal.data_uri !== undefined
+                        "
                         style="word-wrap: break-word"
                         class="link-primary"
                         :href="
@@ -253,7 +256,10 @@
                         >{{ deal.data_uri }}</a
                       >
                       <a
-                        v-if="providerEndpoints[deal.provider] === undefined"
+                        v-if="
+                          providerEndpoints[deal.provider] === undefined &&
+                          deal.data_uri !== undefined
+                        "
                         style="word-wrap: break-word"
                         class="link-primary"
                         :href="
@@ -264,9 +270,10 @@
                         >{{ deal.data_uri }}</a
                       >
                     </p>
+                    <!-- <h2>{{returnDate(deal.timestamp_end)}}</h2> -->
                   </div>
                   <div
-                    class="is-flex is-justify-content-space-between is-align-items-center b-bottom-colored-grey bg-pink-light px-2"
+                    class="is-flex is-justify-content-space-between is-align-items-center b-bottom-colored-grey px-2"
                     :class="{
                       'pb-1 pt-1': isTablet,
                     }"
@@ -283,7 +290,7 @@
                     </div>
                   </div>
                   <div
-                    class="b-bottom-colored-grey bg-pink-light px-2"
+                    class="b-bottom-colored-grey px-2"
                     :class="{
                       'pb-3 pt-3': isDesktop,
                       'pb-1 pt-1': isTablet,
@@ -292,7 +299,7 @@
                     <p><b>Canceled:</b> {{ deal.canceled }}</p>
                   </div>
                   <div
-                    class="b-bottom-colored-grey bg-pink-light px-2"
+                    class="b-bottom-colored-grey px-2"
                     :class="{
                       'pb-3 pt-3': isDesktop,
                       'pb-1 pt-1': isTablet,
@@ -310,7 +317,7 @@
                   </div>
                   <div
                     v-if="deal.appeal_requested !== undefined"
-                    class="b-bottom-colored-grey bg-pink-light px-2"
+                    class="b-bottom-colored-grey px-2"
                     :class="{
                       'pb-3 pt-3': isDesktop,
                       'pb-1 pt-1': isTablet,
@@ -322,7 +329,7 @@
                     </p>
                   </div>
                   <div
-                    class="b-bottom-colored-grey bg-pink-light px-2"
+                    class="b-bottom-colored-grey px-2"
                     :class="{
                       'pb-3 pt-3': isDesktop,
                       'pb-1 pt-1': isTablet,
@@ -341,7 +348,7 @@
                   </div>
                   <!-- TIMING DEAL -->
                   <div
-                    class="b-bottom-colored-grey bg-pink-light"
+                    class="b-bottom-colored-grey"
                     :class="{ 'pb-3': openTimingDeal }"
                   >
                     <div
@@ -407,7 +414,7 @@
                         </p>
                       </div>
                       <div
-                        class="bg-pink-light px-2"
+                        class="px-2"
                         v-if="parseInt(deal.timestamp_start) !== 0"
                       >
                         <p>
@@ -455,7 +462,7 @@
                         deal.appeal !== undefined &&
                         deal.appeal.round !== undefined
                       "
-                      class="b-bottom-colored-grey bg-pink-dark px-2"
+                      class="b-bottom-colored-grey px-2"
                       :class="{
                         'pb-3 pt-3': isDesktop,
                         'pb-1 pt-1': isTablet,
@@ -468,7 +475,7 @@
                       </p>
                     </div>
                     <div
-                      class="b-bottom-colored-grey bg-pink-dark px-2"
+                      class="b-bottom-colored-grey px-2"
                       :class="{
                         'pb-3 pt-3': isDesktop,
                         'pb-1 pt-1': isTablet,
@@ -490,6 +497,7 @@
                 ></div>
                 <div v-if="download" class="box-img">
                   <img
+                    v-if="deal.data_uri !== undefined"
                     :src="
                       providerEndpoints[deal.provider] +
                       '/ipfs/' +
@@ -535,9 +543,10 @@ export default {
     };
   },
   mounted() {
-    this.deal = this.storedDeal;
-    if (this.deal.appeal === undefined) {
-      this.deal.appeal = {};
+    const app = this;
+    app.deal = app.storedDeal;
+    if (app.deal.appeal === undefined) {
+      app.deal.appeal = {};
     }
   },
   methods: {
@@ -548,24 +557,44 @@ export default {
       if (app.isOpen === app.deal.index) {
         app.isOpen = -1;
       } else {
+        app.isOpen = app.deal.index;
+        app.refreshDeal();
+        const providers = await axios.get(
+          process.env.VUE_APP_API_URL + "/providers"
+        );
+        for (let k in providers.data) {
+          app.providerEndpoints[providers.data[k].address] =
+            providers.data[k].endpoint;
+        }
         const uri =
           app.providerEndpoints[app.deal.provider] +
           "/ipfs/" +
           app.deal.data_uri.replace("ipfs://", "");
+
         try {
           console.log("Downloading file from:", uri);
           const downloaded = await axios.get(uri);
           if (downloaded.data !== undefined) {
-            // app.download[app.deal.data_uri] = true;
+            // app.download[app.deal.deal_uri] = true;
             app.download = true;
             console.log("download became", app.download);
           }
         } catch (e) {
           console.log("Error while downloading from:", uri);
         }
-        app.isOpen = app.deal.index;
+        // Fetching appeal fee
+        try {
+          console.log("starting fetching appelFee");
+          const contract = new app.web3.eth.Contract(app.abi, app.contract);
+          const appeal_fee = await contract.methods
+            .returnAppealFee(app.deal.index)
+            .call();
+          app.appealFee = appeal_fee;
+          console.log("Appeal Fee is:", app.appealFee);
+        } catch (e) {
+          console.log("Error while calculating appel fee");
+        }
         console.log("Opening deal", app.isOpen);
-        app.refreshDeal();
       }
     },
     async refreshDeal() {
@@ -584,10 +613,23 @@ export default {
         });
         try {
           let refreshed = await axios.get(
-            process.env.VUE_APP_API_URL + "/parse/" + app.deal.index
+            process.env.VUE_APP_API_URL +
+              "/parse/" +
+              app.deal.contract +
+              "/" +
+              app.deal.index
           );
           console.log("refreshed", refreshed.data);
           app.deal = refreshed.data;
+
+          // Fix needed to be compatible to old contract
+          // if (app.deal.deal_uri === undefined) {
+          //   app.deal.deal_uri = app.deal.data_uri;
+          // }
+          // if (app.deal.data_uri === undefined) {
+          //   app.deal.data_uri = app.deal.deal_uri;
+          // }
+
           app.$toast.clear();
           this.$buefy.toast.open({
             duration: 5000,

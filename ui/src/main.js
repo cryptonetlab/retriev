@@ -7,6 +7,7 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 
 import 'animate.css';
+import './themes/colors.scss';
 import "./themes/style.scss";
 import "./themes/responsive.scss";
 
