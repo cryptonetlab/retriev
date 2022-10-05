@@ -15,12 +15,12 @@ async function main() {
     const value = "100" // Amount to pay for deal in gwei
     const ipfs_providers = [configs.providers[0].address, configs.providers[1].address] // Adding two providers
     let data_uri = 'ipfs://bafkreiggzxkhpj6m6vkzzwvzst4tv6kng3pgma67ukcrzwzyh5b54eben4'
-    if (configs.network === "localhost") {
+    if (configs.network === "hardhat") {
         console.log("Adding index for test in localhost..")
         data_uri = 'ipfs://bafkreiggzxkhpj6m6vkzzwvzst4tv6kng3pgma67ukcrzwzyh5b54eben4-' + deal_index // Public readme folder
     }
     const min_duration = await contract.min_duration()
-    const duration = min_duration; // Duration of the deal (2 minutes for test)
+    const duration = min_duration; // Duration of the deal
     const collateral = ethers.utils.parseUnits(value, 'gwei') // Setting 0 if you need minimum one
     const appeal_addresses = [wallet.address]
     try {

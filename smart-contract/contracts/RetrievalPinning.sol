@@ -167,7 +167,7 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
             deal.value,
             deal.timestamp_start,
             deal.duration,
-            deal.canceled
+            getRound(active_appeals[deals[tokenId].data_uri]) < 99
         );
         return output;
     }

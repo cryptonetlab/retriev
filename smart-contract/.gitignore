@@ -10,3 +10,4 @@ out
 artifacts
 configs/*
 !configs/example.json
+!configs/backgrounds.json

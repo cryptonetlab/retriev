@@ -22,7 +22,7 @@ async function main() {
             const owner = await contract.ownerOf(i)
             const uri = await contract.tokenURI(i)
             console.log('TOKENID: ' + i, 'OWNER IS', owner)
-            // console.log(Buffer.from(uri.split('base64,')[1], 'base64').toString())
+            console.log(Buffer.from(uri.split('base64,')[1], 'base64').toString())
             const decodedStr = JSON.parse(Buffer.from(uri.split('base64,')[1], 'base64').toString());
             fs.writeFileSync('./preview_nft/' + i + '.html', '<img width="1300" src="' + decodedStr.image + '" />')
             console.log('--')
