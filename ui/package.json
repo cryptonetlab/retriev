@@ -15,9 +15,11 @@
     "buefy": "^0.9.19",
     "core-js": "^3.6.5",
     "socket.io-client": "^4.5.0",
+    "typewriter-vue": "^0.5.19",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vue-toastification": "^1.7.14",
+    "vue2-particles": "^2.3.3",
     "web3": "^1.7.3",
     "web3modal": "^1.9.6"
   },

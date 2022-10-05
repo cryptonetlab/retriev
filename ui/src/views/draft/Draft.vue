@@ -54,7 +54,7 @@
                   <!-- ACTION BAR (button create deal - searchbar - filters) -->
                   <div class="columns is-mobile is-multiline is-vcentered mb-5">
                     <div class="column is-4-mobile is-4-tablet is-5-desktop">
-                      <a href="/#/create" class="btn-secondary">
+                      <a href="/#/app/new-deal" class="btn-secondary">
                         <i class="fa-solid fa-file-medical mr-3"></i>create new
                         deal
                       </a>

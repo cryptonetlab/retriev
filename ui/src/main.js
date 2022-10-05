@@ -2,12 +2,13 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import Buefy from "buefy";
-import "buefy/dist/buefy.css";
 import Toast from "vue-toastification";
-import "vue-toastification/dist/index.css";
+import Particles from "vue2-particles";
 
-import 'animate.css';
-import './themes/colors.scss';
+import "buefy/dist/buefy.css";
+import "vue-toastification/dist/index.css";
+import "animate.css";
+import "./themes/colors.scss";
 import "./themes/style.scss";
 import "./themes/responsive.scss";
 
@@ -19,7 +20,7 @@ Vue.use(Toast, {
 
 Vue.use(Buefy);
 Vue.config.productionTip = false;
-
+Vue.use(Particles);
 new Vue({
   router,
   render: (h) => h(App),

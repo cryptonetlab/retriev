@@ -1051,7 +1051,7 @@ export default {
                   receipt.blockHash.substr(-4)
               );
               setTimeout(async function () {
-                window.location.href = "/";
+                window.location.href = "/app";
               }, 2000);
               this.$toast("Transaction success at: " + receipt.blockHash, {
                 position: "top-right",

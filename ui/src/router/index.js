@@ -1,24 +1,25 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
-import Signup from "../views/Signup.vue";
+import Dashboard from "../views/Dashboard.vue";
 import CreateDeal from "../views/CreateDeal.vue";
+import Splash from "../views/Splash.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/",
-    name: "Home",
-    component: Home,
+    name: "Splash",
+    component: Splash,
   },
   {
-    path: "/signup",
-    name: "Signups",
-    component: Signup,
+    path: "/app",
+    name: "Dashboard",
+    component: Dashboard,
   },
+
   {
-    path: "/create",
+    path: "/app/new-deal",
     name: "CreateDeal",
     component: CreateDeal,
   },
