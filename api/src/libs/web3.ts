@@ -106,7 +106,8 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
         appeal: {},
         appeal_requested: appeal_requested,
         proposal_tx: proposal_tx,
-        contract: process.env.CONTRACT_ADDRESS
+        contract: process.env.CONTRACT_ADDRESS,
+        chain: process.env.CHAIN
       }
       deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
       const checkDB = await db.find('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS })
@@ -131,7 +132,7 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
         if (cancel_tx === '') {
           cancel_tx = checkDB.cancel_tx
         }
-        await db.update('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider, appeal_requested: deal.appeal_requested, accept_tx: accept_tx, cancel_tx: cancel_tx } })
+        await db.update('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider, appeal_requested: deal.appeal_requested, accept_tx: accept_tx, cancel_tx: cancel_tx, chain: process.env.CHAIN } })
       }
       response(true)
     } else {
