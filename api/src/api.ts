@@ -49,9 +49,12 @@ app.get("/parse/:contract/:id", async function (req, res) {
     await parseDeal(deal_id)
     console.log('Manual parsing appeal for deal #' + deal_id)
     await parseAppeal(deal_id)
+    const deal = await db.find('deals', { contract: process.env.CONTRACT_ADDRESS, index: deal_id })
+    res.send(deal)
+  } else {
+    const deal = await db.find('deals', { contract: req.params.contract, index: deal_id })
+    res.send(deal)
   }
-  const deal = await db.find('deals', { contract: process.env.CONTRACT_ADDRESS, index: deal_id })
-  res.send(deal)
 })
 
 // Add signup endpoint
