@@ -5,7 +5,7 @@
       <div class="logo mb-3">
         <img src="../assets/img/logo.svg" alt="" />
       </div>
-      <h2 class="pay-off-2 tertiary-light-text">Retrieval Pinning</h2>
+      <h2 class="pay-off-2 tertiary-light-text">Retriev</h2>
       <p class="has-text-centered mt-5">
         For a better experience, use app from Desktop.
       </p>

@@ -51,7 +51,7 @@
       <!-- ====================== CONTENT ====================== -->
       <typewriter :type-interval="20" :replace-interval="1000">
         <h1 class="big-title">
-          Retriev Pinning Protocol is part of an interoperable ecosystem of
+          Retriev Protocol is part of an interoperable ecosystem of
           on-chain storage products.
         </h1>
       </typewriter>

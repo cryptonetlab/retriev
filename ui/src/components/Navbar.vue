@@ -101,7 +101,7 @@
                           <img src="../assets/img/logo.svg" alt="" />
                         </div>
                         <p class="navbar-text">
-                          Retrieval Pinning is part of an interoperable
+                          Retriev is part of an interoperable
                           ecosystem of
                           <a href="https://onchain.storage" target="_blank"
                             >on-chain storage products</a

@@ -10,7 +10,7 @@
           @click="toggleDeal()"
           style="cursor: pointer"
         >
-          Retrieval Pinning Deal #{{ deal.index }}
+          Retriev Deal #{{ deal.index }}
         </h4>
         <!-- OLD CONTRACT DEAL BADGE -->
         <div v-if="deal.contract !== contract" class="badge badge-ended">
