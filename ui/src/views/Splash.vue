@@ -11,7 +11,7 @@
         />
         <div class="is-flex is-align-items-center">
           <a
-            href="/#/app"
+            @click="connect"
             class="btn-secondary"
             style="text-align: center; text-transform: lowercase"
             :style="[
@@ -97,12 +97,18 @@
 import Typewriter from "typewriter-vue";
 import checkViewport from "@/mixins/checkViewport";
 import Particles from "@/components/landing/Particles.vue";
+import Web3 from "web3";
+import Web3Modal from "web3modal";
+import WalletConnectProvider from "@walletconnect/web3-provider";
+
 export default {
   name: "splash",
   mixins: [checkViewport],
   data() {
     return {
       loadToShow: false,
+      infuraId: process.env.VUE_APP_INFURA_ID,
+      network: process.env.VUE_APP_NETWORK,
     };
   },
   components: {
@@ -118,6 +124,54 @@ export default {
       setTimeout(function () {
         app.loadToShow = true;
       }, 5000);
+    },
+    async connect() {
+      const app = this;
+      let providerOptions = {};
+      if (app.infuraId !== undefined) {
+        providerOptions = {
+          walletconnect: {
+            package: WalletConnectProvider,
+            options: {
+              infuraId: app.infuraId,
+            },
+          },
+        };
+      }
+      // Instantiating Web3Modal
+      const web3Modal = new Web3Modal({
+        cacheProvider: true,
+        providerOptions: providerOptions,
+      });
+      const provider = await web3Modal.connect();
+      const web3 = await new Web3(provider);
+      const netId = await web3.eth.net.getId();
+      console.log("Current network is:", netId);
+      if (parseInt(netId) === parseInt(app.network)) {
+        const accounts = await web3.eth.getAccounts();
+        if (accounts.length > 0) {
+          window.location = "/#/app";
+        }
+      } else {
+        try {
+          await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [
+              {
+                chainId:
+                  "0x" + Number(process.env.VUE_APP_NETWORK).toString(16),
+              },
+            ],
+          });
+          setTimeout(function () {
+            app.connect();
+          }, 100);
+        } catch (e) {
+          app.log(
+            "Can't automatically switch to Goerli, please do it manually."
+          );
+        }
+      }
     },
   },
 };

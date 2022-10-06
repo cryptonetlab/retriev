@@ -259,16 +259,6 @@
         <!-- PLATFORM END -->
       </div>
 
-      <!-- Connect Wallet container -->
-      <div v-if="!account" class="connect-container">
-        <div class="mt-5">
-          <h2 class="mb-0">Please connect your <br>wallet first</h2>
-          <div class="btn-primary mt-4" @click="connect()">
-            <i class="fa-solid fa-wallet mr-3"></i> Connect Wallet
-          </div>
-        </div>
-      </div>
-
       <!-- END | Connect Wallet container -->
 
       <!-- Working Messages -->
@@ -385,21 +375,34 @@ export default {
         cacheProvider: true,
         providerOptions: providerOptions,
       });
-      const provider = await web3Modal.connect();
-      app.web3 = await new Web3(provider);
+
+      try {
+        const provider = await web3Modal.connect();
+        app.web3 = await new Web3(provider);
+      } catch (e) {
+        console.log("PROVIDER_ERROR", e.message);
+        window.location = "/#/";
+      }
       const netId = await app.web3.eth.net.getId();
       console.log("Current network is:", netId);
       if (parseInt(netId) === parseInt(app.network)) {
-        const accounts = await app.web3.eth.getAccounts();
-        if (accounts.length > 0) {
-          app.account = accounts[0];
-          app.appealAddress = app.account;
-          app.accountBalance = await app.web3.eth.getBalance(accounts[0]);
-          console.log("account balance is", app.accountBalance);
-          app.accountBalance = parseFloat(
-            app.web3.utils.fromWei(app.accountBalance, "ether")
-          ).toFixed(10);
-          app.loadState();
+        try {
+          const accounts = await app.web3.eth.getAccounts();
+          if (accounts.length > 0) {
+            app.account = accounts[0];
+            app.appealAddress = app.account;
+            app.accountBalance = await app.web3.eth.getBalance(accounts[0]);
+            console.log("account balance is", app.accountBalance);
+            app.accountBalance = parseFloat(
+              app.web3.utils.fromWei(app.accountBalance, "ether")
+            ).toFixed(10);
+            app.loadState();
+          } else {
+            window.location = "/";
+          }
+        } catch (e) {
+          console.log("USER_CONNECT", e.message);
+          window.location = "/#/";
         }
       } else {
         try {
