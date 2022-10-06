@@ -4,7 +4,4 @@
   </div>
 </template>
 <style>
-*, .input{
-  font-family: "IBM Plex Mono", monospace 
-}
 </style>

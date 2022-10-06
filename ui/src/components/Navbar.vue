@@ -6,14 +6,14 @@
         <p>
           <i class="fa-solid fa-circle-exclamation mr-3"></i>
           <b
-            >Retrieval Pinning is in testnet. This is an alpha version and
+            >Retriev is in testnet. This is an alpha version and
             storage is at your own risk.</b
           >
         </p>
       </div>
     </div>
     <!-- ALERT BANNER TESTNET -->
-    <div class="header py-5" :class="{ 'px-3': !isDesktop }">
+    <div class="header py-6" :class="{ 'px-3': !isDesktop }">
       <div class="container">
         <div
           class="columns is-mobile is-multiline is-vcentered is-justify-content-space-between"
@@ -21,13 +21,7 @@
           <div class="column is-2-mobile is-1-tablet is-3-desktop">
             <a href="/">
               <div class="is-flex is-align-items-center">
-                <img src="../assets/img/logo.svg" alt="" />
-                <h2
-                  v-if="!isMobile && !isTablet"
-                  class="pay-off-2 tertiary-light-text ml-4"
-                >
-                  Retrieval Pinning
-                </h2>
+                <img src="../assets/img/logo-ext.svg" alt="" />
               </div></a
             >
           </div>
@@ -44,7 +38,7 @@
               <div
                 v-if="accountBalance.length > 0"
                 @click="isWithdraw = !isWithdraw"
-                class="btn-light ml-2"
+                class="btn-light ml-2 mr-2"
               >
                 <span>{{ accountBalance.substr(0, 4) }}</span>
                 <span

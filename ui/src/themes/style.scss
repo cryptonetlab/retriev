@@ -84,13 +84,12 @@ body {
   border: 1px solid var(--primary-color);
   color: var(--primary-color);
   &:hover {
-    -webkit-box-shadow: 6px 6px 0px 1px var(--primary-color);
-    box-shadow: 6px 6px 0px 1px var(--primary-color);
+   background-color:  var(--primary-color);
+   color: var(--primary-color-contrast);
   }
 }
 
 @mixin btn {
-  text-transform: uppercase;
   padding: 10px 30px;
   vertical-align: middle;
   box-sizing: border-box;
@@ -101,7 +100,7 @@ body {
   color: var(--primary-color);
   @include font-inter;
   letter-spacing: 0.04em;
-  font-size: 0.813rem;
+  font-size: 0.9rem;
   font-weight: 500;
   &:hover {
     transition: all 0.3s;
@@ -252,9 +251,9 @@ a.splash-link {
 }
 
 .title {
+  @include font-inter();
   color: var(--primary-color);
-  font-weight: 400;
-  letter-spacing: 0.03em;
+  font-weight: 500;
 }
 
 /* ==============> POSITIONING, BORDERS, MARGIN, PADDING, ETC...<============== */
@@ -518,11 +517,11 @@ input,
 
 .btn-loader {
   @include btn();
+  font-size: 1.2rem;
+  font-weight: 600;
   background-color: var(--light-color);
   border: 1px solid var(--primary-color);
   color: var(--primary-color);
-  -webkit-box-shadow: 6px 6px 0px 1px var(--primary-color);
-  box-shadow: 6px 6px 0px 1px var(--primary-color);
 }
 
 .btn-minimal-noHover {
@@ -693,6 +692,7 @@ button.button.is-rounded.is-dark:hover {
   color: black;
   text-decoration: none;
   font-size: 0.8rem;
+  font-weight: 500;
   cursor: pointer;
 }
 
@@ -720,6 +720,7 @@ button.button.is-rounded.is-dark:hover {
   transition: all 0.4s cubic-bezier(0.93, 0.88, 0.1, 0.8);
   color: black;
   border: 1px solid black;
+  border-radius: 5px;
   max-height: 300px;
   overflow-y: auto;
   -ms-overflow-style: none; /* Internet Explorer 10+ */

@@ -8,6 +8,8 @@
   .btn-secondary,
   .custom_dropdown {
     width: 100%;
+    font-size: 1.1rem !important;
+    padding: 5px 10px;
   }
   h1.big-title {
     font-size: 3rem;
@@ -77,5 +79,11 @@
   }
   h2.pay-off {
     font-size: 1rem;
+  }
+}
+
+@media screen and (min-width: 1408px) {
+  .container:not(.is-max-desktop):not(.is-max-widescreen) {
+    max-width: 1440px;
   }
 }

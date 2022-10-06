@@ -1,11 +1,15 @@
 <template>
   <div class="bg-color-dark full-container bg-img">
     <Particles />
-    <div class="container" :class="{ 'p-5': !isDesktop }">
+    <div
+      class="container"
+      :class="{ 'px-5': !isDesktop }"
+      style="min-height: 100vh"
+    >
       <!-- ====================== NAVBAR ====================== -->
-      <div class="is-flex is-justify-content-space-between py-5">
+      <div class="is-flex is-justify-content-space-between py-6">
         <img
-          :width="[isMobile ? 32 : 52]"
+          :width="[isMobile ? 40 : 52]"
           src="../assets/img/logo.svg"
           alt=""
         />
@@ -45,7 +49,7 @@
       <div class="gap"></div>
 
       <!-- ====================== CONTENT ====================== -->
-      <typewriter :type-interval="50" :replace-interval="1000">
+      <typewriter :type-interval="20" :replace-interval="1000">
         <h1 class="big-title">
           Retriev Pinning Protocol is part of an interoperable ecosystem of
           on-chain storage products.
@@ -55,9 +59,11 @@
         <div v-if="loadToShow" class="columns mt-6">
           <div class="column is-6">
             <p class="pay-off">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s.
+              In the setting of a decentralized storage network there are
+              clients who delegate the storage of their files to a network of
+              providers,<br>we add a "retrievability assurance" for such storage
+              service is key to boost confidence and usage of decentralized
+              storage networks.
             </p>
           </div>
         </div>
@@ -71,8 +77,17 @@
       <Transition enter-active-class="fade-in">
         <div
           v-if="loadToShow"
-          class="is-flex is-align-items-center is-justify-content-flex-end pb-6"
-          style="position: absolute, bottom: 20px"
+          class="is-flex is-align-items-center is-justify-content-flex-end pb-5"
+          :style="[
+            !isMobile
+              ? {
+                  position: 'absolute',
+                  bottom: '50px',
+                  width: '100%',
+                  right: '0',
+                }
+              : { position: 'absolute', right: '20px' },
+          ]"
         >
           <a
             class="splash-link mr-3"
@@ -123,7 +138,7 @@ export default {
       const app = this;
       setTimeout(function () {
         app.loadToShow = true;
-      }, 5000);
+      }, 1800);
     },
     async connect() {
       const app = this;

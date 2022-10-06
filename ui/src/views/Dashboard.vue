@@ -34,14 +34,14 @@
         <!-- END | NAVBAR SECTION -->
 
         <!-- PLATFORM START -->
-        <div class="py-5" :class="{ 'px-3': !isDesktop }">
+        <div class="py-5 mt-5" :class="{ 'px-3': !isDesktop }">
           <div class="container">
             <div>
               <div v-if="!loading">
                 <div>
                   <!-- TITLE -->
-                  <div class="b-bottom-colored-dark m-0 pb-3 mb-6">
-                    <h2 class="title is-3 m-0">MANAGE DEALS</h2>
+                  <div class="m-0 pb-3 mb-6">
+                    <h2 class="title is-3 m-0">Manage Deals</h2>
                   </div>
                   <!-- END TITLE -->
 
@@ -55,7 +55,7 @@
                   <div class="columns is-mobile is-multiline is-vcentered mb-5">
                     <div class="column is-4-mobile is-4-tablet is-5-desktop">
                       <a href="/#/app/new-deal" class="btn-secondary">
-                        <i class="fa-solid fa-file-medical mr-3"></i>create new
+                        <i class="fa-solid fa-file-medical mr-3"></i>Create new
                         deal
                       </a>
                     </div>
@@ -98,15 +98,15 @@
                           @click="filtered = !filtered"
                         >
                           <div class="custom_dropdown__text">
-                            <span class="small">FILTER:</span>
-                            <span v-if="activeDeal">Active</span>
+                            <span class="small mr-1">FILTER:</span>
+                            <span v-if="activeDeal"><b>Active</b></span>
                             <span
                               v-if="
                                 endedDeal !== undefined && endedDeal === true
                               "
-                              >Ended</span
+                              ><b>Ended</b></span
                             >
-                            <span v-if="showallDeals">All</span>
+                            <span v-if="showallDeals"><b>All</b></span>
                             <i
                               v-if="!filtered"
                               class="ml-3 fa-solid fa-chevron-right"
@@ -247,10 +247,8 @@
                 class="mt-6 mb-6 has-text-centered pulse_loading"
               >
                 <div class="btn-loader">
-                  <h2 class="m-0">
-                    <i class="fas fa-spinner fa-pulse mr-3"></i> PREPARING
-                    DASHBOARD
-                  </h2>
+                  <i class="fas fa-spinner fa-pulse mr-3"></i> PREPARING
+                  DASHBOARD
                 </div>
               </div>
             </div>
@@ -587,9 +585,6 @@ export default {
     async loadState() {
       const app = this;
       app.appealsByUri = {};
-      app.showLoadingToast(
-        "Loading data from blockchain and fetching your deals, please wait..."
-      );
       app.deals = [];
       app.isWorking = false;
       app.log("Reading state from blockchain..");

@@ -10,27 +10,29 @@
             : { top: '0px' },
         ]"
       >
-        <div class="square-particles bounce-in-top"></div>
-        <div class="square-particles-2 bounce-in-top-2"></div>
+        <div class="square-particles bounce-in-left"></div>
+        <div class="square-particles-2 bounce-in-left-2"></div>
       </div>
     </Transition>
     <Transition leave-active-class="fade-out-top">
       <div
         v-if="step > 1"
-        class="is-flex-column particles-container"
+        class="is-flex particles-container"
         :style="[
           step > 1
             ? {
                 bottom: '10%',
                 top: 'unset',
                 left: '5%',
-                transform: 'rotate(90deg)',
               }
             : { top: '0px' },
         ]"
       >
-        <div class="square-particles-4 bounce-in-top"></div>
-        <div class="square-particles-3 bounce-in-top-2"></div>
+        <div class="square-particles-4 bounce-in-left"></div>
+        <div
+          class="square-particles-3 bounce-in-left-2"
+          style="margin-top: 12px"
+        ></div>
       </div>
     </Transition>
     <Transition leave-active-class="fade-out-top">
@@ -43,16 +45,16 @@
             : { top: '0px' },
         ]"
       >
-        <div class="square-particles bounce-in-top"></div>
+        <div class="square-particles bounce-in-left"></div>
         <div
-          class="square-particles-4 bounce-in-top-2"
+          class="square-particles-4 bounce-in-left-2"
           style="margin-top: 12px"
         ></div>
       </div>
     </Transition>
     <Transition leave-active-class="fade-out-top">
       <div
-        v-if="step > 3"
+        v-if="step > 3 && !isMobile"
         class="particles-container"
         :style="[
           step > 3
@@ -60,9 +62,9 @@
             : { top: '0px' },
         ]"
       >
-        <div class="square-particles bounce-in-top"></div>
+        <div class="square-particles bounce-in-left"></div>
         <div
-          class="square-particles-2 bounce-in-top-2"
+          class="square-particles-2 bounce-in-left-2"
           style="margin-left: 12px"
         ></div>
       </div>
@@ -77,13 +79,13 @@
             : { top: '0px' },
         ]"
       >
-        <div class="square-particles-3 bounce-in-top"></div>
-        <div class="square-particles bounce-in-top-2"></div>
+        <div class="square-particles-3 bounce-in-left"></div>
+        <div class="square-particles bounce-in-left-2"></div>
       </div>
     </Transition>
     <Transition leave-active-class="fade-out-top">
       <div
-        v-if="step > 5"
+        v-if="step > 5 "
         :style="[
           step > 5
             ? { top: '25%', left: 'unset', right: '1%' }
@@ -91,9 +93,9 @@
         ]"
         class="is-flex-row particles-container"
       >
-        <div class="square-particles-2 bounce-in-top"></div>
+        <div class="square-particles-2 bounce-in-left"></div>
         <div
-          class="square-particles-4 bounce-in-top-2"
+          class="square-particles-4 bounce-in-left-2"
           style="margin-left: 12px"
         ></div>
       </div>
@@ -108,16 +110,16 @@
         ]"
         class="is-flex particles-container"
       >
-        <div class="square-particles bounce-in-top"></div>
+        <div class="square-particles bounce-in-left"></div>
         <div
-          class="square-particles-2 bounce-in-top-2"
+          class="square-particles-2 bounce-in-left-2"
           style="margin-top: 12px"
         ></div>
       </div>
     </Transition>
     <Transition leave-active-class="fade-out-top">
       <div
-        v-if="step > 7"
+        v-if="step > 7 && !isMobile"
         :style="[
           step > 7
             ? { bottom: '25%', top: 'unset', left: '30%' }
@@ -125,8 +127,8 @@
         ]"
         class="is-flex-column particles-container"
       >
-        <div class="square-particles-3 bounce-in-top"></div>
-        <div class="square-particles bounce-in-top-2"></div>
+        <div class="square-particles-3 bounce-in-left"></div>
+        <div class="square-particles bounce-in-left-2"></div>
       </div>
     </Transition>
     <Transition leave-active-class="fade-out-top">
@@ -135,9 +137,9 @@
         :style="[step > 8 ? { left: '30%', top: '12%' } : { top: '0px' }]"
         class="is-flex particles-container"
       >
-        <div class="square-particles bounce-in-top"></div>
+        <div class="square-particles bounce-in-left"></div>
         <div
-          class="square-particles-2 bounce-in-top-2"
+          class="square-particles-2 bounce-in-left-2"
           style="margin-top: 12px"
         ></div>
       </div>
@@ -152,8 +154,8 @@
         ]"
         class="is-flex-column particles-container"
       >
-        <div class="square-particles bounce-in-top"></div>
-        <div class="square-particles-4 bounce-in-top-2"></div>
+        <div class="square-particles bounce-in-left"></div>
+        <div class="square-particles-4 bounce-in-left-2"></div>
       </div>
     </Transition>
     <Transition leave-active-class="fade-out-top">
@@ -162,16 +164,18 @@
         :style="[step > 10 ? { top: '30%', left: '50%' } : { top: '0px' }]"
         class="is-flex particles-container"
       >
-        <div class="square-particles bounce-in-top"></div>
-        <div class="square-particles-4 bounce-in-top-2"></div>
+        <div class="square-particles bounce-in-left"></div>
+        <div class="square-particles-4 bounce-in-left-2"></div>
       </div>
     </Transition>
   </div>
 </template>
 
 <script>
+import checkViewport from "@/mixins/checkViewport";
 export default {
   name: "particles",
+  mixins: [checkViewport],
   data() {
     return {
       step: 0,
@@ -183,11 +187,12 @@ export default {
         const app = this;
         if (app.step === 11) {
           clearInterval(app.increasingID);
-          app.decreasingStep();
-        } else if (app.step === 0) {
-          clearInterval(app.decreasingID);
-          app.incrementStep();
+          // app.decreasingStep();
         }
+        // else if (app.step === 0) {
+        //   clearInterval(app.decreasingID);
+        //   app.incrementStep();
+        // }
       },
     },
   },
@@ -240,116 +245,117 @@ export default {
   height: 12px;
   background-color: #fff145;
 }
-.bounce-in-top {
-  -webkit-animation: bounce-in-top 0.5s both;
-  animation: bounce-in-top 0.5s both;
+
+.bounce-in-left {
+  -webkit-animation: bounce-in-left 0.5s both;
+  animation: bounce-in-left 0.5s both;
 }
 
-.bounce-in-top-2 {
-  -webkit-animation: bounce-in-top 1.1s both;
-  animation: bounce-in-top 1.1s both;
+.bounce-in-left-2 {
+  -webkit-animation: bounce-in-left 1.1s both;
+  animation: bounce-in-left 1.1s both;
 }
 
-@-webkit-keyframes bounce-in-top {
+@-webkit-keyframes bounce-in-left {
   0% {
-    -webkit-transform: translateY(-500px);
-    transform: translateY(-500px);
+    -webkit-transform: translateX(-600px);
+    transform: translateX(-600px);
     -webkit-animation-timing-function: ease-in;
     animation-timing-function: ease-in;
     opacity: 0;
   }
   38% {
-    -webkit-transform: translateY(0);
-    transform: translateY(0);
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
     -webkit-animation-timing-function: ease-out;
     animation-timing-function: ease-out;
     opacity: 1;
   }
   55% {
-    -webkit-transform: translateY(-65px);
-    transform: translateY(-65px);
+    -webkit-transform: translateX(-68px);
+    transform: translateX(-68px);
     -webkit-animation-timing-function: ease-in;
     animation-timing-function: ease-in;
   }
   72% {
-    -webkit-transform: translateY(0);
-    transform: translateY(0);
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
     -webkit-animation-timing-function: ease-out;
     animation-timing-function: ease-out;
   }
   81% {
-    -webkit-transform: translateY(-28px);
-    transform: translateY(-28px);
+    -webkit-transform: translateX(-28px);
+    transform: translateX(-28px);
     -webkit-animation-timing-function: ease-in;
     animation-timing-function: ease-in;
   }
   90% {
-    -webkit-transform: translateY(0);
-    transform: translateY(0);
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
     -webkit-animation-timing-function: ease-out;
     animation-timing-function: ease-out;
   }
   95% {
-    -webkit-transform: translateY(-8px);
-    transform: translateY(-8px);
+    -webkit-transform: translateX(-8px);
+    transform: translateX(-8px);
     -webkit-animation-timing-function: ease-in;
     animation-timing-function: ease-in;
   }
   100% {
-    -webkit-transform: translateY(0);
-    transform: translateY(0);
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
     -webkit-animation-timing-function: ease-out;
     animation-timing-function: ease-out;
   }
 }
-@keyframes bounce-in-top {
+@keyframes bounce-in-left {
   0% {
-    -webkit-transform: translateY(-500px);
-    transform: translateY(-500px);
+    -webkit-transform: translateX(-600px);
+    transform: translateX(-600px);
     -webkit-animation-timing-function: ease-in;
     animation-timing-function: ease-in;
     opacity: 0;
   }
   38% {
-    -webkit-transform: translateY(0);
-    transform: translateY(0);
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
     -webkit-animation-timing-function: ease-out;
     animation-timing-function: ease-out;
     opacity: 1;
   }
   55% {
-    -webkit-transform: translateY(-65px);
-    transform: translateY(-65px);
+    -webkit-transform: translateX(-68px);
+    transform: translateX(-68px);
     -webkit-animation-timing-function: ease-in;
     animation-timing-function: ease-in;
   }
   72% {
-    -webkit-transform: translateY(0);
-    transform: translateY(0);
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
     -webkit-animation-timing-function: ease-out;
     animation-timing-function: ease-out;
   }
   81% {
-    -webkit-transform: translateY(-28px);
-    transform: translateY(-28px);
+    -webkit-transform: translateX(-28px);
+    transform: translateX(-28px);
     -webkit-animation-timing-function: ease-in;
     animation-timing-function: ease-in;
   }
   90% {
-    -webkit-transform: translateY(0);
-    transform: translateY(0);
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
     -webkit-animation-timing-function: ease-out;
     animation-timing-function: ease-out;
   }
   95% {
-    -webkit-transform: translateY(-8px);
-    transform: translateY(-8px);
+    -webkit-transform: translateX(-8px);
+    transform: translateX(-8px);
     -webkit-animation-timing-function: ease-in;
     animation-timing-function: ease-in;
   }
   100% {
-    -webkit-transform: translateY(0);
-    transform: translateY(0);
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
     -webkit-animation-timing-function: ease-out;
     animation-timing-function: ease-out;
   }

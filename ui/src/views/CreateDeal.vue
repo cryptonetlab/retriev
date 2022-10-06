@@ -31,14 +31,14 @@
       <!-- END | NAVBAR SECTION -->
 
       <!-- SHOW CREATION DEAL -->
-      <div class="hero-body pt-5">
+      <div class="hero-body px-3 pt-5">
         <div class="container">
           <!-- TITLE -->
           <div
             @click="checkAddressArray()"
-            class="b-bottom-colored-dark m-0 pb-3 mb-6"
+            class="m-0 pb-3 mb-6 mt-5"
           >
-            <h2 class="title is-3 m-0">NEW DEAL PROPOSAL</h2>
+            <h2 class="title is-3 m-0">New Deal Proposal</h2>
           </div>
           <!-- END TITLE -->
 
@@ -46,7 +46,7 @@
           <div
             class="is-flex is-justify-content-space-between is-align-items-center mb-5"
           >
-            <a class="btn-white" href="/">
+            <a class="btn-white" href="/#/app">
               <i class="fa-solid fa-arrow-left"></i> back
             </a>
             <b-field>
@@ -506,7 +506,7 @@
                       :disabled="dealValue === 0 || isWorking"
                       class="btn-transparent fixed-width mr-4"
                       :type="{
-                        'is-info':
+                        'is-primary':
                           dealCollateral === parseInt(dealValue) &&
                           parseInt(dealValue) > 0,
                       }"
@@ -517,7 +517,7 @@
                       :disabled="dealValue === 0 || isWorking"
                       class="btn-transparent fixed-width mr-4"
                       :type="{
-                        'is-info':
+                        'is-primary':
                           dealCollateral ===
                             parseInt(dealValue) * (slashingMultiplier / 100) &&
                           dealValue > 0,
@@ -1051,7 +1051,7 @@ export default {
                   receipt.blockHash.substr(-4)
               );
               setTimeout(async function () {
-                window.location.href = "/app";
+                window.location.href = "/#/app";
               }, 2000);
               this.$toast("Transaction success at: " + receipt.blockHash, {
                 position: "top-right",

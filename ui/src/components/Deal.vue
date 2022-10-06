@@ -1,16 +1,23 @@
 <template>
   <div class="custom-card p-0">
     <div
-      class="card-header p-2"
+      class="card-header p-2 is-flex is-justify-content-space-between"
       :class="{ 'custom-card-hover': deal.index !== isOpen }"
     >
-      <h4
-        class="card-header-title"
-        @click="toggleDeal()"
-        style="cursor: pointer"
-      >
-        Retrieval Pinning Deal #{{ deal.index }}
-      </h4>
+      <div class="is-flex is-align-items-center">
+        <h4
+          class="card-header-title"
+          @click="toggleDeal()"
+          style="cursor: pointer"
+        >
+          Retrieval Pinning Deal #{{ deal.index }}
+        </h4>
+        <!-- OLD CONTRACT DEAL BADGE -->
+        <div v-if="deal.contract !== contract" class="badge badge-ended">
+          <span>Read Only</span>
+        </div>
+        <!-- active badge -->
+      </div>
 
       <!-- Deal action bar -->
       <div
@@ -119,7 +126,6 @@
 
         <!-- BADGES -->
         <div>
-          <!-- active badge -->
           <div
             v-if="
               (parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0 &&
@@ -579,7 +585,7 @@ export default {
         if (app.deal.data_uri === undefined) {
           app.deal.data_uri = app.deal.deal_uri;
         }
-        
+
         const uri =
           app.providerEndpoints[app.deal.provider] +
           "/ipfs/" +
