@@ -75,7 +75,7 @@ contract TokenRender {
         string[15] memory parts;
 
         // Defining reder array
-        parts[0] = base('fff');
+        parts[0] = base("fff");
         parts[1] = "efefef";
         parts[2] = '"/><stop offset=".828" stop-color="#';
         parts[3] = "232323";
@@ -94,7 +94,7 @@ contract TokenRender {
             timestamp_start > 0 &&
             (timestamp_start + duration) > block.timestamp
         ) {
-            parts[0] = base('fff');
+            parts[0] = base("fff");
             status = "ACTIVE";
             parts[1] = "d2d2d2";
             parts[3] = "33ff94";
@@ -114,7 +114,7 @@ contract TokenRender {
             }
         }
         if (appeal) {
-            parts[0] = base('fff');
+            parts[0] = base("fff");
             status = "APPEAL";
             parts[1] = "33ff91";
             parts[3] = "9a77ff";
@@ -183,7 +183,30 @@ contract TokenRender {
             json_parts = string(
                 abi.encodePacked(json_parts, Base64.encode(bytes(svg)))
             );
-            json_parts = string(abi.encodePacked(json_parts, '"}'));
+            // Appeal text
+            string memory appeal_text;
+            if (appeal) {
+                appeal_text = "YES";
+            } else {
+                appeal_text = "NO";
+            }
+
+            json_parts = string(
+                abi.encodePacked(
+                    json_parts,
+                    '", "attributes": [',
+                    '{"trait_type": "DATA URI", "value": "',
+                    data_uri,
+                    '"},',
+                    '{"trait_type": "VALUE", "value": "',
+                    Strings.toString(value),
+                    ' WEI"},',
+                    '{"trait_type": "APPEAL", "value": "',
+                    appeal_text,
+                    '"}',
+                    "]}"
+                )
+            );
 
             string memory json = Base64.encode(bytes(json_parts));
 

@@ -21,6 +21,8 @@ async function main() {
         try {
             const owner = await contract.ownerOf(i)
             const uri = await contract.tokenURI(i)
+            const deal = await contract.deals(i)
+            console.log("DEAL:", deal)
             console.log('TOKENID: ' + i, 'OWNER IS', owner)
             console.log(Buffer.from(uri.split('base64,')[1], 'base64').toString())
             const decodedStr = JSON.parse(Buffer.from(uri.split('base64,')[1], 'base64').toString());
