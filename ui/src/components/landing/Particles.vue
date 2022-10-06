@@ -29,8 +29,8 @@
             : { top: '0px' },
         ]"
       >
-        <div class="square-particles bounce-in-top"></div>
-        <div class="square-particles-2 bounce-in-top-2"></div>
+        <div class="square-particles-4 bounce-in-top"></div>
+        <div class="square-particles-3 bounce-in-top-2"></div>
       </div>
     </Transition>
     <Transition leave-active-class="fade-out-top">
@@ -45,7 +45,7 @@
       >
         <div class="square-particles bounce-in-top"></div>
         <div
-          class="square-particles-2 bounce-in-top-2"
+          class="square-particles-4 bounce-in-top-2"
           style="margin-top: 12px"
         ></div>
       </div>
@@ -77,8 +77,8 @@
             : { top: '0px' },
         ]"
       >
-        <div class="square-particles bounce-in-top"></div>
-        <div class="square-particles-2 bounce-in-top-2"></div>
+        <div class="square-particles-3 bounce-in-top"></div>
+        <div class="square-particles bounce-in-top-2"></div>
       </div>
     </Transition>
     <Transition leave-active-class="fade-out-top">
@@ -91,9 +91,9 @@
         ]"
         class="is-flex-row particles-container"
       >
-        <div class="square-particles bounce-in-top"></div>
+        <div class="square-particles-2 bounce-in-top"></div>
         <div
-          class="square-particles-2 bounce-in-top-2"
+          class="square-particles-4 bounce-in-top-2"
           style="margin-left: 12px"
         ></div>
       </div>
@@ -125,8 +125,8 @@
         ]"
         class="is-flex-column particles-container"
       >
-        <div class="square-particles bounce-in-top"></div>
-        <div class="square-particles-2 bounce-in-top-2"></div>
+        <div class="square-particles-3 bounce-in-top"></div>
+        <div class="square-particles bounce-in-top-2"></div>
       </div>
     </Transition>
     <Transition leave-active-class="fade-out-top">
@@ -153,7 +153,7 @@
         class="is-flex-column particles-container"
       >
         <div class="square-particles bounce-in-top"></div>
-        <div class="square-particles-2 bounce-in-top-2"></div>
+        <div class="square-particles-4 bounce-in-top-2"></div>
       </div>
     </Transition>
     <Transition leave-active-class="fade-out-top">
@@ -163,7 +163,7 @@
         class="is-flex particles-container"
       >
         <div class="square-particles bounce-in-top"></div>
-        <div class="square-particles-2 bounce-in-top-2"></div>
+        <div class="square-particles-4 bounce-in-top-2"></div>
       </div>
     </Transition>
   </div>
@@ -230,7 +230,16 @@ export default {
   height: 12px;
   background-color: #1eeffd;
 }
-
+.square-particles-3 {
+  width: 12px;
+  height: 12px;
+  background-color: #33ff94;
+}
+.square-particles-4 {
+  width: 12px;
+  height: 12px;
+  background-color: #fff145;
+}
 .bounce-in-top {
   -webkit-animation: bounce-in-top 0.5s both;
   animation: bounce-in-top 0.5s both;

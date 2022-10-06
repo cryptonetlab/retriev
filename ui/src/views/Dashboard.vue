@@ -261,20 +261,10 @@
 
       <!-- Connect Wallet container -->
       <div v-if="!account" class="connect-container">
-        <div class="grid-img">
-          <img src="../assets/img/grid.svg" alt="" />
-        </div>
-        <div>
-          <div class="logo">
-            <img src="../assets/img/logo.svg" alt="" />
-          </div>
-          <br />
-          <h2 class="pay-off tertiary-light-text">Retrieval Pinning</h2>
-          <div class="mt-5">
-            <p class="mb-0">Please connect your wallet first</p>
-            <div class="btn-primary mt-4" @click="connect()">
-              <i class="fa-solid fa-wallet mr-3"></i> Connect Wallet
-            </div>
+        <div class="mt-5">
+          <h2 class="mb-0">Please connect your <br>wallet first</h2>
+          <div class="btn-primary mt-4" @click="connect()">
+            <i class="fa-solid fa-wallet mr-3"></i> Connect Wallet
           </div>
         </div>
       </div>

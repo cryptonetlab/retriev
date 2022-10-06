@@ -19,7 +19,13 @@
         <!-- create appeal button -->
         <b-button
           @click="createAppeal()"
-          :disabled="isWorking || deal.contract !== contract"
+          :disabled="
+            deal.timestamp_start === 0 ||
+            deal.provider === 'NOT_ACCEPTED' ||
+            deal.contract !== contract ||
+            deal.pending === true ||
+            isWorking
+          "
           class="btn-tertiary btn-active"
         >
           <i class="fa-solid fa-bell mr-3"></i>REQUEST APPEAL
@@ -53,7 +59,10 @@
           target="_blank"
         >
           <b-button
-            :disabled="parseInt(deal.timestamp_start * 1000) === 0"
+            :disabled="
+              parseInt(deal.timestamp_start * 1000) === 0 ||
+              deal.contract !== contract
+            "
             class="btn-icon svg-icon"
           >
             <svg
@@ -100,10 +109,7 @@
         </a>
         <div class="divider ml-4 mr-4"></div>
         <b-button
-          :disabled="
-            (deal.canceled !== undefined && deal.canceled === true) ||
-            (deal.timestamp_start !== undefined && deal.timestamp_start !== 0)
-          "
+          :disabled="!deal.pending"
           class="btn-icon"
           @click="isDeletingDeal()"
         >
@@ -566,6 +572,14 @@ export default {
           app.providerEndpoints[providers.data[k].address] =
             providers.data[k].endpoint;
         }
+        // Fix needed to be compatible to old contract
+        if (app.deal.deal_uri === undefined) {
+          app.deal.deal_uri = app.deal.data_uri;
+        }
+        if (app.deal.data_uri === undefined) {
+          app.deal.data_uri = app.deal.deal_uri;
+        }
+        
         const uri =
           app.providerEndpoints[app.deal.provider] +
           "/ipfs/" +
@@ -622,13 +636,36 @@ export default {
           console.log("refreshed", refreshed.data);
           app.deal = refreshed.data;
 
-          // Fix needed to be compatible to old contract
-          // if (app.deal.deal_uri === undefined) {
-          //   app.deal.deal_uri = app.deal.data_uri;
-          // }
-          // if (app.deal.data_uri === undefined) {
-          //   app.deal.data_uri = app.deal.deal_uri;
-          // }
+          //Check active deal
+          if (
+            (parseInt(app.deal.timestamp_end) - new Date().getTime() / 1000 >
+              0 &&
+              app.deal.appeal !== undefined &&
+              app.deal.appeal.round === undefined) ||
+            (parseInt(app.deal.timestamp_end) - new Date().getTime() / 1000 >
+              0 &&
+              app.deal.appeal !== undefined &&
+              app.deal.appeal.round !== undefined &&
+              app.deal.appeal.round === 99 &&
+              app.deal.appeal.slashed !== undefined &&
+              app.deal.appeal.slashed === false)
+          ) {
+            app.deal.status_active = true;
+          } else {
+            app.deal.status_active = false;
+          }
+
+          // Check Pending deal
+          if (
+            app.deal.timestamp_start !== undefined &&
+            parseInt(app.deal.timestamp_start) === 0 &&
+            !app.deal.canceled
+          ) {
+            app.deal.pending = true;
+            app.deal.canAppeal = false;
+          } else {
+            app.deal.pending = false;
+          }
 
           app.$toast.clear();
           this.$buefy.toast.open({

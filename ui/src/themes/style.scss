@@ -969,20 +969,17 @@ img.network-logo {
   width: 100%;
   height: auto;
   min-height: 100vh;
-  background-color: #002b4d;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding-left: 10vw;
   justify-content: center;
-  .logo {
-    width: 150px;
-    height: 150px;
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
+  h2 {
+    line-height: 1.1;
+    font-size: 2.5rem;
+    font-weight: 600;
+    @include font-inter();
+    color: var(--primary-color);
   }
 }
 
@@ -1186,7 +1183,7 @@ hr {
 }
 
 .Vue-Toastification__toast--warning {
-  background-color: #ffe08a;
+  background-color: #FFF145;
   color: var(--primary-color);
 }
 
