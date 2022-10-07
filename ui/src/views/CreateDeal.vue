@@ -31,13 +31,13 @@
       <!-- END | NAVBAR SECTION -->
 
       <!-- SHOW CREATION DEAL -->
-      <div class="hero-body px-3 pt-5">
+      <div
+        class="hero-body pt-5"
+        :class="{ 'px-3': isDesktop, 'px-6': !isDesktop }"
+      >
         <div class="container">
           <!-- TITLE -->
-          <div
-            @click="checkAddressArray()"
-            class="m-0 pb-3 mb-6 mt-5"
-          >
+          <div @click="checkAddressArray()" class="m-0 pb-3 mb-6 mt-5">
             <h2 class="title is-3 m-0">New Deal Proposal</h2>
           </div>
           <!-- END TITLE -->
@@ -194,7 +194,9 @@
             >
               <div class="columns is-mobile m-0">
                 <div class="column is-3-tablet is-4-desktop">
-                 <b> {{ provider.substr(0, 4) + "..." + provider.substr(-4) }}</b>
+                  <b>
+                    {{ provider.substr(0, 4) + "..." + provider.substr(-4) }}</b
+                  >
                 </div>
 
                 <div
@@ -233,7 +235,10 @@
               </div>
             </div>
           </div>
-          <div class="columns is-mobile mt-6">
+          <div
+            class="columns mt-6"
+            :class="{ 'is-desktop': !expertMode, 'is-mobile': expertMode }"
+          >
             <!-- Deal input fields -->
             <div class="column is-half">
               <div class="mb-5">
@@ -603,7 +608,7 @@
                   <b> {{ dealCollateral }} WEI</b>
                 </p>
               </div>
-              <div v-if="dealUri.length > 0">
+              <div>
                 <div class="is-flex is-align-items-center mb-5">
                   <b-field class="mb-0">
                     <b-checkbox

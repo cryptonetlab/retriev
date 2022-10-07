@@ -64,6 +64,7 @@ body {
 }
 
 @mixin btn-light {
+  border: none !important;
   background-color: var(--secondary-color);
   &:hover {
     box-shadow: 0px 0px 0px 2px var(--secondary-color);
@@ -127,7 +128,7 @@ a.hover-underline {
 }
 
 a span {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 b {
@@ -796,9 +797,6 @@ button.button.is-rounded.is-dark:hover {
 
 .header {
   background-color: var(--primary-color);
-  img {
-    height: 43px;
-  }
 }
 
 .alert-banner {

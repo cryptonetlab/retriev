@@ -2,7 +2,7 @@
   <div class="bg-color-dark full-container bg-img">
     <Particles />
     <div
-      class="container"
+      class="container px-6"
       :class="{ 'px-5': !isDesktop }"
       style="min-height: 100vh"
     >

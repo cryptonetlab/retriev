@@ -18,14 +18,14 @@
         <div
           class="columns is-mobile is-multiline is-vcentered is-justify-content-space-between"
         >
-          <div class="column is-2-mobile is-1-tablet is-3-desktop">
+          <div class="column is-2-mobile is-2-tablet is-3-desktop">
             <a href="/">
               <div class="is-flex is-align-items-center">
                 <img src="../assets/img/logo-ext.svg" alt="" />
               </div></a
             >
           </div>
-          <div class="column is-10-mobile is-11-tablet is-9-desktop">
+          <div class="column is-10-mobile is-10-tablet is-9-desktop">
             <div
               class="is-flex is-align-items-center"
               :class="{ 'is-justify-content-flex-end': !isMobile }"
@@ -60,58 +60,6 @@
               <!-- Navbar -->
               <div class="ml-2">
                 <div>
-                  <!-- Nav Button show/hide -->
-                  <div @click="navState = !navState" class="btn-light-icon">
-                    <i class="fa-solid fa-ellipsis"></i>
-                  </div>
-                  <!--End | Nav Button show/hide -->
-
-                  <!-- NAVBAR -->
-                  <Transition
-                    enter-active-class="slide-in-right"
-                    leave-active-class="slide-out-right"
-                  >
-                    <div
-                      v-if="navState"
-                      @mouseleave="closeNav()"
-                      class="right-col"
-                    >
-                      <div class="nav-container">
-                        <div class="mt-3">
-                          <a href="/"
-                            ><i class="fa-solid fa-server mr-2"></i>Dashboard</a
-                          >
-                        </div>
-                        <div class="mt-3">
-                          <a
-                            href="https://filecoinproject.slack.com/archives/C03CJKWP2DR"
-                            target="_blank"
-                            ><i class="fa-solid fa-circle-question mr-2"></i
-                            >Help</a
-                          >
-                        </div>
-                        <div class="mt-3">
-                          <a href="https://pldr.dev" target="_blank"
-                            ><i class="fa-solid fa-link mr-2"></i>website</a
-                          >
-                        </div>
-                      </div>
-                      <div class="nav-container">
-                        <div class="logo-navbar mb-3">
-                          <img src="../assets/img/logo.svg" alt="" />
-                        </div>
-                        <p class="navbar-text">
-                          Retriev is part of an interoperable
-                          ecosystem of
-                          <a href="https://onchain.storage" target="_blank"
-                            >on-chain storage products</a
-                          >.
-                        </p>
-                      </div>
-                    </div>
-                  </Transition>
-                  <!-- END NAVBAR -->
-
                   <!-- REFEREE SPECIFICATION -->
                   <Transition
                     enter-active-class="slide-in-right"
@@ -276,34 +224,12 @@
 
                 <!-- END - Navbar -->
               </div>
-              <div class="ml-2">
-                <!-- Logs button show/hide -->
-                <div @click="logState = !logState" class="btn-light-icon">
-                  <i class="fa-solid fa-terminal"></i>
-                </div>
-                <!-- END - Logs button show/hide -->
-              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Application Logs -->
-    <Transition
-      enter-active-class="slide-in-right"
-      leave-active-class="slide-out-right"
-    >
-      <div
-        v-if="logState"
-        @mouseleave="closeLogs()"
-        class="right-col"
-        style="padding: 0.5rem 1.5rem"
-      >
-        <p v-html="logs"></p>
-      </div>
-    </Transition>
-    <!-- END - Application Logs -->
 
     <!-- Working Messages -->
     <!-- <div
