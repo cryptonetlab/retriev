@@ -11,6 +11,7 @@ interface IRENDER is IERC165 {
         uint256 value,
         uint256 timestamp_start,
         uint256 duration,
-        bool appeal
+        bool appeal,
+        address owner
     ) external pure returns (string memory);
 }
