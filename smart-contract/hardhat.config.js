@@ -25,6 +25,9 @@ let hardhatConfigs = {
     },
     mainnet: {
       url: provider
+    },
+    polygon: {
+      url: provider
     }
   },
   solidity: {
@@ -63,7 +66,7 @@ if (process.env.PROVIDER !== undefined) {
 }
 
 if (process.env.POLYGONSCAN !== undefined && process.env.POLYGONSCAN !== '') {
-  hardhatConfigs.etherscan = { apiKey: { polygonMumbai: process.env.POLYGONSCAN } }
+  hardhatConfigs.etherscan = { apiKey: { polygonMumbai: process.env.POLYGONSCAN, polygon: process.env.POLYGONSCAN } }
 }
 
 if (process.env.ETHERSCAN !== undefined && process.env.ETHERSCAN !== '' && process.env.POLYGONSCAN === undefined) {

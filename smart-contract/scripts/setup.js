@@ -41,11 +41,13 @@ async function main() {
         fs.writeFileSync(process.env.CONFIG, JSON.stringify(configs, null, 4))
     }
 
+
     // Adding providers to contract
     for (let k in configs.providers) {
         console.log('Adding ' + configs.providers[k].address + ' to providers..')
         try {
-            const tx = await contract.setProviderStatus(configs.providers[k].address, true, configs.providers[k].endpoint)
+            const gasPrice = await provider.getGasPrice()
+            const tx = await contract.setProviderStatus(configs.providers[k].address, true, configs.providers[k].endpoint, { gasPrice, gasLimit: "5000000" })
             await tx.wait()
             console.log('Provider added at ' + tx.hash + '!')
         } catch (e) {
@@ -58,7 +60,8 @@ async function main() {
     for (let k in configs.referees) {
         console.log('Adding ' + configs.referees[k].address + ' to referees..')
         try {
-            const tx = await contract.setRefereeStatus(configs.referees[k].address, true, configs.referees[k].endpoint)
+            const gasPrice = await provider.getGasPrice()
+            const tx = await contract.setRefereeStatus(configs.referees[k].address, true, configs.referees[k].endpoint, { gasPrice, gasLimit: "5000000" })
             await tx.wait()
             console.log('Referee added at ' + tx.hash + '!')
         } catch (e) {

@@ -14,7 +14,8 @@ async function main() {
   const provider = new ethers.providers.JsonRpcProvider(configs.provider);
   const wallet = new ethers.Wallet(configs.owner_key).connect(provider)
   const dr_contract = new ethers.Contract(configs.contract_address, ABI.abi, wallet)
-  await dr_contract.tuneProtocolVariables(0, contract.address, true)
+  const gasPrice = await provider.getGasPrice()
+  await dr_contract.tuneProtocolVariables(0, contract.address, true, { gasPrice })
   console.log('Address saved in contract')
   configs.token_render = contract.address
   fs.writeFileSync(process.env.CONFIG, JSON.stringify(configs, null, 4))

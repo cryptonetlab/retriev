@@ -138,6 +138,7 @@ function createdeal(node) {
                 if (parseInt(balance.toString()) > 0 && parseInt(balance.toString()) >= value) {
                     try {
                         let tx
+                        const gasPrice = await provider.getGasPrice()
                         if (parseInt(value) > 0) {
                             tx = await contract.createDealProposal(
                                 data_uri,
@@ -145,14 +146,14 @@ function createdeal(node) {
                                 collateral,
                                 providers,
                                 appeal_addresses
-                                , { value: value.toString() })
+                                , { value: value.toString(), gasPrice })
                         } else {
                             tx = await contract.createDealProposal(
                                 data_uri,
                                 duration,
                                 collateral,
                                 providers,
-                                appeal_addresses)
+                                appeal_addresses, { gasPrice })
                         }
                         console.log('⌛ Pending transaction at: ' + tx.hash)
                         await tx.wait()
@@ -184,12 +185,13 @@ function makeappeal(node) {
         if (deal_index !== undefined) {
             const { contract, wallet, ethers } = await node.contract()
             console.log("🚩 Making appeal to deal #" + deal_index)
+            const gasPrice = await provider.getGasPrice()
             const can_create_appeal = await contract.canAddressAppeal(deal_index, wallet.address)
             if (can_create_appeal) {
                 try {
                     const fee = await contract.returnAppealFee(deal_index)
                     console.log("Fee for appeal is:", ethers.utils.formatEther(fee.toString()))
-                    const tx = await contract.createAppeal(deal_index, { value: fee })
+                    const tx = await contract.createAppeal(deal_index, { value: fee, gasPrice })
                     console.log('⌛ Pending transaction at: ' + tx.hash)
                     await tx.wait()
                     console.log('🎉 Appeal created at ' + tx.hash + '!')
@@ -289,8 +291,9 @@ const withdraw = async (node, ...args) => {
     const { contract, wallet, ethers } = await node.contract()
     const balance = await contract.vault(wallet.address)
     if (balance > 0) {
+        const gasPrice = await provider.getGasPrice()
         console.log("Starting withdraw of " + ethers.utils.formatEther(balance) + " ETH..")
-        const tx = await contract.withdrawFromVault(balance)
+        const tx = await contract.withdrawFromVault(balance, { gasPrice })
         console.log('Pending transaction at: ' + tx.hash)
         await tx.wait()
     } else {

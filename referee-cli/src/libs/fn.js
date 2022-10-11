@@ -28,7 +28,8 @@ const withdraw = async (node, ...args) => {
     const balance = await contract.vault(wallet.address)
     if (balance > 0) {
         console.log("Starting withdraw of " + ethers.utils.formatEther(balance) + " ETH..")
-        const tx = await contract.withdrawFromVault(balance)
+        const gasPrice = await provider.getGasPrice()
+        const tx = await contract.withdrawFromVault(balance, { gasPrice })
         console.log('Pending transaction at: ' + tx.hash)
         await tx.wait()
     } else {
@@ -99,7 +100,8 @@ const processappeal = async (node, index) => {
                 if (retrieved === false) {
                     console.log("Slashing provider on-chain for appeal " + index + "..")
                     try {
-                        const slash = await contract.processAppeal(appeal.deal_index, [], [])
+                        const gasPrice = await provider.getGasPrice()
+                        const slash = await contract.processAppeal(appeal.deal_index, [], [], { gasPrice })
                         console.log('Pending transactiofn at: ' + slash.hash)
                         await slash.wait()
                         console.log("Provider successfully slashed.")
@@ -218,7 +220,8 @@ const startappeal = async (node, index) => {
         // Check if referee is leader
         if (leader.toUpperCase() === wallet.address.toUpperCase()) {
             console.log('Starting appeal #' + index + '..')
-            await contract.startAppeal(index)
+            const gasPrice = await provider.getGasPrice()
+            await contract.startAppeal(index, { gasPrice })
             node.log("START_" + index.toString())
             CONCURRENT_APPEALS++
         } else {
@@ -228,7 +231,8 @@ const startappeal = async (node, index) => {
                     const appeal = await contract.appeals(index)
                     if (appeal.origin_timestamp.toString() == "0") {
                         console.log('Starting appeal #' + index + '..')
-                        await contract.startAppeal(index)
+                        const gasPrice = await provider.getGasPrice()
+                        await contract.startAppeal(index, { gasPrice })
                         node.log("START_" + index.toString())
                     }
                     CONCURRENT_APPEALS++
@@ -350,7 +354,8 @@ const parseslash = async (node, raw) => {
                                     console.log("Collected enough signatures, trying slash.")
                                     console.log("Slashing provider because leader didn't and collected enough signatures.")
                                     try {
-                                        const slashTransaction = await contract.processAppeal(appeal.deal_index, referees_addresses, referees_signatures)
+                                        const gasPrice = await provider.getGasPrice()
+                                        const slashTransaction = await contract.processAppeal(appeal.deal_index, referees_addresses, referees_signatures, { gasPrice })
                                         console.log('Pending transaction at: ' + slashTransaction.hash)
                                         await slashTransaction.wait()
                                         console.log("Provider successfully slashed.")

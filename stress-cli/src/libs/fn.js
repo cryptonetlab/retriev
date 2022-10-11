@@ -57,13 +57,14 @@ function createDeal(node, nonce) {
         const collateral = ethers.utils.parseUnits(value, 'gwei')
         const appeal_addresses = [wallet.address]
         try {
+            const gasPrice = await provider.getGasPrice()
             const tx = await contract.createDealProposal(
                 data_uri,
                 duration,
                 collateral,
                 ipfs_providers,
                 appeal_addresses
-                , { value: ethers.utils.parseUnits(value, 'gwei') })
+                , { value: ethers.utils.parseUnits(value, 'gwei'), gasPrice })
             console.log('⌛ Pending transaction at: ' + tx.hash)
             await tx.wait()
             console.log('🎉 Deal created at ' + tx.hash + '!')
@@ -83,7 +84,8 @@ function makeAppeal(node, deal_index) {
             try {
                 const fee = await contract.returnAppealFee(deal_index)
                 console.log("Fee for appeal is:", ethers.utils.formatEther(fee.toString()))
-                const tx = await contract.createAppeal(deal_index, { value: fee })
+                const gasPrice = await provider.getGasPrice()
+                const tx = await contract.createAppeal(deal_index, { value: fee, gasPrice })
                 console.log('⌛ Pending transaction at: ' + tx.hash)
                 await tx.wait()
                 console.log('🎉 Appeal created at ' + tx.hash + '!')

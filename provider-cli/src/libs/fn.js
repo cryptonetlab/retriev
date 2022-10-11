@@ -191,7 +191,8 @@ const subscribe = async (node) => {
             } else {
                 try {
                     console.log("Sending on-chain transaction..")
-                    const tx = await contract.setProviderStatus(wallet.address, true, argv._[1])
+                    const gasPrice = await provider.getGasPrice()
+                    const tx = await contract.setProviderStatus(wallet.address, true, argv._[1], { gasPrice })
                     console.log("Found pending transaction at:", tx.hash)
                     await tx.wait()
                     console.log("Subscribed successfully!")
@@ -262,7 +263,7 @@ const deals = async (node, ...args) => {
                     if (balance < deposit_needed) {
                         console.log('Need to deposit, not enough balance inside contract..')
                         try {
-                            const tx = await contract.depositToVault({ value: deposit_needed })
+                            const tx = await contract.depositToVault({ value: deposit_needed, gasPrice })
                             console.log("Depositing at " + tx.hash)
                             await tx.wait()
                         } catch (e) {
@@ -275,7 +276,8 @@ const deals = async (node, ...args) => {
                     }
                     if (!errored) {
                         try {
-                            const tx = await contract.acceptDealProposal(deal_index)
+                            const gasPrice = await provider.getGasPrice()
+                            const tx = await contract.acceptDealProposal(deal_index, { gasPrice })
                             console.log('Pending transaction at: ' + tx.hash)
                             await tx.wait()
                             console.log('Deal accepted at ' + tx.hash + '!')
@@ -314,7 +316,8 @@ const withdraw = async (node, ...args) => {
     const balance = await contract.vault(wallet.address)
     if (balance > 0) {
         console.log("Starting withdraw of " + ethers.utils.formatEther(balance) + " ETH..")
-        const tx = await contract.withdrawFromVault(balance)
+        const gasPrice = await provider.getGasPrice()
+        const tx = await contract.withdrawFromVault(balance, { gasPrice })
         console.log('Pending transaction at: ' + tx.hash)
         await tx.wait()
     } else {
@@ -452,7 +455,8 @@ const processdeal = (node, deal_index) => {
                             if (deposited < deposit_needed) {
                                 try {
                                     console.log('Need to deposit, not enough balance inside contract..')
-                                    const tx = await contract.depositToVault({ value: deposit_needed.toString() })
+                                    const gasPrice = await provider.getGasPrice()
+                                    const tx = await contract.depositToVault({ value: deposit_needed.toString(), gasPrice })
                                     console.log("Depositing at " + tx.hash)
                                     await tx.wait()
                                 } catch (e) {
@@ -467,12 +471,11 @@ const processdeal = (node, deal_index) => {
                             // Be sure provider can accept deal
                             if (canAccept) {
                                 console.log("Can accept, listed as provider in deal.")
-                                const tx = await contract.acceptDealProposal(deal_index)
+                                const gasPrice = await provider.getGasPrice()
+                                const tx = await contract.acceptDealProposal(deal_index, { gasPrice })
                                 console.log('Pending transaction at: ' + tx.hash)
                                 await tx.wait()
                                 console.log('Deal accepted at ' + tx.hash + '!')
-                                const balance2 = await contract.vault(wallet.address)
-                                console.log("Balance after accept is:", ethers.utils.formatEther(balance2.toString()))
                                 const message = JSON.stringify({
                                     deal_index: deal_index.toString(),
                                     action: "ACCEPTED",
