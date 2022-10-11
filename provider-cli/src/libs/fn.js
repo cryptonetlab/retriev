@@ -270,6 +270,7 @@ const deals = async (node, ...args) => {
                     if (balance < deposit_needed) {
                         console.log('Need to deposit, not enough balance inside contract..')
                         try {
+                            const gasPrice = await provider.getGasPrice()
                             const tx = await contract.depositToVault({ value: deposit_needed, gasPrice })
                             console.log("Depositing at " + tx.hash)
                             await tx.wait()
