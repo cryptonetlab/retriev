@@ -45,7 +45,7 @@ export const ABI = [
                 "type": "uint256"
             }
         ],
-        "name": "RoundSlashed",
+        "name": "AppealStarted",
         "type": "event"
     },
     {
@@ -121,19 +121,6 @@ export const ABI = [
                 "type": "uint256"
             }
         ],
-        "name": "DealProposalAccepted",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "index",
-                "type": "uint256"
-            }
-        ],
         "name": "DealProposalCanceled",
         "type": "event"
     },
@@ -185,19 +172,6 @@ export const ABI = [
         "anonymous": false,
         "inputs": [
             {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "index",
-                "type": "uint256"
-            }
-        ],
-        "name": "DealRejected",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
                 "indexed": true,
                 "internalType": "address",
                 "name": "previousOwner",
@@ -211,6 +185,19 @@ export const ABI = [
             }
         ],
         "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            }
+        ],
+        "name": "RoundSlashed",
         "type": "event"
     },
     {
@@ -311,6 +298,30 @@ export const ABI = [
     {
         "inputs": [
             {
+                "internalType": "uint8",
+                "name": "",
+                "type": "uint8"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "admins",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
@@ -332,6 +343,11 @@ export const ABI = [
                 "internalType": "uint128",
                 "name": "slashes",
                 "type": "uint128"
+            },
+            {
+                "internalType": "uint256",
+                "name": "request_timestamp",
+                "type": "uint256"
             },
             {
                 "internalType": "uint256",
@@ -364,7 +380,7 @@ export const ABI = [
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_owner",
+                "name": "_to_check",
                 "type": "address"
             }
         ],
@@ -374,6 +390,30 @@ export const ABI = [
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "deal_index",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "appeal_address",
+                "type": "address"
+            }
+        ],
+        "name": "canAddressAppeal",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
             }
         ],
         "stateMutability": "view",
@@ -400,6 +440,19 @@ export const ABI = [
                 "internalType": "uint8",
                 "name": "",
                 "type": "uint8"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "contract_protected",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
             }
         ],
         "stateMutability": "view",
@@ -439,24 +492,16 @@ export const ABI = [
                 "internalType": "address[]",
                 "name": "_providers",
                 "type": "address[]"
+            },
+            {
+                "internalType": "address[]",
+                "name": "_appeal_addresses",
+                "type": "address[]"
             }
         ],
         "name": "createDealProposal",
         "outputs": [],
         "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "proposal_timeout",
-        "outputs": [
-            {
-                "internalType": "uint32",
-                "name": "",
-                "type": "uint32"
-            }
-        ],
-        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -710,6 +755,19 @@ export const ABI = [
     },
     {
         "inputs": [],
+        "name": "min_deal_value",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "min_duration",
         "outputs": [
             {
@@ -769,6 +827,38 @@ export const ABI = [
     {
         "inputs": [
             {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "name": "pending_appeals",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "permissioned_providers",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "uint256",
                 "name": "deal_index",
                 "type": "uint256"
@@ -787,6 +877,19 @@ export const ABI = [
         "name": "processAppeal",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "proposal_timeout",
+        "outputs": [
+            {
+                "internalType": "uint32",
+                "name": "",
+                "type": "uint32"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -884,32 +987,6 @@ export const ABI = [
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "returnRoundsLimit",
-        "outputs": [
-            {
-                "internalType": "uint8",
-                "name": "",
-                "type": "uint8"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "returnSlashesThreshold",
-        "outputs": [
-            {
-                "internalType": "uint8",
-                "name": "",
-                "type": "uint8"
             }
         ],
         "stateMutability": "view",
@@ -1057,6 +1134,29 @@ export const ABI = [
         "type": "function"
     },
     {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "kind",
+                "type": "uint8"
+            },
+            {
+                "internalType": "bool",
+                "name": "status",
+                "type": "bool"
+            },
+            {
+                "internalType": "address",
+                "name": "admin",
+                "type": "address"
+            }
+        ],
+        "name": "setRole",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
         "inputs": [],
         "name": "slashes_threshold",
         "outputs": [
@@ -1080,6 +1180,19 @@ export const ABI = [
             }
         ],
         "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "appeal_index",
+                "type": "uint256"
+            }
+        ],
+        "name": "startAppeal",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -1147,6 +1260,19 @@ export const ABI = [
                 "internalType": "uint8",
                 "name": "",
                 "type": "uint8"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalAppeals",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -1225,9 +1351,14 @@ export const ABI = [
                 "internalType": "address",
                 "name": "addy",
                 "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "state",
+                "type": "bool"
             }
         ],
-        "name": "tuneAddresses",
+        "name": "tuneProtocolVariables",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1245,6 +1376,24 @@ export const ABI = [
                 "type": "uint256"
             },
             {
+                "internalType": "uint32",
+                "name": "value32",
+                "type": "uint32"
+            }
+        ],
+        "name": "tuneProvidersVariables",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "kind",
+                "type": "uint8"
+            },
+            {
                 "internalType": "uint8",
                 "name": "value8",
                 "type": "uint8"
@@ -1255,7 +1404,7 @@ export const ABI = [
                 "type": "uint32"
             }
         ],
-        "name": "tuneProtocol",
+        "name": "tuneRefereesVariables",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"

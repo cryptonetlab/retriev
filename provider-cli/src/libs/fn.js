@@ -175,7 +175,7 @@ const subscribe = async (node) => {
     const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
     if (configs.api_url !== undefined) {
         if (argv._[1] !== undefined && argv._[1].indexOf('https') !== undefined) {
-            const { wallet, contract } = await node.contract()
+            const { wallet, contract, provider } = await node.contract()
             const is_permissioned = await contract.permissioned_providers()
             if (is_permissioned) {
                 const message = "Sign me as Retrieval Pinning provider."
@@ -190,14 +190,21 @@ const subscribe = async (node) => {
                 console.log('Response is:', subscription.data.message)
             } else {
                 try {
-                    console.log("Sending on-chain transaction..")
+                    const message = "Sign me as Retrieval Pinning provider."
+                    const signature = await node.sign(message)
+                    const subscription = await axios.post(configs.api_url + '/signup', {
+                        endpoint: argv._[1],
+                        address: wallet.address,
+                        signature: signature
+                    })
+                    console.log('Response is:', subscription.data.message)
                     const gasPrice = await provider.getGasPrice()
                     const tx = await contract.setProviderStatus(wallet.address, true, argv._[1], { gasPrice })
                     console.log("Found pending transaction at:", tx.hash)
                     await tx.wait()
                     console.log("Subscribed successfully!")
                 } catch (e) {
-                    console.log("Can't send transaction..")
+                    console.log("Can't subscribe..")
                 }
             }
             try {
@@ -218,7 +225,7 @@ const subscribe = async (node) => {
 const deals = async (node, ...args) => {
     if (args[1] !== undefined) {
         const deal_command = args[1]
-        const { contract, wallet, ethers } = await node.contract()
+        const { contract, wallet, ethers, provider } = await node.contract()
         const totalDeals = await contract.totalDeals()
         const deals = []
         switch (deal_command) {
@@ -312,7 +319,7 @@ const deals = async (node, ...args) => {
 }
 
 const withdraw = async (node, ...args) => {
-    const { contract, wallet, ethers } = await node.contract()
+    const { contract, wallet, ethers, provider } = await node.contract()
     const balance = await contract.vault(wallet.address)
     if (balance > 0) {
         console.log("Starting withdraw of " + ethers.utils.formatEther(balance) + " ETH..")
@@ -346,7 +353,7 @@ const processdeal = (node, deal_index) => {
     return new Promise(async response => {
         try {
             const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
-            const { contract, wallet, ethers } = await node.contract()
+            const { contract, wallet, ethers, provider } = await node.contract()
             let canAccept = await contract.isProviderInDeal(deal_index, wallet.address)
             if (canAccept) {
                 const proposal = await contract.deals(deal_index)

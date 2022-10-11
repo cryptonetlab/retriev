@@ -64,15 +64,21 @@ app.post("/signup", async function (req, res) {
     if (verified !== false && verified.toUpperCase() === req.body.address.toUpperCase()) {
       const db = new Database.default.Mongo()
       const provider = await db.find('providers', { address: req.body.address })
+      const instance = await contract()
+      const isPermissioned = await instance.contract.permissioned_providers()
       if (provider === null) {
-        const instance = await contract()
-        const tx = await instance.contract.setProviderStatus(req.body.address, true, req.body.endpoint)
-        req.body.tx = tx
+        let tx
+        if (isPermissioned) {
+          tx = await instance.contract.setProviderStatus(req.body.address, true, req.body.endpoint)
+          req.body.tx = tx
+        }
         await db.insert('providers', req.body)
         res.send({ message: "Provided added correctly", error: false, tx: tx })
       } else if (req.body.endpoint !== provider.endpoint) {
-        const instance = await contract()
-        const tx = await instance.contract.setProviderStatus(req.body.address, true, req.body.endpoint)
+        let tx
+        if (isPermissioned) {
+          tx = await instance.contract.setProviderStatus(req.body.address, true, req.body.endpoint)
+        }
         await db.update('provider', { address: req.body.address }, { $set: { endpoint: req.body.endpoint, tx } })
         res.send({ message: "Endpoint changed correctly", error: false, tx: tx })
       } else {
