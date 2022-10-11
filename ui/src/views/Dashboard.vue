@@ -3,11 +3,11 @@
     <!-- MOBILE BLOCKER APP -->
     <div v-if="isMobile" class="mobile-blocker">
       <div class="logo mb-3">
-        <img src="../assets/img/logo.svg" alt="" />
+        <img src="../assets/img/logo-ext.svg" alt="" />
       </div>
-      <h2 class="pay-off-2 tertiary-light-text">Retriev</h2>
       <p class="has-text-centered mt-5">
-        For a better experience, use app from Desktop.
+        For a better experience,<br />
+        use app from Desktop.
       </p>
     </div>
     <!-- END MOBILE BLOCKER APP -->
@@ -372,6 +372,12 @@ export default {
         app.network = app.config[1].network;
         app.apiEndpoint = app.config[1].api;
         app.abi = ABI_ETH;
+      } else if (app.selectedContract === null) {
+        app.contract = app.config[0].contract;
+        app.network = app.config[0].network;
+        app.apiEndpoint = app.config[0].api;
+        app.abi = ABI_POLYGON;
+        localStorage.setItem("contract", "polygon");
       }
       console.log(
         "contract spec",

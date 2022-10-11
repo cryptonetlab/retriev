@@ -59,15 +59,6 @@
         </b-button>
         <div class="divider ml-4 mr-4"></div>
 
-        <b-button
-          :disabled="!deal.pending"
-          class="btn-icon"
-          @click="isDeletingDeal()"
-        >
-          <i class="fa-solid fa-trash-can"></i>
-        </b-button>
-        <div class="divider ml-4 mr-4"></div>
-
         <!-- BADGES -->
         <div>
           <div
@@ -444,23 +435,33 @@
                       </p>
                     </div>
                   </div>
-                  <a
-                    :class="{
-                      'no-pointer': parseInt(deal.timestamp_start * 1000) === 0,
-                    }"
-                    :href="opensea + '/' + contract + '/' + deal.index"
-                    target="_blank"
-                  >
-                    <b-button
-                      :disabled="
-                        parseInt(deal.timestamp_start * 1000) === 0 ||
-                        deal.contract !== contract
-                      "
-                      class="btn-tertiary mt-5"
+                  <div class="is-flex align-items-center">
+                    <a
+                      :class="{
+                        'no-pointer':
+                          parseInt(deal.timestamp_start * 1000) === 0,
+                      }"
+                      :href="opensea + '/' + contract + '/' + deal.index"
+                      target="_blank"
                     >
-                      Check NFT
+                      <b-button
+                        :disabled="
+                          parseInt(deal.timestamp_start * 1000) === 0 ||
+                          deal.contract !== contract
+                        "
+                        class="btn-tertiary mt-5"
+                      >
+                        Check NFT
+                      </b-button>
+                    </a>
+                    <b-button
+                      v-if="deal.pending"
+                      class="btn-icon"
+                      @click="isDeletingDeal()"
+                    >
+                      <i class="fa-solid fa-trash-can"></i> Delete
                     </b-button>
-                  </a>
+                  </div>
                 </div>
               </div>
               <div class="column is-one-quarter-tablet is-half-desktop">

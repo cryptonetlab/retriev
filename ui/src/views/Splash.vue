@@ -11,7 +11,7 @@
         />
         <div class="is-flex is-align-items-center">
           <a
-            @click="connect"
+            @click="fetchingContract()"
             class="btn-secondary"
             style="text-align: center; text-transform: lowercase"
             :style="[
@@ -101,15 +101,22 @@ import Particles from "@/components/landing/Particles.vue";
 import Web3 from "web3";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
+const CONFIG = require("../config.json");
+const ABI_POLYGON = require("../abi/abi-polygon.json");
+const ABI_ETH = require("../abi/abi-eth.json");
 
 export default {
   name: "splash",
   mixins: [checkViewport],
   data() {
     return {
+      contract: "",
+      selectedContract: localStorage.getItem("contract"),
+      config: CONFIG,
+      abi: ABI_POLYGON,
+      network: 5,
       loadToShow: false,
       infuraId: process.env.VUE_APP_INFURA_ID,
-      network: process.env.VUE_APP_NETWORK,
     };
   },
   components: {
@@ -118,6 +125,7 @@ export default {
   },
   mounted() {
     this.loader();
+    localStorage.setItem("contract", "polygon");
   },
   methods: {
     loader() {
@@ -125,6 +133,38 @@ export default {
       setTimeout(function () {
         app.loadToShow = true;
       }, 2950);
+    },
+    async fetchingContract() {
+      const app = this;
+      // Fetching data by contract selected
+      console.log("CONTRACT Selected is:", app.selectedContract);
+      if (app.selectedContract === "polygon") {
+        app.contract = app.config[0].contract;
+        app.network = app.config[0].network;
+        app.apiEndpoint = app.config[0].api;
+        app.abi = ABI_POLYGON;
+      } else if (app.selectedContract === "ethereum") {
+        app.contract = app.config[1].contract;
+        app.network = app.config[1].network;
+        app.apiEndpoint = app.config[1].api;
+        app.abi = ABI_ETH;
+      } else if (app.selectedContract === null) {
+        app.contract = app.config[0].contract;
+        app.network = app.config[0].network;
+        app.apiEndpoint = app.config[0].api;
+        app.abi = ABI_POLYGON;
+        localStorage.setItem("contract", "polygon");
+      }
+      console.log(
+        "contract spec",
+        "address",
+        app.contract,
+        "network",
+        app.network,
+        "endpoint",
+        app.apiEndpoint
+      );
+      app.connect();
     },
     async connect() {
       const app = this;
@@ -159,8 +199,7 @@ export default {
             method: "wallet_switchEthereumChain",
             params: [
               {
-                chainId:
-                  "0x" + Number(process.env.VUE_APP_NETWORK).toString(16),
+                chainId: "0x" + Number(app.network).toString(16),
               },
             ],
           });

@@ -633,7 +633,6 @@ button.button.is-rounded.is-dark:hover {
 
 .custom_dropdown {
   position: relative;
-  filter: url(#goo);
   vertical-align: middle;
   display: inline-block;
   line-height: 1;
@@ -719,7 +718,6 @@ button.button.is-rounded.is-dark:hover {
 .custom_dropdown-2 {
   min-width: 125px;
   position: relative;
-  filter: url(#goo);
   vertical-align: middle;
   display: inline-block;
   text-align: center;
@@ -1059,15 +1057,14 @@ img.network-logo {
   width: 100%;
   height: auto;
   height: 100vh;
-  background-color: #002b4d;
+  background-color: var(--primary-color);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 30px;
   .logo {
-    width: 80px;
-    height: 80px;
+    width: 50%;
     img {
       width: 100%;
       height: 100%;

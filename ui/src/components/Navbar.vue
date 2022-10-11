@@ -29,6 +29,7 @@
               class="is-flex is-align-items-center"
               :class="{ 'is-justify-content-flex-end': !isMobile }"
             >
+              <!-- Select Blockchain contract -->
               <div class="custom_dropdown-2 me-10-desktop">
                 <div
                   class="custom_dropdown__face"
@@ -67,6 +68,8 @@
                   </ul>
                 </Transition>
               </div>
+              <!-- END | Select Blockchain contract -->
+
               <div
                 v-if="accountBalance.length > 0"
                 @click="isWithdraw = !isWithdraw"
@@ -79,7 +82,8 @@
                 >
                   g</span
                 >
-                <span>ETH</span>
+                <span v-if="parseInt(network) === 1"> ETH</span>
+                <span v-if="parseInt(network) === 137"> MATIC</span>
               </div>
               <div
                 class="btn-light"
