@@ -16,7 +16,10 @@
     <div class="header py-6">
       <div class="container" :class="{ 'px-5': !isDesktop }">
         <div
-          class="columns is-mobile is-multiline is-vcentered is-justify-content-space-between"
+          class="
+            columns
+            is-mobile is-multiline is-vcentered is-justify-content-space-between
+          "
         >
           <div class="column is-2-mobile is-2-tablet is-3-desktop">
             <a href="/">
@@ -36,11 +39,14 @@
                   @click="openSelect = !openSelect"
                 >
                   <div class="custom_dropdown__text">
-                    <span>
+                    <span v-if="selectedContract === 'ethereum'">
                       <i class="fa-brands fa-ethereum mr-2"></i>
-                      {{ selectedContract }}</span
+                      GOERLI</span
                     >
-
+                    <span v-if="selectedContract === 'polygon'">
+                      <i class="fa-brands fa-ethereum mr-2"></i>
+                      POLYGON</span
+                    >
                     <i
                       v-if="!openSelect"
                       class="ml-3 fa-solid fa-chevron-right"
@@ -63,7 +69,12 @@
                       :value="contract.blockchain"
                       :key="contract.blockchain"
                     >
-                      {{ contract.blockchain }}
+                      <span v-if="contract.blockchain === 'ethereum'">
+                        GOERLI</span
+                      >
+                      <span v-if="contract.blockchain === 'polygon'">
+                        POLYGON</span
+                      >
                     </li>
                   </ul>
                 </Transition>
@@ -76,11 +87,8 @@
                 class="btn-light ml-2 mr-2"
               >
                 <span>{{ accountBalance.substr(0, 4) }}</span>
-                <span
-                  v-if="parseInt(network) === 5"
-                  style="text-transform: lowercase"
-                >
-                  g</span
+                <span v-if="parseInt(network) === 5">
+                  <span style="text-transform: lowercase">g</span></span
                 >
                 <span v-if="parseInt(network) === 1"> ETH</span>
                 <span v-if="parseInt(network) === 137"> MATIC</span>

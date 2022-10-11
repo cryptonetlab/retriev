@@ -621,7 +621,7 @@ export default {
     return {
       // Web3 data
       contract: "",
-      selectedContract: localStorage.getItem("contract"),
+      selectedContract: "",
       config: CONFIG,
       abi: ABI_POLYGON,
       network: 0,
@@ -742,6 +742,10 @@ export default {
     async fetchingContract() {
       const app = this;
       // Fetching data by contract selected
+      app.selectedContract = localStorage.getItem("contract")
+      if(app.selectedContract === null) {
+        app.selectedContract = "polygon"
+      }
       console.log("CONTRACT Selected is:", app.selectedContract);
       if (app.selectedContract === "polygon") {
         app.contract = app.config[0].contract;
@@ -811,7 +815,7 @@ export default {
             params: [
               {
                 chainId:
-                  "0x" + Number(process.env.VUE_APP_NETWORK).toString(16),
+                  "0x" + Number(app.network).toString(16),
               },
             ],
           });
@@ -858,7 +862,7 @@ export default {
       app.showLoadingToast("Loading Providers, please wait...");
       app.providers = [];
       const providersApi = await axios.get(
-        process.env.VUE_APP_API_URL + "/providers"
+        app.apiEndpoint + "/providers"
       );
       for (let k in providersApi.data) {
         const provider = providersApi.data[k];
@@ -935,7 +939,7 @@ export default {
           console.log("changed Deal value, now is: ", app.dealValue);
           axios({
             method: "post",
-            url: process.env.VUE_APP_API_URL + "/upload",
+            url: app.apiEndpoint + "/upload",
             data: formData,
             headers: {
               "Content-Type": "multipart/form-data;",

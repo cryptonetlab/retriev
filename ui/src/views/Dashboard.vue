@@ -646,10 +646,9 @@ export default {
           if (deal.proposal_tx !== undefined && deal.proposal_tx !== null) {
             app.txids.push(deal.proposal_tx);
           }
-          if (keys.indexOf(parseInt(deal.index)) === -1) {
-            keys.push(parseInt(deal.index));
+          if (keys.indexOf(deal.contract+":"+deal.index) === -1) {
+            keys.push(deal.contract+":"+deal.index);
             // Check if deal can appeal or not
-
             // Getting active deals
             if (
               parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0 ||
@@ -657,7 +656,6 @@ export default {
                 !deal.expired &&
                 !deal.canceled)
             ) {
-              keys.push(parseInt(deal.index));
               app.deals.push(deal);
             }
             // console.log("Can deal appeal?", deal.canAppeal);

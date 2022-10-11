@@ -3,7 +3,7 @@
     "contract": "0xc8834A8b64ad66668B11240Dc12B3EE32bA02c5B",
     "blockchain": "polygon",
     "network": "137",
-    "api": "https://api.pldr.dev"
+    "api": "https://api-polygon.pldr.dev"
   },
   {
     "contract": "0x7Aa765411207De8614C5044D25c58148F017DD80",
