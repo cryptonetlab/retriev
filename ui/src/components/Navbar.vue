@@ -1,39 +1,71 @@
 <template>
   <div>
     <!-- ALERT BANNER TESTNET -->
-    <div class="alert-banner py-3" :class="{ 'px-3': !isDesktop }">
+    <div v-if="selectedContract === 'ethereum'" class="alert-banner py-3 px-5">
       <div class="container">
         <p>
           <i class="fa-solid fa-circle-exclamation mr-3"></i>
           <b
-            >Retriev is in testnet. This is an alpha version and
-            storage is at your own risk.</b
+            >Retriev is in testnet. This is an alpha version and storage is at
+            your own risk.</b
           >
         </p>
       </div>
     </div>
     <!-- ALERT BANNER TESTNET -->
-    <div class="header py-6" :class="{ 'px-3': !isDesktop }">
-      <div class="container">
+    <div class="header py-6">
+      <div class="container" :class="{ 'px-5': !isDesktop }">
         <div
           class="columns is-mobile is-multiline is-vcentered is-justify-content-space-between"
         >
           <div class="column is-2-mobile is-2-tablet is-3-desktop">
             <a href="/">
               <div class="is-flex is-align-items-center">
-                <img src="../assets/img/logo-ext.svg" alt="" />
-              </div></a
-            >
+                <img src="../assets/img/logo-ext.svg" alt="" /></div
+            ></a>
           </div>
           <div class="column is-10-mobile is-10-tablet is-9-desktop">
             <div
               class="is-flex is-align-items-center"
               :class="{ 'is-justify-content-flex-end': !isMobile }"
             >
-              <div class="btn-light" style="cursor: default">
-                <i class="fa-brands fa-ethereum mr-2"></i>
-                <span v-if="parseInt(network) === 5">Goerli</span>
-                <span v-if="parseInt(network) === 1">Ethereum</span>
+              <div class="custom_dropdown-2 me-10-desktop">
+                <div
+                  class="custom_dropdown__face"
+                  @click="openSelect = !openSelect"
+                >
+                  <div class="custom_dropdown__text">
+                    <span>
+                      <i class="fa-brands fa-ethereum mr-2"></i>
+                      {{ selectedContract }}</span
+                    >
+
+                    <i
+                      v-if="!openSelect"
+                      class="ml-3 fa-solid fa-chevron-right"
+                    ></i>
+                    <i
+                      v-if="openSelect"
+                      class="ml-3 fa-solid fa-chevron-down"
+                    ></i>
+                  </div>
+                </div>
+                <Transition
+                  name="custom-fade"
+                  enter-active-class="fade-in-top"
+                  leave-active-class="fade-out-top"
+                >
+                  <ul v-if="openSelect" class="custom_dropdown__items">
+                    <li
+                      @click="selectContract(contract)"
+                      v-for="contract in config"
+                      :value="contract.blockchain"
+                      :key="contract.blockchain"
+                    >
+                      {{ contract.blockchain }}
+                    </li>
+                  </ul>
+                </Transition>
               </div>
               <div
                 v-if="accountBalance.length > 0"
@@ -229,17 +261,6 @@
         </div>
       </div>
     </div>
-
-
-    <!-- Working Messages -->
-    <!-- <div
-      class="workingMessage is-flex is-flex-direction-row is-flex-wrap-wrap is-align-items-center is-justify-content-center"
-      v-if="isWithdraw"
-    >
-      <i class="fas fa-spinner fa-pulse mr-5"></i>
-      <p class="text-center">{{ withdrawMessage }}</p>
-    </div> -->
-    <!-- END Working Messages -->
   </div>
 </template>
 
@@ -250,6 +271,8 @@ import axios from "axios";
 export default {
   mixins: [checkViewport],
   props: [
+    "config",
+    "selectedContract",
     "account",
     "accountBalance",
     "network",
@@ -264,8 +287,8 @@ export default {
     return {
       // LAYOUT
       navState: false,
+      openSelect: false,
       childData: "",
-      logState: false,
       hideForNow: true,
       isWithdraw: false,
       withdrawMessage: false,
@@ -303,15 +326,10 @@ export default {
       const app = this;
       app.navState = false;
     },
-    closeLogs() {
-      const app = this;
-      app.logState = false;
-    },
     closeWithdraw() {
       const app = this;
       app.isWithdraw = false;
     },
-
     alertCustomError(message) {
       this.$buefy.dialog.alert({
         title: "Error",
@@ -323,6 +341,15 @@ export default {
         ariaRole: "alertdialog",
         ariaModal: true,
       });
+    },
+    selectContract(contract) {
+      const app = this;
+      localStorage.setItem("contract", contract.blockchain);
+      console.log(
+        "Funtcion selectContract CONTRACT",
+        localStorage.getItem("contract")
+      );
+      window.location.reload();
     },
   },
 };

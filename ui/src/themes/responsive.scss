@@ -2,7 +2,9 @@
 @media screen and (max-width: 767px) {
   html,
   body {
-    font-size: 13px;
+    font-size: 15px;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
   }
   .btn-primary,
   .btn-secondary,
@@ -11,15 +13,25 @@
     font-size: 1.1rem !important;
     padding: 5px 10px;
   }
+  .custom-footer {
+    position: absolute;
+    bottom: 50px;
+    width: 100%;
+    right: 20px;
+  }
   h1.big-title {
-    font-size: 3rem;
+    font-size: 2.5rem;
   }
 }
 
 // TABLET GENERAL
 @media only screen and (min-width: 768px) and (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) {
-  html, body {
+  html,
+  body {
     font-size: 14px;
+  }
+  h1.big-title {
+    font-size: 4rem;
   }
   .btn-primary,
   .btn-secondary,
@@ -70,6 +82,30 @@
   }
 }
 
+@media screen and (min-width: 1025px) and (max-width: 1260px) {
+  h1.big-title {
+    font-size: 3.875rem;
+  }
+  .hideMiddle {
+    display: none !important;
+  }
+}
+
+@media screen and (min-width: 1261px) and (max-width: 1439px) {
+  h1.big-title {
+    font-size: 4rem;
+  }
+  .custom-footer {
+    bottom: 50px;
+  }
+  p.pay-off {
+    font-size: 1rem;
+  }
+  .hideMiddle {
+    display: none !important;
+  }
+}
+
 @media screen and (max-width: 1216px) {
   // .btn-primary,
   // .btn-secondary,
@@ -92,8 +128,3 @@
   }
 }
 
-@media screen and (min-width: 1408px) {
-  .container:not(.is-max-desktop):not(.is-max-widescreen) {
-    max-width: 1440px;
-  }
-}

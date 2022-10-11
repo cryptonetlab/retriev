@@ -1,11 +1,7 @@
 <template>
   <div class="bg-color-dark full-container bg-img">
     <Particles />
-    <div
-      class="container px-6"
-      :class="{ 'px-5': !isDesktop }"
-      style="min-height: 100vh"
-    >
+    <div class="container px-5" style="min-height: 100vh">
       <!-- ====================== NAVBAR ====================== -->
       <div class="is-flex is-justify-content-space-between py-6">
         <img
@@ -46,13 +42,13 @@
         </div>
       </div>
       <!-- ====================== NAVBAR ====================== -->
-      <div class="gap"></div>
-
+      <div class="gap-1"></div>
+      <div class="gap-1 hideMiddle"></div>
       <!-- ====================== CONTENT ====================== -->
-      <typewriter :type-interval="20" :replace-interval="1000">
+      <typewriter :type-interval="30" :replace-interval="1000">
         <h1 class="big-title">
-          Retriev Protocol is part of an interoperable ecosystem of
-          on-chain storage products.
+          Retriev Protocol is part of an interoperable ecosystem of on-chain
+          storage products.
         </h1>
       </typewriter>
       <Transition enter-active-class="fade-in">
@@ -61,33 +57,23 @@
             <p class="pay-off">
               In the setting of a decentralized storage network there are
               clients who delegate the storage of their files to a network of
-              providers,<br>we add a "retrievability assurance" for such storage
-              service is key to boost confidence and usage of decentralized
-              storage networks.
+              providers,<br />we add a "retrievability assurance" for such
+              storage service is key to boost confidence and usage of
+              decentralized storage networks.
             </p>
           </div>
         </div>
       </Transition>
       <div v-if="isDesktop || isMobile" class="gap"></div>
 
-      <div class="gap"></div>
+      <!-- <div class="gap hideMiddle"></div> -->
       <!-- ====================== CONTENT ====================== -->
 
       <!-- ====================== FOOTER ====================== -->
       <Transition enter-active-class="fade-in">
         <div
           v-if="loadToShow"
-          class="is-flex is-align-items-center is-justify-content-flex-end pb-5"
-          :style="[
-            !isMobile
-              ? {
-                  position: 'absolute',
-                  bottom: '50px',
-                  width: '100%',
-                  right: '0',
-                }
-              : { position: 'absolute', right: '20px' },
-          ]"
+          class="custom-footer is-flex is-align-items-center is-justify-content-flex-end"
         >
           <a
             class="splash-link mr-3"
@@ -138,7 +124,7 @@ export default {
       const app = this;
       setTimeout(function () {
         app.loadToShow = true;
-      }, 1800);
+      }, 2950);
     },
     async connect() {
       const app = this;
@@ -191,3 +177,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+@media screen and (min-width: 1408px) {
+  .container:not(.is-max-desktop):not(.is-max-widescreen) {
+    max-width: 1440px;
+  }
+}
+</style>

@@ -16,6 +16,8 @@
       <div v-if="account">
         <!-- NAVBAR SECTION -->
         <Navbar
+          :config="config"
+          :selectedContract="selectedContract"
           :account="account"
           :network="network"
           :accountBalance="accountBalance"
@@ -30,230 +32,223 @@
           :web3="web3"
           @withdraw="withdraw()"
           @toggleSpec="toggleSpec()"
+          @reloadContract="fetchingContract()"
         />
         <!-- END | NAVBAR SECTION -->
 
         <!-- PLATFORM START -->
-        <div class="py-5 mt-5" :class="{ 'px-3': !isDesktop }">
-          <div class="container">
-            <div>
-              <div v-if="!loading">
-                <div>
-                  <!-- TITLE -->
-                  <div class="m-0 pb-3 mb-6">
-                    <h2 class="title is-3 m-0">Manage Deals</h2>
+        <div class="container mt-5" :class="{ 'px-5': !isDesktop }">
+          <div>
+            <div v-if="!loading">
+              <div>
+                <!-- TITLE -->
+                <div class="m-0 pb-3 mb-6">
+                  <h2 class="title is-3 m-0">Dashboard</h2>
+                </div>
+                <!-- END TITLE -->
+
+                <!-- ACTION BAR (button create deal - searchbar - filters) -->
+                <div class="columns is-mobile is-multiline is-vcentered mb-5">
+                  <div class="column is-4-mobile is-4-tablet is-5-desktop">
+                    <a href="/#/app/new-deal" class="btn-secondary">
+                      <i class="fa-solid fa-file-medical mr-3"></i>Create new
+                      deal
+                    </a>
                   </div>
-                  <!-- END TITLE -->
 
-                  <!-- Message pending Tx -->
-                  <!-- <div v-if="pendingTx">
-                    Searching for latest transaction {{ pendingTx }}, please
-                    wait...<br /><br />
-                  </div> -->
-
-                  <!-- ACTION BAR (button create deal - searchbar - filters) -->
-                  <div class="columns is-mobile is-multiline is-vcentered mb-5">
-                    <div class="column is-4-mobile is-4-tablet is-5-desktop">
-                      <a href="/#/app/new-deal" class="btn-secondary">
-                        <i class="fa-solid fa-file-medical mr-3"></i>Create new
-                        deal
-                      </a>
+                  <!-- SEARCH FUNCTION -->
+                  <div class="column is-4-mobile is-4-tablet is-5-desktop">
+                    <div class="field" style="position: relative">
+                      <div class="control has-icons-left has-icons-right">
+                        <input
+                          class="input is-info"
+                          type="text"
+                          placeholder=" Search Data URI"
+                          v-model="searcher"
+                        />
+                        <span class="icon is-small is-left">
+                          <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                      </div>
+                      <div
+                        v-if="searcher !== undefined && searcher.length !== 0"
+                        class="placeholder-input-search"
+                      >
+                        <i
+                          class="fa-solid fa-circle-xmark pointer"
+                          @click="searcher = ''"
+                        ></i>
+                      </div>
                     </div>
+                  </div>
+                  <!-- END SEARCH FUNCTION -->
 
-                    <!-- SEARCH FUNCTION -->
-                    <div class="column is-4-mobile is-4-tablet is-5-desktop">
-                      <div class="field" style="position: relative">
-                        <div class="control has-icons-left has-icons-right">
-                          <input
-                            class="input is-info"
-                            type="text"
-                            placeholder=" Search Data URI"
-                            v-model="searcher"
-                          />
-                          <span class="icon is-small is-left">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                          </span>
-                        </div>
-                        <div
-                          v-if="searcher !== undefined && searcher.length !== 0"
-                          class="placeholder-input-search"
-                        >
+                  <!-- FILTER FUNCTIONS -->
+                  <div
+                    class="column is-4-mobile is-4-tablet is-2-desktop"
+                    :class="{ 'has-text-right': !isMobile }"
+                  >
+                    <div class="custom_dropdown me-10-desktop">
+                      <div
+                        class="custom_dropdown__face"
+                        @click="filtered = !filtered"
+                      >
+                        <div class="custom_dropdown__text">
+                          <span class="small mr-1">FILTER:</span>
+                          <span v-if="activeDeal"><b>Active</b></span>
+                          <span
+                            v-if="endedDeal !== undefined && endedDeal === true"
+                            ><b>Ended</b></span
+                          >
+                          <span v-if="showallDeals"><b>All</b></span>
                           <i
-                            class="fa-solid fa-circle-xmark pointer"
-                            @click="searcher = ''"
+                            v-if="!filtered"
+                            class="ml-3 fa-solid fa-chevron-right"
+                          ></i>
+                          <i
+                            v-if="filtered"
+                            class="ml-3 fa-solid fa-chevron-down"
                           ></i>
                         </div>
                       </div>
+                      <Transition
+                        name="custom-fade"
+                        enter-active-class="fade-in-top"
+                        leave-active-class="fade-out-top"
+                      >
+                        <ul v-if="filtered" class="custom_dropdown__items">
+                          <li
+                            @click="
+                              (showallDeals = true),
+                                (activeDeal = false),
+                                (endedDeal = false),
+                                (filtered = false),
+                                allDeals()
+                            "
+                          >
+                            All
+                          </li>
+                          <li
+                            @click="
+                              (activeDeal = true),
+                                (showallDeals = false),
+                                (endedDeal = false),
+                                (filtered = false),
+                                loadState()
+                            "
+                          >
+                            Active
+                          </li>
+                          <li
+                            @click="
+                              (endedDeal = true),
+                                (showallDeals = false),
+                                (activeDeal = false),
+                                (filtered = false),
+                                expiredDeals()
+                            "
+                          >
+                            Ended
+                          </li>
+                        </ul>
+                      </Transition>
                     </div>
-                    <!-- END SEARCH FUNCTION -->
-
-                    <!-- FILTER FUNCTIONS -->
-                    <div
-                      class="column is-4-mobile is-4-tablet is-2-desktop"
-                      :class="{ 'has-text-right': !isMobile }"
-                    >
-                      <div class="custom_dropdown me-10-desktop">
-                        <div
-                          class="custom_dropdown__face"
-                          @click="filtered = !filtered"
-                        >
-                          <div class="custom_dropdown__text">
-                            <span class="small mr-1">FILTER:</span>
-                            <span v-if="activeDeal"><b>Active</b></span>
-                            <span
-                              v-if="
-                                endedDeal !== undefined && endedDeal === true
-                              "
-                              ><b>Ended</b></span
-                            >
-                            <span v-if="showallDeals"><b>All</b></span>
-                            <i
-                              v-if="!filtered"
-                              class="ml-3 fa-solid fa-chevron-right"
-                            ></i>
-                            <i
-                              v-if="filtered"
-                              class="ml-3 fa-solid fa-chevron-down"
-                            ></i>
-                          </div>
-                        </div>
-                        <Transition
-                          name="custom-fade"
-                          enter-active-class="fade-in-top"
-                          leave-active-class="fade-out-top"
-                        >
-                          <ul v-if="filtered" class="custom_dropdown__items">
-                            <li
-                              @click="
-                                (showallDeals = true),
-                                  (activeDeal = false),
-                                  (endedDeal = false),
-                                  (filtered = false),
-                                  allDeals()
-                              "
-                            >
-                              All
-                            </li>
-                            <li
-                              @click="
-                                (activeDeal = true),
-                                  (showallDeals = false),
-                                  (endedDeal = false),
-                                  (filtered = false),
-                                  loadState()
-                              "
-                            >
-                              Active
-                            </li>
-                            <li
-                              @click="
-                                (endedDeal = true),
-                                  (showallDeals = false),
-                                  (activeDeal = false),
-                                  (filtered = false),
-                                  expiredDeals()
-                              "
-                            >
-                              Ended
-                            </li>
-                          </ul>
-                        </Transition>
-                      </div>
-                    </div>
-                    <!-- END | FILTER FUNCTION -->
                   </div>
-                  <!-- END | ACTION BAR (button create deal - searchbar - filters) -->
+                  <!-- END | FILTER FUNCTION -->
+                </div>
+                <!-- END | ACTION BAR (button create deal - searchbar - filters) -->
 
-                  <div class="mb-5" v-if="deals.length > 0">
-                    <!-- TITLES TABLE -->
+                <!-- DEALS -->
+                <div class="mb-5" v-if="deals.length > 0">
+                  <!-- TITLES TABLE -->
+                  <div
+                    class="columns is-mobile is-multiline is-vcentered hide"
+                    v-if="!isMobile"
+                  >
                     <div
-                      class="columns is-mobile is-multiline is-vcentered hide"
-                      v-if="!isMobile"
+                      class="column is-4-mobile is-2-tablet is-5-desktop is-6-widescreen is-6-fullhd"
                     >
-                      <div
-                        class="column is-4-mobile is-2-tablet is-5-desktop is-6-widescreen is-6-fullhd"
-                      >
-                        <h5 class="title-table ml-5">DEAL TYPE</h5>
-                      </div>
-                      <div
-                        class="column is-4-mobile is-6-tablet is-4-desktop is-4-widescreen is-4-fullhd"
-                      >
-                        <h5 class="title-table ml-5">ACTIONS</h5>
-                      </div>
-                      <div
-                        class="column is-4-mobile is-2-tablet is-2-desktop is-2-widescreen is-2-fullhd"
-                      >
-                        <h5
-                          class="title-table"
-                          :class="{ 'ml-5': isDesktop, 'ml-6': isTablet }"
-                        >
-                          STATUS
-                        </h5>
-                      </div>
+                      <h5 class="title-table ml-5">DEALS</h5>
                     </div>
-                    <!-- END TITLES TABLE -->
-
-                    <!-- DEALS -->
-                    <div class="bordered">
-                      <div v-for="deal in deals" :key="deal.identifier">
-                        <Deal
-                          :web3="web3"
-                          :account="account"
-                          :storedDeal="deal"
-                          :index="deal.index"
-                          :opensea="opensea"
-                          :contract="contract"
-                          :abi="abi"
-                          :providerEndpoints="providerEndpoints"
-                          @toggleSpec="toggleSpec()"
-                          @alert="alertCustomError($event)"
-                        />
-                      </div>
+                    <div
+                      class="column is-4-mobile is-6-tablet is-4-desktop is-4-widescreen is-4-fullhd"
+                    >
+                      <h5 class="title-table ml-5">ACTIONS</h5>
                     </div>
-                    <!-- DEALS -->
+                    <div
+                      class="column is-4-mobile is-2-tablet is-2-desktop is-2-widescreen is-2-fullhd"
+                    >
+                      <h5
+                        class="title-table"
+                        :class="{ 'ml-5': isDesktop, 'ml-6': isTablet }"
+                      >
+                        STATUS
+                      </h5>
+                    </div>
                   </div>
-                  <!-- NO DEALS -->
-                  <p
-                    v-if="
-                      deals.length === 0 &&
-                      searcher.length === 0 &&
+                  <!-- END TITLES TABLE -->
+
+                  <div class="bordered">
+                    <div v-for="deal in deals" :key="deal.identifier">
+                      <Deal
+                        :web3="web3"
+                        :account="account"
+                        :storedDeal="deal"
+                        :index="deal.index"
+                        :apiEndpoint="apiEndpoint"
+                        :opensea="opensea"
+                        :contract="contract"
+                        :abi="abi"
+                        :providerEndpoints="providerEndpoints"
+                        @toggleSpec="toggleSpec()"
+                        @alert="alertCustomError($event)"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <!-- DEALS -->
+
+                <!-- NO DEALS MESSAGE -->
+                <p
+                  v-if="
+                    deals.length === 0 &&
+                    searcher.length === 0 &&
+                    endedDeal !== undefined &&
+                    endedDeal === false
+                  "
+                  class="mt-6"
+                >
+                  You have no active Deals or Proposal. Create a new one or view
+                  the history of Deals you have created.
+                </p>
+                <!-- END | NO DEALS MESSAGE -->
+
+                <!-- NO DEALS MESSAGE 2-->
+                <p
+                  v-if="
+                    (deals.length === 0 && searcher.length > 0) ||
+                    (deals.length === 0 &&
                       endedDeal !== undefined &&
-                      endedDeal === false
-                    "
-                    class="mt-6"
-                  >
-                    You have no active Deals or Proposal. Create a new one or
-                    view the history of Deals you have created.
-                  </p>
-                  <!-- END | NO DEALS -->
-
-                  <!-- NO DEALS -->
-                  <p
-                    v-if="
-                      (deals.length === 0 && searcher.length > 0) ||
-                      (deals.length === 0 &&
-                        endedDeal !== undefined &&
-                        endedDeal === true)
-                    "
-                    class="mt-6"
-                  >
-                    No deal fouded... try again!
-                  </p>
-                  <!-- END | NO DEALS -->
-                </div>
+                      endedDeal === true)
+                  "
+                  class="mt-6"
+                >
+                  No deal fouded... try again!
+                </p>
+                <!-- END | NO DEALS MESSAGE 2 -->
               </div>
-              <div
-                v-if="loading"
-                class="mt-6 mb-6 has-text-centered pulse_loading"
-              >
-                <div class="btn-loader">
-                  <i class="fas fa-spinner fa-pulse mr-3"></i> PREPARING
-                  DASHBOARD
-                </div>
+            </div>
+            <div
+              v-if="loading"
+              class="mt-6 mb-6 has-text-centered pulse_loading"
+            >
+              <div class="btn-loader">
+                <i class="fas fa-spinner fa-pulse mr-3"></i> PREPARING DASHBOARD
               </div>
             </div>
           </div>
         </div>
+
         <!-- PLATFORM END -->
       </div>
 
@@ -270,6 +265,7 @@
         <p class="text-center">{{ workingMessage }}</p>
       </div>
       <!-- END Working Messages -->
+      <Footer v-if="!loading" />
     </section>
   </div>
 </template>
@@ -278,27 +274,35 @@ import Web3 from "web3";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Navbar from "@/components/Navbar.vue";
+import Footer from "@/components/Footer.vue";
 import Deal from "@/components/Deal.vue";
 import checkViewport from "@/mixins/checkViewport";
 import { io } from "socket.io-client";
 const axios = require("axios");
-const ABI = require("../abi.json");
-
+const CONFIG = require("../config.json");
+const ABI_POLYGON = require("../abi/abi-polygon.json");
+const ABI_ETH = require("../abi/abi-eth.json");
 export default {
   name: "Home",
   mixins: [checkViewport],
   components: {
     Navbar,
     Deal,
+    Footer,
   },
   data() {
     return {
-      account: "",
-      accountBalance: 0,
+      contract: "",
+      selectedContract: localStorage.getItem("contract"),
+      config: CONFIG,
+      abi: ABI_POLYGON,
+      network: 0,
+      apiEndpoint: "",
       opensea: process.env.VUE_APP_OPENSEA,
-      contract: process.env.VUE_APP_CONTRACT,
       infuraId: process.env.VUE_APP_INFURA_ID,
-      network: process.env.VUE_APP_NETWORK,
+      account: "",
+      balance: 0,
+      accountBalance: 0,
       web3: "",
       loading: true,
       showCreate: false,
@@ -311,14 +315,14 @@ export default {
       deals: [],
       providers: [],
       txids: [],
+      referees: [],
       providerEndpoints: {},
       logs: "",
       dealUri: "",
       dealCollateral: "",
       dealProviders: "",
       dealValue: "",
-      abi: ABI,
-      balance: 0,
+
       infuraURL: "https://ipfs.infura.io:5001/api/v0/add",
       currentNetwork: { icon: "fa-solid fa-user-secret", text: "Goerli" },
       appealsByUri: {},
@@ -326,19 +330,16 @@ export default {
       slashingMultiplier: 10,
       appealAddress: "",
       pendingTx: "",
-      // REFRESH SINGLE DEAL
-      selectedDeal: {},
       // FOR LAYOUT
       expertMode: false,
       navSpec: false,
+
       // FILTER
-      changeNetwork: false,
       filtered: false,
       activeDeal: true,
       endedDeal: false,
       showallDeals: false,
       searcher: "",
-      referees: [],
     };
   },
   watch: {
@@ -353,8 +354,36 @@ export default {
       }
     },
   },
-
+  mounted() {
+    this.fetchingContract();
+  },
   methods: {
+    async fetchingContract() {
+      const app = this;
+      // Fetching data by contract selected
+      console.log("CONTRACT Selected is:", app.selectedContract);
+      if (app.selectedContract === "polygon") {
+        app.contract = app.config[0].contract;
+        app.network = app.config[0].network;
+        app.apiEndpoint = app.config[0].api;
+        app.abi = ABI_POLYGON;
+      } else if (app.selectedContract === "ethereum") {
+        app.contract = app.config[1].contract;
+        app.network = app.config[1].network;
+        app.apiEndpoint = app.config[1].api;
+        app.abi = ABI_ETH;
+      }
+      console.log(
+        "contract spec",
+        "address",
+        app.contract,
+        "network",
+        app.network,
+        "endpoint",
+        app.apiEndpoint
+      );
+      app.connect();
+    },
     async connect() {
       const app = this;
       let providerOptions = {};
@@ -408,8 +437,7 @@ export default {
             method: "wallet_switchEthereumChain",
             params: [
               {
-                chainId:
-                  "0x" + Number(process.env.VUE_APP_NETWORK).toString(16),
+                chainId: "0x" + Number(app.network).toString(16),
               },
             ],
           });
@@ -457,9 +485,7 @@ export default {
           position: "is-bottom-right",
           type: "is-warning",
         });
-        let deals = await axios.get(
-          process.env.VUE_APP_API_URL + "/deals/" + app.account
-        );
+        let deals = await axios.get(app.apiEndpoint + "/deals/" + app.account);
         for (let k in deals.data) {
           let deal = deals.data[k];
           if (
@@ -508,7 +534,7 @@ export default {
         .call();
       const round = await contract.methods.getRound(appeal_index).call();
 
-      console.log(
+      app.log(
         "deal " + deal.index + " with appeal index ",
         appeal_index + " have a round " + round
       );
@@ -566,9 +592,11 @@ export default {
       // Set expiration timestamp
       const expires_at =
         (parseInt(deal.timestamp_request) + parseInt(proposalTimeout)) * 1000;
-
       // Check if expired
-      if (new Date().getTime() > expires_at && deal.timestamp_start === 0) {
+      if (
+        new Date().getTime() > expires_at &&
+        parseInt(deal.timestamp_start) === 0
+      ) {
         deal.expired = true;
         deal.canAppeal = false;
       } else {
@@ -587,6 +615,7 @@ export default {
       app.appealsByUri = {};
       app.deals = [];
       app.isWorking = false;
+      app.loading = true;
       app.log("Reading state from blockchain..");
       const contract = new app.web3.eth.Contract(app.abi, app.contract);
       app.balance = await contract.methods.vault(app.account).call();
@@ -600,16 +629,14 @@ export default {
       app.proposalTimeout = proposalTimeout;
       console.log("Proposal Timeout", app.proposalTimeout);
 
+      // Fetch Deals and parser
       try {
         app.isWorking = true;
-        let deals = await axios.get(
-          process.env.VUE_APP_API_URL + "/deals/" + app.account
-        );
+        let deals = await axios.get(app.apiEndpoint + "/deals/" + app.account);
         app.isWorking = false;
         let keys = [];
         for (let k in deals.data) {
           let deal = await app.parseDeal(deals.data[k]);
-          console.log("PARSED", deal);
           if (deal.proposal_tx !== undefined && deal.proposal_tx !== null) {
             app.txids.push(deal.proposal_tx);
           }
@@ -641,11 +668,6 @@ export default {
         console.log(e);
         app.alertCustomError("2 h deals from blockchain, please retry!");
       }
-
-      app.minDuration = parseInt(await contract.methods.min_duration().call());
-      app.maxDuration = await contract.methods.max_duration().call();
-      app.log("Min duration is: " + app.minDuration);
-      app.log("Max duration is: " + app.maxDuration);
 
       app.loading = false;
 
@@ -909,6 +931,7 @@ export default {
     // FILTERS
     async expiredDeals() {
       const app = this;
+      app.loading = true;
       console.log("Checking all deals...");
       app.log("Checking all deals...");
       if (!app.isWorking) {
@@ -916,7 +939,7 @@ export default {
         app.deals = [];
         try {
           let deals = await axios.get(
-            process.env.VUE_APP_API_URL + "/deals/" + app.account
+            app.apiEndpoint + "/deals/" + app.account
           );
           let keys = [];
           let appealsByUri = {};
@@ -950,9 +973,9 @@ export default {
               parseInt(deal.timestamp_end) !== 604800
             ) {
               deal.canAppeal = false;
-              deal.dealisEnded = true;
+              deal.ended = true;
             } else {
-              deal.dealisEnded = false;
+              deal.ended = false;
             }
 
             // Check if deal is pending
@@ -979,8 +1002,8 @@ export default {
             );
             if (keys.indexOf(parseInt(deal.index)) === -1) {
               if (
-                deal.dealisEnded === true ||
-                (deal.dealisEnded === true &&
+                deal.ended === true ||
+                (deal.ended === true &&
                   deal.expired === true &&
                   !deal.dealPending) ||
                 deal.canceled
@@ -998,9 +1021,11 @@ export default {
           );
         }
       }
+      app.loading = false;
     },
     async allDeals() {
       const app = this;
+      app.loading = true;
       console.log("Checking all deals...");
       app.log("Checking all deals...");
       if (!app.isWorking) {
@@ -1008,7 +1033,7 @@ export default {
         app.deals = [];
         try {
           let deals = await axios.get(
-            process.env.VUE_APP_API_URL + "/deals/" + app.account
+            app.apiEndpoint + "/deals/" + app.account
           );
           let keys = [];
           let appealsByUri = {};
@@ -1060,6 +1085,7 @@ export default {
           );
         }
       }
+      app.loading = false;
     },
     searchDealURI() {
       // filter deal by data_uri by v-model "searcher"
@@ -1078,23 +1104,6 @@ export default {
       const app = this;
       app.navSpec = !app.navSpec;
     },
-  },
-  computed: {
-    // filteredList() {
-    //   return this.deals.filter((deal) => {
-    //     if (this.searcher.length > 0) {
-    //       return (
-    //         deal.data_uri !== undefined &&
-    //         deal.data_uri.toLowerCase().includes(this.searcher.toLowerCase())
-    //       );
-    //     } else {
-    //       return Object.keys(deal).sort(); // Do your custom sorting here
-    //     }
-    //   });
-    // },
-  },
-  mounted() {
-    this.connect();
   },
 };
 </script>

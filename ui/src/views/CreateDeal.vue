@@ -14,6 +14,8 @@
     <section v-if="!isMobile" class="hero">
       <!-- NAVBAR SECTION -->
       <Navbar
+        :config="config"
+        :selectedContract="selectedContract"
         :account="account"
         :network="network"
         :accountBalance="accountBalance"
@@ -101,6 +103,7 @@
                   dealValue = 0;
                   dealCollateral = 0;
                   baseDealValue = 0;
+                  canDoProposal = false;
                 "
                 ><i class="fa-solid fa-circle-xmark"></i> Change file</b-button
               >
@@ -433,58 +436,6 @@
               <!-- END | Payment input fields -->
 
               <!-- Collateral Input -->
-
-              <!-- Collateral Input Slider OK -->
-              <!-- <div v-if="!expertMode" class="mt-6 mb-6">
-                <div class="is-flex is-align-items-center mb-3">
-                  <h5 class="m-0">collateral</h5>
-                  <h3>
-                    <i
-                      @click="infoCollateral = true"
-                      class="fa-solid fa-circle-info pointer ml-2"
-                    ></i>
-                  </h3>
-                </div>
-                <b-field class="px-4">
-                  <b-slider
-                    :disabled="isWorking"
-                    :min="0"
-                    :max="dealValue * slashingMultiplier"
-                    :step="slashingMultiplier"
-                    indicator
-                    :tooltip="false"
-                    type="is-info"
-                    v-model="dealCollateral"
-                  >
-                    <b-slider-tick
-                      v-if="parseInt(dealValue) > 0"
-                      :value="parseInt(dealValue)"
-                      >Low</b-slider-tick
-                    >
-                    <b-slider-tick
-                      v-if="parseInt(dealValue) > 0"
-                      :value="parseInt(dealValue) * (slashingMultiplier / 2)"
-                      >Mid</b-slider-tick
-                    >
-                    <b-slider-tick
-                      v-if="dealValue > 0"
-                      :value="dealValue * slashingMultiplier"
-                      >High</b-slider-tick
-                    ></b-slider
-                  >
-                </b-field>
-                <div v-if="dealCollateralLow" class="alert-banner p-3 mt-6">
-                  <p>
-                    <i class="fa-solid fa-circle-exclamation mr-3"></i>
-                    <b
-                      >Collateral is less than the Deal value. Keep attention
-                      storage is at your own risk.
-                    </b>
-                  </p>
-                </div>
-              </div> -->
-              <!-- END | Collateral Input Slider -->
-
               <div class="mb-6">
                 <div class="is-flex is-align-items-center mb-3">
                   <b-tooltip
@@ -625,16 +576,13 @@
                     style="margin-top: -5px"
                   ></i>
                 </div>
-
                 <b-button
                   class="btn-secondary"
                   :disabled="
-                    (termsOfService !== undefined &&
-                      !termsOfService &&
-                      !isUploadingIPFS) ||
+                    (termsOfService !== undefined && !termsOfService) ||
+                    !canDoProposal ||
                     isWorking
                   "
-                  v-if="!isWorking && canDoProposal"
                   @click="createDealProposal()"
                 >
                   <i class="fa-solid fa-file-medical mr-3"></i>
@@ -645,21 +593,8 @@
           </div>
         </div>
       </div>
-      <div v-if="isWorking">{{ workingMessage }}</div>
-
       <!-- END - SHOW CREATION DEAL -->
-
-      <!-- Working Messages -->
-      <div
-        class="workingMessage is-flex is-flex-direction-row is-flex-wrap-wrap is-align-items-center is-justify-content-center"
-        v-if="
-          isWorking && workingMessage !== undefined && workingMessage !== ''
-        "
-      >
-        <i class="fas fa-spinner fa-pulse mr-5"></i>
-        <p class="text-center">{{ workingMessage }}</p>
-      </div>
-      <!-- END Working Messages -->
+      <Footer />
     </section>
   </div>
 </template>
@@ -670,8 +605,11 @@ import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import checkViewport from "@/mixins/checkViewport";
 import Navbar from "@/components/Navbar.vue";
+import Footer from "@/components/Footer.vue";
 import axios from "axios";
-const ABI = require("../abi.json");
+const CONFIG = require("../config.json");
+const ABI_POLYGON = require("../abi/abi-polygon.json");
+const ABI_ETH = require("../abi/abi-eth.json");
 const FormData = require("form-data");
 
 export default {
@@ -680,28 +618,39 @@ export default {
 
   data() {
     return {
+      // Web3 data
+      contract: "",
+      selectedContract: localStorage.getItem("contract"),
+      config: CONFIG,
+      abi: ABI_POLYGON,
+      network: 0,
       account: "",
+      balance: 0,
       accountBalance: 0,
       opensea: process.env.VUE_APP_OPENSEA,
-      contract: process.env.VUE_APP_CONTRACT,
       infuraId: process.env.VUE_APP_INFURA_ID,
-      network: process.env.VUE_APP_NETWORK,
       web3: "",
+
+      // Loaders && Notification
       loading: true,
       isWorking: false,
       isToasting: false,
       service: false,
-      refereenetwork: false,
       workingMessage: "",
+      isUploadingIPFS: false,
+
+      // Providers Details
       minDuration: 3600,
       maxDuration: 42000,
-      deals: [],
       providers: [],
+      referees: [],
       providersPolicy: {},
+
+      // Deal Proposal Details
       logs: "",
       dealUri: "",
       dealDuration: 86400 * 7,
-      dealDurationDays: 7,
+      dealDurationDays: 365,
       dealCollateral: 0,
       dealCollateralLow: 0,
       dealProviders: [],
@@ -709,34 +658,20 @@ export default {
       baseDealValue: 0,
       selectedPriority: 0,
       selectedCollateralPriority: 1,
-      termsOfService: "",
-      abi: ABI,
-      balance: 0,
-      currentNetwork: { icon: "fa-solid fa-user-secret", text: "Goerli" },
-      fileToUpload: {},
-      isUploadingIPFS: false,
       slashingMultiplier: 1000,
       appealAddresses: [],
-      referees: [],
-      // REFRESH SINGLE DEAL
-      selectedDeal: {},
 
-      // FOR LAYOUT
+      // File details
+      fileToUpload: {},
+
+      // Frontend var
       canDoProposal: false,
+      termsOfService: false,
       expertMode: false,
       navSpec: false,
-
-      // FILTER
-      changeNetwork: false,
-      filtered: false,
-      activeDeal: true,
-      endedDeal: false,
-      showallDeals: false,
-      isOpen: 0,
-      searcher: "",
     };
   },
-  components: { Navbar },
+  components: { Navbar, Footer },
   watch: {
     dealDurationDays() {
       const app = this;
@@ -800,9 +735,36 @@ export default {
     },
   },
   mounted() {
-    this.connect();
+    this.fetchingContract();
   },
   methods: {
+    async fetchingContract() {
+      const app = this;
+      console.log("CONTRACT: init fetching confing data before connect");
+      // Fetching data by contract selected
+      console.log("CONTRACT Selected is:", app.selectedContract);
+      if (app.selectedContract === "polygon") {
+        app.contract = app.config[0].contract;
+        app.network = app.config[0].network;
+        app.apiEndpoint = app.config[0].api;
+        app.abi = ABI_POLYGON;
+      } else if (app.selectedContract === "ethereum") {
+        app.contract = app.config[1].contract;
+        app.network = app.config[1].network;
+        app.apiEndpoint = app.config[1].api;
+        app.abi = ABI_ETH;
+      }
+      console.log(
+        "contract spec",
+        "address",
+        app.contract,
+        "network",
+        app.network,
+        "endpoint",
+        app.apiEndpoint
+      );
+      app.connect();
+    },
     async connect() {
       const app = this;
       let providerOptions = {};
@@ -873,11 +835,9 @@ export default {
     },
     async loadState() {
       const app = this;
-      app.deals = [];
       app.isWorking = false;
       app.log("Reading state from blockchain..");
       const contract = new app.web3.eth.Contract(app.abi, app.contract);
-      // const totalDeals = await contract.methods.totalDeals().call();
       app.balance = await contract.methods.vault(app.account).call();
       app.balance = app.web3.utils.fromWei(app.balance);
       app.slashingMultiplier = parseInt(
@@ -909,10 +869,15 @@ export default {
           if (app.providersPolicy[provider.address].maxSize === undefined) {
             app.providersPolicy[provider.address].maxSize = 20000000;
           }
-          app.dealProviders.push(provider.address);
-          app.canDoProposal = true;
+          // app.dealProviders.push(provider.address);
+          // app.canDoProposal = true;
         }
       }
+      console.log(
+        "Try to push this provider on selection",
+        providersApi.data[1]
+      );
+      app.dealProviders.push(app.providers[0]);
       // Checking Referees
       let ended = false;
       let i = 0;
@@ -945,7 +910,6 @@ export default {
         ) {
           app.showLoadingToast("Uploading file on IPFS, please wait..");
           app.isUploadingIPFS = true;
-          app.canDoProposal = true;
           const formData = new FormData();
           formData.append("file", app.fileToUpload);
           formData.append("address", app.account);
@@ -976,6 +940,7 @@ export default {
               app.isUploadingIPFS = false;
               app.$toast.clear();
               console.log("uploaded correctly");
+              app.canDoProposal = true;
             } else {
               app.alertCustomError("Error while uploading file, please retry!");
             }

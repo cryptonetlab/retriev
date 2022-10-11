@@ -31,6 +31,7 @@
             deal.provider === 'NOT_ACCEPTED' ||
             deal.contract !== contract ||
             deal.pending === true ||
+            deal.ended === true ||
             isWorking
           "
           class="btn-tertiary btn-active"
@@ -455,7 +456,7 @@
                         parseInt(deal.timestamp_start * 1000) === 0 ||
                         deal.contract !== contract
                       "
-                      class="btn-primary mt-5"
+                      class="btn-tertiary mt-5"
                     >
                       Check NFT
                     </b-button>
@@ -498,6 +499,7 @@ export default {
   mixins: [checkViewport],
   props: [
     "abi",
+    "apiEndpoint",
     "storedDeal",
     "opensea",
     "contract",
@@ -532,9 +534,7 @@ export default {
       } else {
         app.isOpen = app.deal.index;
         app.refreshDeal();
-        const providers = await axios.get(
-          process.env.VUE_APP_API_URL + "/providers"
-        );
+        const providers = await axios.get(app.apiEndpoint + "/providers");
         for (let k in providers.data) {
           app.providerEndpoints[providers.data[k].address] =
             providers.data[k].endpoint;
@@ -594,7 +594,7 @@ export default {
         });
         try {
           let refreshed = await axios.get(
-            process.env.VUE_APP_API_URL +
+            app.apiEndpoint +
               "/parse/" +
               app.deal.contract +
               "/" +

@@ -1,173 +1,140 @@
 <template>
   <div>
-    <Transition leave-active-class="fade-out-top">
+    <div
+      v-if="step > 0"
+      class="is-flex particles-container flyingLeft"
+      :style="[
+        step > 0 ? { bottom: 'unset', top: '25%', left: '1%' } : { top: '0px' },
+      ]"
+    >
+      <div class="square-particles floating"></div>
+      <div class="square-particles-2 floating-2"></div>
+    </div>
+
+    <div
+      v-if="step > 1"
+      class="is-flex particles-container flyingLeft"
+      :style="[
+        step > 1
+          ? {
+              bottom: '10%',
+              top: 'unset',
+              left: '5%',
+            }
+          : { top: '0px' },
+      ]"
+    >
+      <div class="square-particles-4 floating"></div>
+      <div class="square-particles-3 floating-2" style="margin-top: 12px"></div>
+    </div>
+
+    <div
+      v-if="step > 2"
+      class="is-flex particles-container flyingRight"
+      :style="[
+        step > 2
+          ? { bottom: '40%', top: 'unset', left: 'unset', right: '10%' }
+          : { top: '0px' },
+      ]"
+    >
+      <div class="square-particles floating"></div>
+      <div class="square-particles-4 floating-2" style="margin-top: 12px"></div>
+    </div>
+
+    <div
+      v-if="step > 3 && !isMobile"
+      class="particles-container flyingRight"
+      :style="[
+        step > 3 ? { top: '22%', left: 'unset', right: '35%' } : { top: '0px' },
+      ]"
+    >
+      <div class="square-particles floating-2"></div>
+      <div class="square-particles-2 floating" style="margin-left: 12px"></div>
+    </div>
+
+    <div
+      v-if="step > 4"
+      class="is-flex particles-container flyingLeft"
+      :style="[
+        step > 4
+          ? { bottom: '45%', top: 'unset', left: '18%' }
+          : { top: '0px' },
+      ]"
+    >
+      <div class="square-particles-3 floating-2"></div>
+      <div class="square-particles floating"></div>
+    </div>
+
+    <div
+      v-if="step > 5"
+      :style="[
+        step > 5 ? { top: '25%', left: 'unset', right: '1%' } : { top: '0px' },
+      ]"
+      class="is-flex-row particles-container flyingRight"
+    >
+      <div class="square-particles-2 floating"></div>
       <div
-        v-if="step > 0"
-        class="is-flex particles-container"
-        :style="[
-          step > 0
-            ? { bottom: 'unset', top: '25%', left: '1%' }
-            : { top: '0px' },
-        ]"
-      >
-        <div class="square-particles bounce-in-left"></div>
-        <div class="square-particles-2 bounce-in-left-2"></div>
-      </div>
-    </Transition>
-    <Transition leave-active-class="fade-out-top">
-      <div
-        v-if="step > 1"
-        class="is-flex particles-container"
-        :style="[
-          step > 1
-            ? {
-                bottom: '10%',
-                top: 'unset',
-                left: '5%',
-              }
-            : { top: '0px' },
-        ]"
-      >
-        <div class="square-particles-4 bounce-in-left"></div>
-        <div
-          class="square-particles-3 bounce-in-left-2"
-          style="margin-top: 12px"
-        ></div>
-      </div>
-    </Transition>
-    <Transition leave-active-class="fade-out-top">
-      <div
-        v-if="step > 2"
-        class="is-flex particles-container"
-        :style="[
-          step > 2
-            ? { bottom: '40%', top: 'unset', left: 'unset', right: '10%' }
-            : { top: '0px' },
-        ]"
-      >
-        <div class="square-particles bounce-in-left"></div>
-        <div
-          class="square-particles-4 bounce-in-left-2"
-          style="margin-top: 12px"
-        ></div>
-      </div>
-    </Transition>
-    <Transition leave-active-class="fade-out-top">
-      <div
-        v-if="step > 3 && !isMobile"
-        class="particles-container"
-        :style="[
-          step > 3
-            ? { top: '22%', left: 'unset', right: '35%' }
-            : { top: '0px' },
-        ]"
-      >
-        <div class="square-particles bounce-in-left"></div>
-        <div
-          class="square-particles-2 bounce-in-left-2"
-          style="margin-left: 12px"
-        ></div>
-      </div>
-    </Transition>
-    <Transition leave-active-class="fade-out-top">
-      <div
-        v-if="step > 4"
-        class="is-flex particles-container"
-        :style="[
-          step > 4
-            ? { bottom: '45%', top: 'unset', left: '18%' }
-            : { top: '0px' },
-        ]"
-      >
-        <div class="square-particles-3 bounce-in-left"></div>
-        <div class="square-particles bounce-in-left-2"></div>
-      </div>
-    </Transition>
-    <Transition leave-active-class="fade-out-top">
-      <div
-        v-if="step > 5 "
-        :style="[
-          step > 5
-            ? { top: '25%', left: 'unset', right: '1%' }
-            : { top: '0px' },
-        ]"
-        class="is-flex-row particles-container"
-      >
-        <div class="square-particles-2 bounce-in-left"></div>
-        <div
-          class="square-particles-4 bounce-in-left-2"
-          style="margin-left: 12px"
-        ></div>
-      </div>
-    </Transition>
-    <Transition leave-active-class="fade-out-top">
-      <div
-        v-if="step > 6"
-        :style="[
-          step > 6
-            ? { bottom: '5%', top: 'unset', left: 'calc(50% - 12px)' }
-            : { top: '0px' },
-        ]"
-        class="is-flex particles-container"
-      >
-        <div class="square-particles bounce-in-left"></div>
-        <div
-          class="square-particles-2 bounce-in-left-2"
-          style="margin-top: 12px"
-        ></div>
-      </div>
-    </Transition>
-    <Transition leave-active-class="fade-out-top">
-      <div
-        v-if="step > 7 && !isMobile"
-        :style="[
-          step > 7
-            ? { bottom: '25%', top: 'unset', left: '30%' }
-            : { top: '0px' },
-        ]"
-        class="is-flex-column particles-container"
-      >
-        <div class="square-particles-3 bounce-in-left"></div>
-        <div class="square-particles bounce-in-left-2"></div>
-      </div>
-    </Transition>
-    <Transition leave-active-class="fade-out-top">
-      <div
-        v-if="step > 8"
-        :style="[step > 8 ? { left: '30%', top: '12%' } : { top: '0px' }]"
-        class="is-flex particles-container"
-      >
-        <div class="square-particles bounce-in-left"></div>
-        <div
-          class="square-particles-2 bounce-in-left-2"
-          style="margin-top: 12px"
-        ></div>
-      </div>
-    </Transition>
-    <Transition leave-active-class="fade-out-top">
-      <div
-        v-if="step > 9"
-        :style="[
-          step > 9
-            ? { bottom: '27%', top: 'unset', left: ' unset', right: '50%' }
-            : { top: '0px' },
-        ]"
-        class="is-flex-column particles-container"
-      >
-        <div class="square-particles bounce-in-left"></div>
-        <div class="square-particles-4 bounce-in-left-2"></div>
-      </div>
-    </Transition>
-    <Transition leave-active-class="fade-out-top">
-      <div
-        v-if="step > 10"
-        :style="[step > 10 ? { top: '30%', left: '50%' } : { top: '0px' }]"
-        class="is-flex particles-container"
-      >
-        <div class="square-particles bounce-in-left"></div>
-        <div class="square-particles-4 bounce-in-left-2"></div>
-      </div>
-    </Transition>
+        class="square-particles-4 floating-2"
+        style="margin-left: 12px"
+      ></div>
+    </div>
+
+    <div
+      v-if="step > 6"
+      :style="[
+        step > 6
+          ? { bottom: '5%', top: 'unset', left: 'calc(50% - 12px)' }
+          : { top: '0px' },
+      ]"
+      class="is-flex particles-container flyingLeft"
+    >
+      <div class="square-particles floating"></div>
+      <div class="square-particles-2 floating-2" style="margin-top: 12px"></div>
+    </div>
+
+    <div
+      v-if="step > 7 && !isMobile"
+      :style="[
+        step > 7
+          ? { bottom: '25%', top: 'unset', left: '30%' }
+          : { top: '0px' },
+      ]"
+      class="is-flex-column particles-container flyingLeft"
+    >
+      <div class="square-particles-3 floating-2"></div>
+      <div class="square-particles floating"></div>
+    </div>
+
+    <div
+      v-if="step > 8"
+      :style="[step > 8 ? { left: '30%', top: '12%' } : { top: '0px' }]"
+      class="is-flex particles-container flyingLeft"
+    >
+      <div class="square-particles floating"></div>
+      <div class="square-particles-2 floating-2" style="margin-top: 12px"></div>
+    </div>
+
+    <div
+      v-if="step > 9"
+      :style="[
+        step > 9
+          ? { bottom: '27%', top: 'unset', left: ' unset', right: '50%' }
+          : { top: '0px' },
+      ]"
+      class="is-flex-column particles-container flyingRight"
+    >
+      <div class="square-particles floating-2"></div>
+      <div class="square-particles-4 floating"></div>
+    </div>
+
+    <div
+      v-if="step > 10"
+      :style="[step > 10 ? { top: '30%', left: '50%' } : { top: '0px' }]"
+      class="is-flex particles-container flyingLeft"
+    >
+      <div class="square-particles floating"></div>
+      <div class="square-particles-4 floating-2"></div>
+    </div>
   </div>
 </template>
 
@@ -246,118 +213,180 @@ export default {
   background-color: #fff145;
 }
 
-.bounce-in-left {
-  -webkit-animation: bounce-in-left 0.5s both;
-  animation: bounce-in-left 0.5s both;
+// .bounce-1 {
+//   -webkit-animation: flyingLeft 0.5s both;
+//   animation: flyingLeft 0.5s both;
+// }
+
+// .bounce-2 {
+//   -webkit-animation: flyingLeft 1.1s both;
+//   animation: flyingLeft 1.1s both;
+// }
+
+// @-webkit-keyframes bounce {
+//   0% {
+//     -webkit-transform: translateX(-600px);
+//     transform: translateX(-600px);
+//     -webkit-animation-timing-function: ease-in;
+//     animation-timing-function: ease-in;
+//     opacity: 0;
+//   }
+//   38% {
+//     -webkit-transform: translateX(0);
+//     transform: translateX(0);
+//     -webkit-animation-timing-function: ease-out;
+//     animation-timing-function: ease-out;
+//     opacity: 1;
+//   }
+//   55% {
+//     -webkit-transform: translateX(-68px);
+//     transform: translateX(-68px);
+//     -webkit-animation-timing-function: ease-in;
+//     animation-timing-function: ease-in;
+//   }
+//   72% {
+//     -webkit-transform: translateX(0);
+//     transform: translateX(0);
+//     -webkit-animation-timing-function: ease-out;
+//     animation-timing-function: ease-out;
+//   }
+//   81% {
+//     -webkit-transform: translateX(-28px);
+//     transform: translateX(-28px);
+//     -webkit-animation-timing-function: ease-in;
+//     animation-timing-function: ease-in;
+//   }
+//   90% {
+//     -webkit-transform: translateX(0);
+//     transform: translateX(0);
+//     -webkit-animation-timing-function: ease-out;
+//     animation-timing-function: ease-out;
+//   }
+//   95% {
+//     -webkit-transform: translateX(-8px);
+//     transform: translateX(-8px);
+//     -webkit-animation-timing-function: ease-in;
+//     animation-timing-function: ease-in;
+//   }
+//   100% {
+//     -webkit-transform: translateX(0);
+//     transform: translateX(0);
+//     -webkit-animation-timing-function: ease-out;
+//     animation-timing-function: ease-out;
+//   }
+// }
+// @keyframes bounce {
+//   0% {
+//     -webkit-transform: translateX(-600px);
+//     transform: translateX(-600px);
+//     -webkit-animation-timing-function: ease-in;
+//     animation-timing-function: ease-in;
+//     opacity: 0;
+//   }
+//   38% {
+//     -webkit-transform: translateX(0);
+//     transform: translateX(0);
+//     -webkit-animation-timing-function: ease-out;
+//     animation-timing-function: ease-out;
+//     opacity: 1;
+//   }
+//   55% {
+//     -webkit-transform: translateX(-68px);
+//     transform: translateX(-68px);
+//     -webkit-animation-timing-function: ease-in;
+//     animation-timing-function: ease-in;
+//   }
+//   72% {
+//     -webkit-transform: translateX(0);
+//     transform: translateX(0);
+//     -webkit-animation-timing-function: ease-out;
+//     animation-timing-function: ease-out;
+//   }
+//   81% {
+//     -webkit-transform: translateX(-28px);
+//     transform: translateX(-28px);
+//     -webkit-animation-timing-function: ease-in;
+//     animation-timing-function: ease-in;
+//   }
+//   90% {
+//     -webkit-transform: translateX(0);
+//     transform: translateX(0);
+//     -webkit-animation-timing-function: ease-out;
+//     animation-timing-function: ease-out;
+//   }
+//   95% {
+//     -webkit-transform: translateX(-8px);
+//     transform: translateX(-8px);
+//     -webkit-animation-timing-function: ease-in;
+//     animation-timing-function: ease-in;
+//   }
+//   100% {
+//     -webkit-transform: translateX(0);
+//     transform: translateX(0);
+//     -webkit-animation-timing-function: ease-out;
+//     animation-timing-function: ease-out;
+//   }
+// }
+
+.flyingLeft {
+  animation: linear infinite;
+  animation-name: run;
+  animation-duration: 20s;
 }
 
-.bounce-in-left-2 {
-  -webkit-animation: bounce-in-left 1.1s both;
-  animation: bounce-in-left 1.1s both;
+.flyingRight {
+  animation: linear infinite;
+  animation-name: runRight;
+  animation-duration: 20s;
 }
 
-@-webkit-keyframes bounce-in-left {
+.floating {
+  animation-name: floating;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+.floating-2 {
+  animation-name: floating;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes run {
   0% {
-    -webkit-transform: translateX(-600px);
-    transform: translateX(-600px);
-    -webkit-animation-timing-function: ease-in;
-    animation-timing-function: ease-in;
-    opacity: 0;
+    left: 0;
   }
-  38% {
-    -webkit-transform: translateX(0);
-    transform: translateX(0);
-    -webkit-animation-timing-function: ease-out;
-    animation-timing-function: ease-out;
-    opacity: 1;
-  }
-  55% {
-    -webkit-transform: translateX(-68px);
-    transform: translateX(-68px);
-    -webkit-animation-timing-function: ease-in;
-    animation-timing-function: ease-in;
-  }
-  72% {
-    -webkit-transform: translateX(0);
-    transform: translateX(0);
-    -webkit-animation-timing-function: ease-out;
-    animation-timing-function: ease-out;
-  }
-  81% {
-    -webkit-transform: translateX(-28px);
-    transform: translateX(-28px);
-    -webkit-animation-timing-function: ease-in;
-    animation-timing-function: ease-in;
-  }
-  90% {
-    -webkit-transform: translateX(0);
-    transform: translateX(0);
-    -webkit-animation-timing-function: ease-out;
-    animation-timing-function: ease-out;
-  }
-  95% {
-    -webkit-transform: translateX(-8px);
-    transform: translateX(-8px);
-    -webkit-animation-timing-function: ease-in;
-    animation-timing-function: ease-in;
+  50% {
+    left: calc(100% + 100px);
   }
   100% {
-    -webkit-transform: translateX(0);
-    transform: translateX(0);
-    -webkit-animation-timing-function: ease-out;
-    animation-timing-function: ease-out;
+    left: -100px;
   }
 }
-@keyframes bounce-in-left {
+
+@keyframes runRight {
   0% {
-    -webkit-transform: translateX(-600px);
-    transform: translateX(-600px);
-    -webkit-animation-timing-function: ease-in;
-    animation-timing-function: ease-in;
-    opacity: 0;
+    right: 0;
   }
-  38% {
-    -webkit-transform: translateX(0);
-    transform: translateX(0);
-    -webkit-animation-timing-function: ease-out;
-    animation-timing-function: ease-out;
-    opacity: 1;
-  }
-  55% {
-    -webkit-transform: translateX(-68px);
-    transform: translateX(-68px);
-    -webkit-animation-timing-function: ease-in;
-    animation-timing-function: ease-in;
-  }
-  72% {
-    -webkit-transform: translateX(0);
-    transform: translateX(0);
-    -webkit-animation-timing-function: ease-out;
-    animation-timing-function: ease-out;
-  }
-  81% {
-    -webkit-transform: translateX(-28px);
-    transform: translateX(-28px);
-    -webkit-animation-timing-function: ease-in;
-    animation-timing-function: ease-in;
-  }
-  90% {
-    -webkit-transform: translateX(0);
-    transform: translateX(0);
-    -webkit-animation-timing-function: ease-out;
-    animation-timing-function: ease-out;
-  }
-  95% {
-    -webkit-transform: translateX(-8px);
-    transform: translateX(-8px);
-    -webkit-animation-timing-function: ease-in;
-    animation-timing-function: ease-in;
+  50% {
+    right: calc(100% + 100px);
   }
   100% {
-    -webkit-transform: translateX(0);
-    transform: translateX(0);
-    -webkit-animation-timing-function: ease-out;
-    animation-timing-function: ease-out;
+    right: -100px;
+  }
+}
+
+@keyframes floating {
+  from {
+    transform: translate(0, 0px);
+  }
+  65% {
+    transform: translate(0, 15px);
+  }
+  to {
+    transform: translate(0, -0px);
   }
 }
 </style>
