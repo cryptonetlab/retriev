@@ -16,10 +16,7 @@
     <div class="header py-6">
       <div class="container" :class="{ 'px-5': !isDesktop }">
         <div
-          class="
-            columns
-            is-mobile is-multiline is-vcentered is-justify-content-space-between
-          "
+          class="columns is-mobile is-multiline is-vcentered is-justify-content-space-between"
         >
           <div class="column is-2-mobile is-2-tablet is-3-desktop">
             <a href="/">
@@ -88,9 +85,9 @@
               >
                 <span>{{ accountBalance.substr(0, 4) }}</span>
                 <span v-if="parseInt(network) === 5">
-                  <span style="text-transform: lowercase">g</span></span
+                  <span> gETH</span></span
                 >
-                <span v-if="parseInt(network) === 1"> ETH</span>
+                <span v-if="parseInt(network) === 1">ETH</span>
                 <span v-if="parseInt(network) === 137"> MATIC</span>
               </div>
               <div

@@ -209,32 +209,40 @@
                 <!-- DEALS -->
 
                 <!-- NO DEALS MESSAGE -->
-                <p
+                <div
                   v-if="
                     deals.length === 0 &&
                     searcher.length === 0 &&
                     endedDeal !== undefined &&
                     endedDeal === false
                   "
-                  class="mt-6"
                 >
-                  You have no active Deals or Proposal. Create a new one or view
-                  the history of Deals you have created.
-                </p>
+                  <p class="mt-6">
+                    You have no active Deals or Proposal. Create a new one or
+                    view the history of Deals you have created.
+                  </p>
+                  <div class="gap"></div>
+                  <div class="gap"></div>
+                  <div class="gap"></div>
+                </div>
+
                 <!-- END | NO DEALS MESSAGE -->
 
                 <!-- NO DEALS MESSAGE 2-->
-                <p
+                <div
                   v-if="
                     (deals.length === 0 && searcher.length > 0) ||
                     (deals.length === 0 &&
                       endedDeal !== undefined &&
                       endedDeal === true)
                   "
-                  class="mt-6"
                 >
-                  No deal fouded... try again!
-                </p>
+                  <p class="mt-6">No deal fouded... try again!</p>
+                  <div class="gap"></div>
+                  <div class="gap"></div>
+                  <div class="gap"></div>
+                </div>
+
                 <!-- END | NO DEALS MESSAGE 2 -->
               </div>
             </div>
@@ -646,8 +654,8 @@ export default {
           if (deal.proposal_tx !== undefined && deal.proposal_tx !== null) {
             app.txids.push(deal.proposal_tx);
           }
-          if (keys.indexOf(deal.contract+":"+deal.index) === -1) {
-            keys.push(deal.contract+":"+deal.index);
+          if (keys.indexOf(deal.contract + ":" + deal.index) === -1) {
+            keys.push(deal.contract + ":" + deal.index);
             // Check if deal can appeal or not
             // Getting active deals
             if (
