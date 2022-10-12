@@ -200,7 +200,7 @@ export const parseAppeal = async (deal_index, origin_tx = '') => {
           const checkDB = await db.find('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS })
           if (checkDB !== null) {
             console.log('[APPEALS] ---> Saving appeal details to db')
-            await db.update('deals', { index: deal_index }, { $set: { appeal: appeal } })
+            await db.update('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS }, { $set: { appeal: appeal } })
           }
         }
         response(true)
