@@ -201,9 +201,13 @@ export const parseAppeal = async (deal_index, origin_tx = '') => {
           if (checkDB !== null) {
             console.log('[APPEALS] ---> Saving appeal details to db')
             await db.update('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS }, { $set: { appeal: appeal } })
+            response(true)
+          } else {
+            response(false)
           }
+        } else {
+          response(false)
         }
-        response(true)
       } catch (e) {
         console.log('-> Error while parsing appeal.')
         response(false)
