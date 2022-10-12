@@ -32,6 +32,7 @@
             deal.contract !== contract ||
             deal.pending === true ||
             deal.ended === true ||
+            (deal.appeal.active !== undefined && deal.appeal.active) ||
             isWorking
           "
           class="btn-tertiary btn-active"
@@ -594,6 +595,10 @@ export default {
           position: "is-bottom-right",
           type: "is-warning",
         });
+        console.log(
+          "PARSE ENDPOINT",
+          app.apiEndpoint + "/parse/" + app.deal.contract + "/" + app.deal.index
+        );
         try {
           let refreshed = await axios.get(
             app.apiEndpoint +

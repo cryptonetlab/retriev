@@ -81,9 +81,9 @@
               <div
                 v-if="accountBalance.length > 0"
                 @click="isWithdraw = !isWithdraw"
-                class="btn-navbar is-flex is-align-items-center ml-2 mr-2"
+                class="btn-navbar is-flex is-align-items-center ml-2"
               >
-                <div style="padding: 10px 0 10px 30px">
+                <div style="padding: 10px 30px">
                   <span>{{ accountBalance.substr(0, 4) }}</span>
                   <span v-if="parseInt(network) === 5">
                     <span> gETH</span></span
@@ -92,13 +92,7 @@
                   <span v-if="parseInt(network) === 137"> MATIC</span>
                 </div>
 
-                <div
-                  class="ml-3"
-                  style="
-                    border-left: 1px solid white;
-                    padding: 10px 30px 10px 10px;
-                  "
-                >
+                <div style="border-left: 1px solid white; padding: 10px 30px">
                   <i class="fa-solid fa-wallet mr-2"></i>
                   {{ account.substr(0, 4) + "..." + account.substr(-4) }}
                 </div>
@@ -215,7 +209,14 @@
                               Total Balance
                               <i class="fa-solid fa-wallet ml-3"></i>
                             </h5>
-                            <p class="mt-3">{{ accountBalance }} ETH</p>
+                            <p class="mt-3">
+                              {{ accountBalance.substr(0, 7) }}
+                              <span v-if="selectedContract === 'polygon'"
+                                >MATIC</span
+                              ><span v-if="selectedContract === 'ethereum'"
+                                >ETH</span
+                              >
+                            </p>
                           </div>
                           <div class="mt-3">
                             <h5 class="pb-2 b-bottom-colored-dark">
@@ -223,13 +224,12 @@
                               <i class="fa-solid fa-vault ml-3"></i>
                             </h5>
                             <p class="mt-3">
-                              {{ balance }}
-                              <span
-                                v-if="parseInt(network) === 4"
-                                style="text-transform: lowercase"
+                              {{ balance.substr(0, 7) }}
+                              <span v-if="selectedContract === 'polygon'"
+                                >MATIC</span
+                              ><span v-if="selectedContract === 'ethereum'"
+                                >ETH</span
                               >
-                                r</span
-                              >ETH
                             </p>
                           </div>
                           <div class="mt-5">
@@ -317,13 +317,24 @@ export default {
     async isWithdraw() {
       const app = this;
       if (app.isWithdraw === true) {
-        try {
-          let allDeals = await axios.get(
-            process.env.VUE_APP_API_URL + "/deals/" + app.account
-          );
-          app.allDeals = allDeals.data.length;
-        } catch (e) {
-          console.log("Error while calculating deals");
+        if (app.selectedContract === "ethereum") {
+          try {
+            let allDeals = await axios.get(
+              app.config[1].api + "/deals/" + app.account
+            );
+            app.allDeals = allDeals.data.length;
+          } catch (e) {
+            console.log("Error while calculating deals");
+          }
+        } else if (app.selectedContract === "polygon") {
+          try {
+            let allDeals = await axios.get(
+              app.config[0].api + "/deals/" + app.account
+            );
+            app.allDeals = allDeals.data.length;
+          } catch (e) {
+            console.log("Error while calculating deals");
+          }
         }
       }
     },

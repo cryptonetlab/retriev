@@ -47,10 +47,7 @@
 
           <!-- BACK BUTTON AND EXPERT MODE SWITCH -->
           <div
-            class="
-              is-flex is-justify-content-space-between is-align-items-center
-              mb-5 mt-5
-            "
+            class="is-flex is-justify-content-space-between is-align-items-center mb-5 mt-5"
           >
             <a class="btn-white" href="/#/app">
               <i class="fa-solid fa-arrow-left"></i> back to dashboard
@@ -87,14 +84,7 @@
               </b-upload>
             </b-field>
             <div
-              class="
-                bordered-dashed
-                is-flex
-                is-flex-wrap-wrap
-                is-align-items-start
-                is-justify-content-space-between
-                p-3
-              "
+              class="bordered-dashed is-flex is-flex-wrap-wrap is-align-items-start is-justify-content-space-between p-3"
               v-if="fileToUpload.name"
             >
               <div>
@@ -129,10 +119,7 @@
               <div
                 v-for="(address, index) in appealAddresses"
                 :key="index"
-                class="
-                  is-flex is-align-items-center is-align-content-space-between
-                  mb-3
-                "
+                class="is-flex is-align-items-center is-align-content-space-between mb-3"
               >
                 <b-field class="mb-0" type="is-info" style="width: 100%">
                   <b-input
@@ -217,12 +204,7 @@
                 </div>
 
                 <div
-                  class="
-                    column
-                    is-2-tablet is-3-desktop
-                    b-left-colored-grey b-right-colored-grey
-                    pl-3
-                  "
+                  class="column is-2-tablet is-3-desktop b-left-colored-grey b-right-colored-grey pl-3"
                 >
                   <p>{{ providersPolicy[provider].endpoint }}</p>
                 </div>
@@ -233,12 +215,7 @@
                   <p>{{ providersPolicy[provider].maxSize / 1000000 }}MB</p>
                 </div>
                 <div
-                  class="
-                    column
-                    is-2-tablet is-1-desktop
-                    pl-3
-                    b-right-colored-grey
-                  "
+                  class="column is-2-tablet is-1-desktop pl-3 b-right-colored-grey"
                 >
                   <p>{{ providersPolicy[provider].maxDuration }} days</p>
                 </div>
@@ -774,16 +751,20 @@ export default {
         app.contract = app.config[0].contract;
         app.network = app.config[0].network;
         app.apiEndpoint = app.config[0].api;
+        app.opensea = app.config[0].opensea;
+
         app.abi = ABI_POLYGON;
       } else if (app.selectedContract === "ethereum") {
         app.contract = app.config[1].contract;
         app.network = app.config[1].network;
         app.apiEndpoint = app.config[1].api;
+        app.opensea = app.config[1].opensea;
         app.abi = ABI_ETH;
       } else if (app.selectedContract === null) {
         app.contract = app.config[0].contract;
         app.network = app.config[0].network;
         app.apiEndpoint = app.config[0].api;
+        app.opensea = app.config[0].opensea;
         app.abi = ABI_POLYGON;
         localStorage.setItem("contract", "polygon");
       }
@@ -1019,7 +1000,7 @@ export default {
                 .send({
                   value: app.dealValue.toString(),
                   from: app.account,
-                  gasPrice
+                  gasPrice,
                 })
                 .on("transactionHash", (tx) => {
                   app.log(

@@ -144,16 +144,19 @@ export default {
         app.contract = app.config[0].contract;
         app.network = app.config[0].network;
         app.apiEndpoint = app.config[0].api;
+        app.opensea = app.config[0].opensea;
         app.abi = ABI_POLYGON;
       } else if (app.selectedContract === "ethereum") {
         app.contract = app.config[1].contract;
         app.network = app.config[1].network;
         app.apiEndpoint = app.config[1].api;
+        app.opensea = app.config[1].opensea;
         app.abi = ABI_ETH;
       } else if (app.selectedContract === null) {
         app.contract = app.config[0].contract;
         app.network = app.config[0].network;
         app.apiEndpoint = app.config[0].api;
+        app.opensea = app.config[0].opensea;
         app.abi = ABI_POLYGON;
         localStorage.setItem("contract", "polygon");
       }

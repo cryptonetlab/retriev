@@ -48,7 +48,9 @@
                 <!-- END TITLE -->
 
                 <!-- ACTION BAR (button create deal - searchbar - filters) -->
-                <div class="columns is-mobile is-multiline is-vcentered mt-5 mb-5">
+                <div
+                  class="columns is-mobile is-multiline is-vcentered mt-5 mb-5"
+                >
                   <div class="column is-4-mobile is-4-tablet is-5-desktop">
                     <a href="/#/app/new-deal" class="btn-secondary">
                       <i class="fa-solid fa-file-medical mr-3"></i>Create new
@@ -370,16 +372,19 @@ export default {
         app.network = app.config[0].network;
         app.apiEndpoint = app.config[0].api;
         app.abi = ABI_POLYGON;
+        app.opensea = app.config[0].opensea;
       } else if (app.selectedContract === "ethereum") {
         app.contract = app.config[1].contract;
         app.network = app.config[1].network;
         app.apiEndpoint = app.config[1].api;
+        app.opensea = app.config[1].opensea;
         app.abi = ABI_ETH;
       } else if (app.selectedContract === null) {
         app.contract = app.config[0].contract;
         app.network = app.config[0].network;
         app.apiEndpoint = app.config[0].api;
         app.abi = ABI_POLYGON;
+        app.opensea = app.config[0].opensea;
         localStorage.setItem("contract", "polygon");
       }
       console.log(
