@@ -337,6 +337,8 @@ module.exports = class RetrievNode {
             await axios.post(this.configs.api_url + "/activity", { activity, details, signature, address: this.configs.address })
         } catch (e) {
             console.log("[STATUS] Error posting activity")
+            console.log(e.message)
+            console.log('--')
         }
     }
     /**
