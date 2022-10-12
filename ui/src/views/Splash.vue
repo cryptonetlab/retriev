@@ -73,7 +73,10 @@
       <Transition enter-active-class="fade-in">
         <div
           v-if="loadToShow"
-          class="custom-footer is-flex is-align-items-center is-justify-content-flex-end"
+          class="
+            custom-footer
+            is-flex is-align-items-center is-justify-content-flex-end
+          "
         >
           <a
             class="splash-link mr-3"
@@ -186,31 +189,9 @@ export default {
       });
       const provider = await web3Modal.connect();
       const web3 = await new Web3(provider);
-      const netId = await web3.eth.net.getId();
-      console.log("Current network is:", netId);
-      if (parseInt(netId) === parseInt(app.network)) {
-        const accounts = await web3.eth.getAccounts();
-        if (accounts.length > 0) {
-          window.location = "/#/app";
-        }
-      } else {
-        try {
-          await window.ethereum.request({
-            method: "wallet_switchEthereumChain",
-            params: [
-              {
-                chainId: "0x" + Number(app.network).toString(16),
-              },
-            ],
-          });
-          setTimeout(function () {
-            app.connect();
-          }, 100);
-        } catch (e) {
-          app.log(
-            "Can't automatically switch to Goerli, please do it manually."
-          );
-        }
+      const accounts = await web3.eth.getAccounts();
+      if (accounts.length > 0) {
+        window.location = "/#/app";
       }
     },
   },

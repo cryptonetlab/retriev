@@ -47,7 +47,10 @@
 
           <!-- BACK BUTTON AND EXPERT MODE SWITCH -->
           <div
-            class="is-flex is-justify-content-space-between is-align-items-center mb-5"
+            class="
+              is-flex is-justify-content-space-between is-align-items-center
+              mb-5
+            "
           >
             <a class="btn-white" href="/#/app">
               <i class="fa-solid fa-arrow-left"></i> back
@@ -84,7 +87,14 @@
               </b-upload>
             </b-field>
             <div
-              class="bordered-dashed is-flex is-flex-wrap-wrap is-align-items-start is-justify-content-space-between p-3"
+              class="
+                bordered-dashed
+                is-flex
+                is-flex-wrap-wrap
+                is-align-items-start
+                is-justify-content-space-between
+                p-3
+              "
               v-if="fileToUpload.name"
             >
               <div>
@@ -119,7 +129,10 @@
               <div
                 v-for="(address, index) in appealAddresses"
                 :key="index"
-                class="is-flex is-align-items-center is-align-content-space-between mb-3"
+                class="
+                  is-flex is-align-items-center is-align-content-space-between
+                  mb-3
+                "
               >
                 <b-field class="mb-0" type="is-info" style="width: 100%">
                   <b-input
@@ -204,7 +217,12 @@
                 </div>
 
                 <div
-                  class="column is-2-tablet is-3-desktop b-left-colored-grey b-right-colored-grey pl-3"
+                  class="
+                    column
+                    is-2-tablet is-3-desktop
+                    b-left-colored-grey b-right-colored-grey
+                    pl-3
+                  "
                 >
                   <p>{{ providersPolicy[provider].endpoint }}</p>
                 </div>
@@ -215,7 +233,12 @@
                   <p>{{ providersPolicy[provider].maxSize / 1000000 }}MB</p>
                 </div>
                 <div
-                  class="column is-2-tablet is-1-desktop pl-3 b-right-colored-grey"
+                  class="
+                    column
+                    is-2-tablet is-1-desktop
+                    pl-3
+                    b-right-colored-grey
+                  "
                 >
                   <p>{{ providersPolicy[provider].maxDuration }} days</p>
                 </div>
@@ -742,9 +765,9 @@ export default {
     async fetchingContract() {
       const app = this;
       // Fetching data by contract selected
-      app.selectedContract = localStorage.getItem("contract")
-      if(app.selectedContract === null) {
-        app.selectedContract = "polygon"
+      app.selectedContract = localStorage.getItem("contract");
+      if (app.selectedContract === null) {
+        app.selectedContract = "polygon";
       }
       console.log("CONTRACT Selected is:", app.selectedContract);
       if (app.selectedContract === "polygon") {
@@ -814,8 +837,7 @@ export default {
             method: "wallet_switchEthereumChain",
             params: [
               {
-                chainId:
-                  "0x" + Number(app.network).toString(16),
+                chainId: "0x" + Number(app.network).toString(16),
               },
             ],
           });
@@ -861,9 +883,7 @@ export default {
       // Connecting to p2p network
       app.showLoadingToast("Loading Providers, please wait...");
       app.providers = [];
-      const providersApi = await axios.get(
-        app.apiEndpoint + "/providers"
-      );
+      const providersApi = await axios.get(app.apiEndpoint + "/providers");
       for (let k in providersApi.data) {
         const provider = providersApi.data[k];
         if (app.providers.indexOf(provider.address) === -1) {
@@ -987,6 +1007,7 @@ export default {
             try {
               const contract = new app.web3.eth.Contract(app.abi, app.contract);
               console.log("Appeal Addresses typed are:", app.appealAddresses);
+              const gasPrice = await app.web3.eth.getGasPrice();
               const receipt = await contract.methods
                 .createDealProposal(
                   app.dealUri,
@@ -998,6 +1019,7 @@ export default {
                 .send({
                   value: app.dealValue.toString(),
                   from: app.account,
+                  gasPrice
                 })
                 .on("transactionHash", (tx) => {
                   app.log(

@@ -748,10 +748,12 @@ export default {
           const balance = await contract.methods.vault(app.account).call();
           app.log("Balance found in contract is: " + balance);
           if (balance > 0) {
+            const gasPrice = await app.web3.eth.getGasPrice();
             await contract.methods
               .withdrawFromVault(balance)
               .send({
                 from: app.account,
+                gasPrice
               })
               .on("transactionHash", (tx) => {
                 this.$toast.warning("Found pending transaction at: " + tx, {

@@ -677,11 +677,13 @@ export default {
           try {
             const fee = await contract.methods.returnAppealFee(index).call();
             console.log("Fee needed for appeal is: " + fee);
+            const gasPrice = await app.web3.eth.getGasPrice();
             await contract.methods
               .createAppeal(index)
               .send({
                 value: fee,
                 from: app.account,
+                gasPrice
               })
               .on("transactionHash", (tx) => {
                 app.workingMessage =
