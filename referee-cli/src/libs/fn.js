@@ -24,7 +24,7 @@ const sendmessage = async (node, ...args) => {
 }
 
 const withdraw = async (node, ...args) => {
-    const { contract, wallet, ethers } = await node.contract()
+    const { contract, wallet, ethers, provider } = await node.contract()
     const balance = await contract.vault(wallet.address)
     if (balance > 0) {
         console.log("Starting withdraw of " + ethers.utils.formatEther(balance) + " ETH..")
@@ -38,7 +38,7 @@ const withdraw = async (node, ...args) => {
 }
 
 const getbalance = async (node) => {
-    const { contract, wallet, ethers } = await node.contract()
+    const { contract, wallet, ethers, provider } = await node.contract()
     const balance = await contract.vault(wallet.address)
     console.log("Balance is " + ethers.utils.formatEther(balance) + " ETH")
 }
@@ -82,7 +82,7 @@ const processappeal = async (node, index) => {
     // TODO: Here we should add some database to prevent cache flushing at each restart
     if (appealsProcessed.indexOf(index.toString()) === -1) {
         console.log('Processing appeal #' + index + '..')
-        const { contract, wallet, ethers } = await node.contract()
+        const { contract, wallet, ethers, provider } = await node.contract()
         const round = await contract.getRound(index)
         if (round.toString() !== "99") {
             console.log("Processing round:", round.toString())
@@ -215,15 +215,20 @@ const processappeal = async (node, index) => {
 
 const startappeal = async (node, index) => {
     if (CONCURRENT_APPEALS < MAX_CONCURRENT_APPEALS) {
-        const { contract, wallet, ethers } = await node.contract()
+        const { contract, wallet, ethers, provider } = await node.contract()
         const leader = await contract.getElectedLeader(index)
         // Check if referee is leader
         if (leader.toUpperCase() === wallet.address.toUpperCase()) {
             console.log('Starting appeal #' + index + '..')
             const gasPrice = await provider.getGasPrice()
-            await contract.startAppeal(index, { gasPrice })
-            node.log("START_" + index.toString())
-            CONCURRENT_APPEALS++
+            try {
+                await contract.startAppeal(index, { gasPrice })
+                node.log("START_" + index.toString())
+                CONCURRENT_APPEALS++
+            } catch (e) {
+                node.log("ERROR_START_" + index.toString(), e.message)
+                console.log("Can't start appeal, probably already started..")
+            }
         } else {
             // Else check after 60s + random time if didn't started (random time is needed to avoid concurrency and save gas fees)
             setTimeout(async function () {
@@ -257,7 +262,7 @@ const parseslash = async (node, raw) => {
             if (processed[slash.appeal] === undefined) {
                 processed[slash.appeal] = {}
             }
-            const { contract, wallet, ethers } = await node.contract()
+            const { contract, wallet, ethers, provider } = await node.contract()
             const leader = await contract.getElectedLeader(slash.appeal)
             if (leader.toUpperCase() !== wallet.address.toUpperCase()) {
                 const round = await contract.getRound(slash.appeal)
@@ -432,7 +437,7 @@ const getappeals = async (node) => {
 }
 
 const returnappeal = async (node, appealIndex) => {
-    const { contract, wallet, ethers } = await node.contract()
+    const { contract, wallet, ethers, provider } = await node.contract()
     const appeal = await contract.appeals(appealIndex)
     return appeal
 }
@@ -451,7 +456,7 @@ async function bootstrap(node) {
 const daemon = async (node) => {
     console.log("Running referee daemon..")
     bootstrap(node)
-    const { contract, wallet, ethers } = await node.contract()
+    const { contract, wallet, ethers, provider } = await node.contract()
     setInterval(function () {
         node.log("PING")
     }, 60000)
