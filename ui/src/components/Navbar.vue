@@ -14,7 +14,7 @@
     </div>
     <!-- ALERT BANNER TESTNET -->
     <div class="header py-6">
-      <div class="container" :class="{ 'px-5': !isDesktop }">
+      <div class="container px-md-5" :class="{ 'px-5': !isDesktop }">
         <div
           class="columns is-mobile is-multiline is-vcentered is-justify-content-space-between"
         >

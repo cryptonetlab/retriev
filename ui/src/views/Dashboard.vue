@@ -37,7 +37,7 @@
         <!-- END | NAVBAR SECTION -->
 
         <!-- PLATFORM START -->
-        <div class="container mt-5" :class="{ 'px-5': !isDesktop }">
+        <div class="container mt-5 px-md-5" :class="{ 'px-5': !isDesktop }">
           <div>
             <div v-if="!loading">
               <div>
@@ -221,9 +221,6 @@
                     You have no active Deals or Proposal. Create a new one or
                     view the history of Deals you have created.
                   </p>
-                  <div class="gap"></div>
-                  <div class="gap"></div>
-                  <div class="gap"></div>
                 </div>
 
                 <!-- END | NO DEALS MESSAGE -->
@@ -238,14 +235,12 @@
                   "
                 >
                   <p class="mt-6">No deal fouded... try again!</p>
-                  <div class="gap"></div>
-                  <div class="gap"></div>
-                  <div class="gap"></div>
                 </div>
 
                 <!-- END | NO DEALS MESSAGE 2 -->
               </div>
             </div>
+            <!-- Loader Dashboard -->
             <div
               v-if="loading"
               class="mt-6 mb-6 has-text-centered pulse_loading"
@@ -273,8 +268,8 @@
         <p class="text-center">{{ workingMessage }}</p>
       </div>
       <!-- END Working Messages -->
-      <Footer v-if="!loading" />
     </section>
+    <Footer v-if="!loading" />
   </div>
 </template>
 <script>
@@ -753,7 +748,7 @@ export default {
               .withdrawFromVault(balance)
               .send({
                 from: app.account,
-                gasPrice
+                gasPrice,
               })
               .on("transactionHash", (tx) => {
                 this.$toast.warning("Found pending transaction at: " + tx, {

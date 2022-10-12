@@ -986,6 +986,11 @@ button.button.is-rounded.is-dark:hover {
 }
 
 .footer-custom {
+  background-color: var(--primary-color-contrast);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   a {
     font-weight: 700;
     &:hover {

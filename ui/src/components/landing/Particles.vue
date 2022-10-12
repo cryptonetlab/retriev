@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="no-overflow">
     <div
       v-if="step > 0"
       class="is-flex particles-container flyingLeft"
@@ -387,6 +387,43 @@ export default {
   }
   to {
     transform: translate(0, -0px);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .flyingLeft {
+    animation: linear infinite;
+    animation-name: runningLeft;
+    animation-duration: 20s;
+  }
+
+  .flyingRight {
+    animation: linear infinite;
+    animation-name: runningRight;
+    animation-duration: 20s;
+  }
+  @keyframes runningLeft {
+    0% {
+      left: 0;
+    }
+    50% {
+      left: 90%;
+    }
+    100% {
+      left: 0;
+    }
+  }
+
+  @keyframes runningRight {
+    0% {
+      right: 0;
+    }
+    50% {
+      right: 90%;
+    }
+    100% {
+      right: 0;
+    }
   }
 }
 </style>

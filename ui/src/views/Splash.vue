@@ -73,10 +73,7 @@
       <Transition enter-active-class="fade-in">
         <div
           v-if="loadToShow"
-          class="
-            custom-footer
-            is-flex is-align-items-center is-justify-content-flex-end
-          "
+          class="custom-footer is-flex is-align-items-center is-justify-content-flex-end"
         >
           <a
             class="splash-link mr-3"
@@ -128,7 +125,9 @@ export default {
   },
   mounted() {
     this.loader();
-    localStorage.setItem("contract", "polygon");
+    if (localStorage.getItem("contract") === null) {
+      localStorage.setItem("contract", "polygon");
+    }
   },
   methods: {
     loader() {
