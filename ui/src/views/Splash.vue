@@ -45,7 +45,7 @@
       <div class="gap-1" v-if="!isMobile"></div>
       <div class="gap-1 hideMiddle"></div>
       <!-- ====================== CONTENT ====================== -->
-      <typewriter :type-interval="30" :replace-interval="1000">
+      <typewriter :type-interval="27" :replace-interval="1000">
         <h1 class="big-title">
           Retriev Protocol is part of an interoperable ecosystem of on-chain
           storage products.
@@ -132,9 +132,15 @@ export default {
   methods: {
     loader() {
       const app = this;
-      setTimeout(function () {
-        app.loadToShow = true;
-      }, 2950);
+      if (app.isMobile) {
+        setTimeout(function () {
+          app.loadToShow = true;
+        }, 3500);
+      } else {
+        setTimeout(function () {
+          app.loadToShow = true;
+        }, 2950);
+      }
     },
     async fetchingContract() {
       const app = this;
