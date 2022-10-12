@@ -45,11 +45,11 @@ app.get("/parse/:contract/:id", async function (req, res) {
   const deal_id = parseInt(req.params.id)
   const db = new Database.default.Mongo()
   if (req.params.contract === process.env.CONTRACT_ADDRESS) {
-    console.log('Manual parsing deal #' + deal_id)
     await parseDeal(deal_id)
     console.log('Manual parsing appeal for deal #' + deal_id)
     await parseAppeal(deal_id)
     const deal = await db.find('deals', { contract: process.env.CONTRACT_ADDRESS, index: deal_id })
+    console.log('-> Parse completed, sending updated info to client.')
     res.send(deal)
   } else {
     const deal = await db.find('deals', { contract: req.params.contract, index: deal_id })
