@@ -331,13 +331,13 @@ export default {
 .flyingLeft {
   animation: linear infinite;
   animation-name: run;
-  animation-duration: 20s;
+  animation-duration: 30s;
 }
 
 .flyingRight {
   animation: linear infinite;
   animation-name: runRight;
-  animation-duration: 20s;
+  animation-duration: 30s;
 }
 
 .floating {

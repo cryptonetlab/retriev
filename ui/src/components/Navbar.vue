@@ -19,7 +19,7 @@
           class="columns is-mobile is-multiline is-vcentered is-justify-content-space-between"
         >
           <div class="column is-2-mobile is-2-tablet is-3-desktop">
-            <a href="/">
+            <a href="/#/app">
               <div class="is-flex is-align-items-center">
                 <img src="../assets/img/logo-ext.svg" alt="" /></div
             ></a>
@@ -81,23 +81,29 @@
               <div
                 v-if="accountBalance.length > 0"
                 @click="isWithdraw = !isWithdraw"
-                class="btn-light ml-2 mr-2"
+                class="btn-navbar is-flex is-align-items-center ml-2 mr-2"
               >
-                <span>{{ accountBalance.substr(0, 4) }}</span>
-                <span v-if="parseInt(network) === 5">
-                  <span> gETH</span></span
+                <div style="padding: 10px 0 10px 30px">
+                  <span>{{ accountBalance.substr(0, 4) }}</span>
+                  <span v-if="parseInt(network) === 5">
+                    <span> gETH</span></span
+                  >
+                  <span v-if="parseInt(network) === 1">ETH</span>
+                  <span v-if="parseInt(network) === 137"> MATIC</span>
+                </div>
+
+                <div
+                  class="ml-3"
+                  style="
+                    border-left: 1px solid white;
+                    padding: 10px 30px 10px 10px;
+                  "
                 >
-                <span v-if="parseInt(network) === 1">ETH</span>
-                <span v-if="parseInt(network) === 137"> MATIC</span>
+                  <i class="fa-solid fa-wallet mr-2"></i>
+                  {{ account.substr(0, 4) + "..." + account.substr(-4) }}
+                </div>
               </div>
-              <div
-                class="btn-light"
-                style="margin-left: -1px"
-                @click="isWithdraw = !isWithdraw"
-              >
-                <i class="fa-solid fa-wallet mr-2"></i>
-                {{ account.substr(0, 4) + "..." + account.substr(-4) }}
-              </div>
+
               <!-- Navbar -->
               <div class="ml-2">
                 <div>

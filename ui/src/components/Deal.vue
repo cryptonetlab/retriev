@@ -40,25 +40,6 @@
         </b-button>
         <div class="divider ml-4 mr-4"></div>
 
-        <!-- download file button -->
-        <b-button
-          @click="
-            downloadFile(
-              providerEndpoints[deal.provider] +
-                '/ipfs/' +
-                deal.data_uri.replace('ipfs://', '')
-            )
-          "
-          :disabled="
-            new Date().getTime() > parseInt(deal.timestamp_end * 1000) ||
-            parseInt(deal.timestamp_start * 1000) === 0
-          "
-          class="btn-icon"
-        >
-          <i class="fa-solid fa-download"></i>
-        </b-button>
-        <div class="divider ml-4 mr-4"></div>
-
         <!-- BADGES -->
         <div>
           <div
@@ -435,7 +416,8 @@
                       </p>
                     </div>
                   </div>
-                  <div class="is-flex align-items-center">
+                  <div class="is-flex align-items-center mt-5">
+                    <!-- Check NFT BUTTON -->
                     <a
                       :class="{
                         'no-pointer':
@@ -449,17 +431,36 @@
                           parseInt(deal.timestamp_start * 1000) === 0 ||
                           deal.contract !== contract
                         "
-                        class="btn-tertiary mt-5"
+                        class="btn-tertiary"
                       >
                         Check NFT
                       </b-button>
                     </a>
+                    <!-- Download file button -->
+                    <b-button
+                      @click="
+                        downloadFile(
+                          providerEndpoints[deal.provider] +
+                            '/ipfs/' +
+                            deal.data_uri.replace('ipfs://', '')
+                        )
+                      "
+                      :disabled="
+                        new Date().getTime() >
+                          parseInt(deal.timestamp_end * 1000) ||
+                        parseInt(deal.timestamp_start * 1000) === 0
+                      "
+                      class="btn-tertiary ml-3"
+                    >
+                      <i class="fa-solid fa-download mr-3"></i>Download File
+                    </b-button>
+                    <!-- Cancel Deal button -->
                     <b-button
                       v-if="deal.pending"
-                      class="btn-icon"
+                      class="btn-tertiary ml-3"
                       @click="isDeletingDeal()"
                     >
-                      <i class="fa-solid fa-trash-can"></i> Delete
+                      <i class="fa-solid fa-trash-can mr-3"></i> Cancel Deal
                     </b-button>
                   </div>
                 </div>
@@ -683,7 +684,7 @@ export default {
               .send({
                 value: fee,
                 from: app.account,
-                gasPrice
+                gasPrice,
               })
               .on("transactionHash", (tx) => {
                 app.workingMessage =

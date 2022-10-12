@@ -42,13 +42,13 @@
             <div v-if="!loading">
               <div>
                 <!-- TITLE -->
-                <div class="m-0 pb-3 mb-6">
+                <!-- <div class="m-0 pb-3 mb-6">
                   <h2 class="title is-3 m-0">Dashboard</h2>
-                </div>
+                </div> -->
                 <!-- END TITLE -->
 
                 <!-- ACTION BAR (button create deal - searchbar - filters) -->
-                <div class="columns is-mobile is-multiline is-vcentered mb-5">
+                <div class="columns is-mobile is-multiline is-vcentered mt-5 mb-5">
                   <div class="column is-4-mobile is-4-tablet is-5-desktop">
                     <a href="/#/app/new-deal" class="btn-secondary">
                       <i class="fa-solid fa-file-medical mr-3"></i>Create new

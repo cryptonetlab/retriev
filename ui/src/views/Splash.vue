@@ -42,7 +42,7 @@
         </div>
       </div>
       <!-- ====================== NAVBAR ====================== -->
-      <div class="gap-1"></div>
+      <div class="gap-1" v-if="!isMobile"></div>
       <div class="gap-1 hideMiddle"></div>
       <!-- ====================== CONTENT ====================== -->
       <typewriter :type-interval="30" :replace-interval="1000">
@@ -201,6 +201,11 @@ export default {
 @media screen and (min-width: 1408px) {
   .container:not(.is-max-desktop):not(.is-max-widescreen) {
     max-width: 1440px;
+  }
+}
+@media screen and (min-width: 1408px) {
+  .container[data-v-6092b1a1]:not(.is-max-desktop):not(.is-max-widescreen) {
+    max-width: 1344px;
   }
 }
 </style>

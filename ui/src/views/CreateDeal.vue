@@ -40,20 +40,20 @@
       >
         <div class="container">
           <!-- TITLE -->
-          <div @click="checkAddressArray()" class="m-0 pb-3 mb-6 mt-5">
+          <!-- <div class="m-0 pb-3 mb-6 mt-5">
             <h2 class="title is-3 m-0">New Deal Proposal</h2>
-          </div>
+          </div> -->
           <!-- END TITLE -->
 
           <!-- BACK BUTTON AND EXPERT MODE SWITCH -->
           <div
             class="
               is-flex is-justify-content-space-between is-align-items-center
-              mb-5
+              mb-5 mt-5
             "
           >
             <a class="btn-white" href="/#/app">
-              <i class="fa-solid fa-arrow-left"></i> back
+              <i class="fa-solid fa-arrow-left"></i> back to dashboard
             </a>
             <b-field>
               <b-switch
@@ -76,7 +76,7 @@
                 v-model="fileToUpload"
                 expanded
                 drag-drop
-                :disabled="isWorking"
+                :disabled="isWorking || dealProviders.length === 0"
                 type="is-info"
               >
                 <section class="section">

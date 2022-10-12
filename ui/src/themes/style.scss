@@ -21,31 +21,9 @@ body {
   }
 }
 
-@mixin btn-minimal-noHover {
-  background-color: transparent;
-  text-transform: uppercase;
-  padding: 10px 30px;
-  vertical-align: middle;
-  box-sizing: border-box;
-  display: inline-block;
-  cursor: pointer;
-  transition: all 0.3s;
-  @include font-inter;
-  letter-spacing: 0.04em;
-  font-size: 0.813rem;
-  font-weight: 500;
-  color: var(--tertiary-color-light);
-  border: 1px solid var(--tertiary-color-light);
-  border-radius: 5px !important;
-  transition: all 0.3s;
-}
-
 @mixin btn-minimal {
   background-color: transparent;
-  padding: 10px 30px;
-  vertical-align: middle;
   box-sizing: border-box;
-  display: inline-block;
   cursor: pointer;
   transition: all 0.3s;
   @include font-inter;
@@ -219,7 +197,6 @@ a.splash-link {
   font-size: 1.25rem;
   color: var(--primary-color-contrast);
   text-decoration: underline;
-  text-underline-offset: 8px;
   font-weight: 500;
   transition: all 0.3s;
   &:hover {
@@ -307,12 +284,6 @@ a.splash-link {
 .control.has-icons-right .select select {
   padding-right: 30px !important;
   background-color: var(--primary-color-light);
-}
-
-.custom-footer {
-  position: absolute;
-  right: 20px;
-  bottom: 50px;
 }
 
 .fixed-top {
@@ -465,7 +436,7 @@ input,
   }
 }
 
-.btn-light {
+.btn-navbar {
   @include btn-minimal();
 }
 
@@ -508,10 +479,6 @@ input,
   background-color: var(--light-color);
   border: 1px solid var(--primary-color);
   color: var(--primary-color);
-}
-
-.btn-minimal-noHover {
-  @include btn-minimal-noHover();
 }
 
 .btn-withdraw {
@@ -993,6 +960,7 @@ button.button.is-rounded.is-dark:hover {
   width: 100%;
   a {
     font-weight: 700;
+    color: var(--primary-color);
     &:hover {
       text-decoration: underline;
       text-underline-offset: 2px;
@@ -1000,11 +968,11 @@ button.button.is-rounded.is-dark:hover {
   }
   p {
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    color: var(--primary-color-low-contrast);
   }
   p,
   a {
     font-size: 0.75rem;
-    color: var(--primary-color-low-contrast);
   }
 }
 
@@ -1165,12 +1133,12 @@ img.network-logo {
     @include font-inter();
     text-transform: uppercase;
     font-size: 1.2rem;
-    color: var(--primary-color);
+    color: var(--primary-color-light);
     font-weight: 600;
   }
   .modal-card-foot,
   .modal-card-head {
-    background-color: var(--tertiary-color-light);
+    background-color: var(--primary-color);
   }
   p {
     @include font-inter();

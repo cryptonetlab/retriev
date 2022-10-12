@@ -14,7 +14,7 @@
   }
   .custom-footer {
     position: absolute;
-    bottom: 50px;
+    bottom: 100px;
     width: 100%;
     right: 20px;
   }
@@ -29,6 +29,13 @@
   body {
     font-size: 14px;
   }
+  .hideMiddle {
+    display: block !important;
+  }
+  .gap-1 {
+    height: 7rem;
+  }
+
   h1.big-title {
     font-size: 4rem;
   }
@@ -76,8 +83,14 @@
 
 // iPad Air, Pro GENERAL
 @media only screen and (min-width: 820px) and (max-width: 1180px) and (-webkit-min-device-pixel-ratio: 2) {
-  .hide {
-    display: flex !important;
+  h1.big-title {
+    font-size: 5.5rem;
+  }
+  .hideMiddle {
+    display: block !important;
+  }
+  .gap-1 {
+    height: 8rem;
   }
 }
 
