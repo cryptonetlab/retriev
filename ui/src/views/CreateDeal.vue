@@ -673,7 +673,7 @@ export default {
       // Deal Proposal Details
       logs: "",
       dealUri: "",
-      dealDuration: 86400 * 7,
+      dealDuration: 86400 * 365,
       dealDurationDays: 365,
       dealCollateral: 0,
       dealCollateralLow: 0,
