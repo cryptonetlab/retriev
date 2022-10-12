@@ -168,17 +168,38 @@
                     v-if="!isMobile"
                   >
                     <div
-                      class="column is-4-mobile is-2-tablet is-5-desktop is-6-widescreen is-6-fullhd"
+                      class="
+                        column
+                        is-4-mobile
+                        is-2-tablet
+                        is-5-desktop
+                        is-6-widescreen
+                        is-6-fullhd
+                      "
                     >
                       <h5 class="title-table ml-5">DEALS</h5>
                     </div>
                     <div
-                      class="column is-4-mobile is-6-tablet is-4-desktop is-4-widescreen is-4-fullhd"
+                      class="
+                        column
+                        is-4-mobile
+                        is-6-tablet
+                        is-4-desktop
+                        is-4-widescreen
+                        is-4-fullhd
+                      "
                     >
                       <h5 class="title-table ml-5">ACTIONS</h5>
                     </div>
                     <div
-                      class="column is-4-mobile is-2-tablet is-2-desktop is-2-widescreen is-2-fullhd"
+                      class="
+                        column
+                        is-4-mobile
+                        is-2-tablet
+                        is-2-desktop
+                        is-2-widescreen
+                        is-2-fullhd
+                      "
                     >
                       <h5
                         class="title-table"
@@ -261,7 +282,14 @@
 
       <!-- Working Messages -->
       <div
-        class="workingMessage is-flex is-flex-direction-row is-flex-wrap-wrap is-align-items-center is-justify-content-center"
+        class="
+          workingMessage
+          is-flex
+          is-flex-direction-row
+          is-flex-wrap-wrap
+          is-align-items-center
+          is-justify-content-center
+        "
         v-if="
           isWorking && workingMessage !== undefined && workingMessage !== ''
         "
@@ -338,7 +366,7 @@ export default {
       // FOR LAYOUT
       expertMode: false,
       navSpec: false,
-
+      retries: 0,
       // FILTER
       filtered: false,
       activeDeal: true,
@@ -481,6 +509,7 @@ export default {
     },
     async searchPending() {
       const app = this;
+      app.retries = 0;
       const pendingTx = localStorage.getItem("pendingTx");
       app.pendingTx = pendingTx;
       console.log("Stored pending tx:", pendingTx);
@@ -514,12 +543,17 @@ export default {
             }
           }
         }
+        app.retries++;
         // Still not found
         if (!found) {
-          app.log("Pending tx not found, refreshing in 2 seconds..");
-          setTimeout(function () {
-            app.searchPending();
-          }, 2000);
+          if (app.retries < 10) {
+            app.log("Pending tx not found, refreshing in 5 seconds..");
+            setTimeout(function () {
+              app.searchPending();
+            }, 5000);
+          } else {
+            localStorage.removeItem("pendingTx");
+          }
         } else {
           app.$toast.clear();
           app.log("Pending tx found, removing from cache.");
