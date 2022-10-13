@@ -47,19 +47,16 @@
       <!-- ====================== CONTENT ====================== -->
       <typewriter :type-interval="27" :replace-interval="1000">
         <h1 class="big-title">
-          Retriev Protocol is part of an interoperable ecosystem of on-chain
-          storage products.
+          Retriev provides retrievability assurance for data stored on
+          decentralized networks.
         </h1>
       </typewriter>
       <Transition enter-active-class="fade-in">
         <div v-if="loadToShow" class="columns mt-6">
           <div class="column is-6">
             <p class="pay-off">
-              In the setting of a decentralized storage network there are
-              clients who delegate the storage of their files to a network of
-              providers,<br />we add a "retrievability assurance" for such
-              storage service is key to boost confidence and usage of
-              decentralized storage networks.
+              Retriev is part of the
+              <a href="https://onchain.storage">on-chain.storage</a>ecosystem
             </p>
           </div>
         </div>
