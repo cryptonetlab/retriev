@@ -210,7 +210,6 @@ a.splash-link {
   color: var(--primary-color);
   font-weight: 500;
 }
-
 /* ==============> POSITIONING, BORDERS, MARGIN, PADDING, ETC...<============== */
 
 .bg-color-dark {
@@ -1244,6 +1243,14 @@ hr {
   line-height: 1;
   height: 100vh;
   width: 100%;
+}
+
+/* ==============> SPLASH SCREEN <============== */
+.custom-footer {
+  position: absolute;
+  bottom: 30px;
+  width: 100%;
+  right: 20px;
 }
 
 /* ANIMATIONS */

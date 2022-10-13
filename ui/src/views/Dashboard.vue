@@ -168,45 +168,19 @@
                     v-if="!isMobile"
                   >
                     <div
-                      class="
-                        column
-                        is-4-mobile
-                        is-2-tablet
-                        is-5-desktop
-                        is-6-widescreen
-                        is-6-fullhd
-                      "
+                      class="column is-4-mobile is-7-tablet is-7-desktop is-8-widescreen is-9-fullhd"
                     >
-                      <h5 class="title-table ml-5">DEALS</h5>
+                      <h5 class="title-table ml-6">DEALS</h5>
                     </div>
                     <div
-                      class="
-                        column
-                        is-4-mobile
-                        is-6-tablet
-                        is-4-desktop
-                        is-4-widescreen
-                        is-4-fullhd
-                      "
+                      class="column is-4-mobile is-2-tablet is-2-desktop is-2-widescreen is-1-fullhd"
                     >
-                      <h5 class="title-table ml-5">ACTIONS</h5>
+                      <h5 class="title-table">ACTIONS</h5>
                     </div>
                     <div
-                      class="
-                        column
-                        is-4-mobile
-                        is-2-tablet
-                        is-2-desktop
-                        is-2-widescreen
-                        is-2-fullhd
-                      "
+                      class="column is-4-mobile is-2-tablet is-2-desktop is-1-widescreen is-1-fullhd"
                     >
-                      <h5
-                        class="title-table"
-                        :class="{ 'ml-5': isDesktop, 'ml-6': isTablet }"
-                      >
-                        STATUS
-                      </h5>
+                      <h5 class="title-table ml-6">STATUS</h5>
                     </div>
                   </div>
                   <!-- END TITLES TABLE -->
@@ -282,14 +256,7 @@
 
       <!-- Working Messages -->
       <div
-        class="
-          workingMessage
-          is-flex
-          is-flex-direction-row
-          is-flex-wrap-wrap
-          is-align-items-center
-          is-justify-content-center
-        "
+        class="workingMessage is-flex is-flex-direction-row is-flex-wrap-wrap is-align-items-center is-justify-content-center"
         v-if="
           isWorking && workingMessage !== undefined && workingMessage !== ''
         "

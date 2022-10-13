@@ -42,7 +42,7 @@
         </div>
       </div>
       <!-- ====================== NAVBAR ====================== -->
-      <div class="gap-1" v-if="!isMobile"></div>
+      <div class="gap-1" v-if="isDesktop"></div>
       <div class="gap-1 hideMiddle"></div>
       <!-- ====================== CONTENT ====================== -->
       <typewriter :type-interval="27" :replace-interval="1000">

@@ -12,6 +12,9 @@
     font-size: 1rem !important;
     padding: 5px;
   }
+  .content *:last-child::after {
+    font-size: calc(1.2em - 1.2rem) !important;
+  }
   .custom-footer {
     position: absolute;
     bottom: 30px;
