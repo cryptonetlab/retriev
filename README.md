@@ -36,8 +36,10 @@ Project is divided by subfolders, any folder contains a different piece of the p
 - `clients-cli`: which contains a basic CLI to interact with contract, create deals and appeals.
 - `provider-cli`: which contains *provider* logic to accept deals published on-chain and serve deal files.
 - `referee-cli`: which contains *referee* logic to ask `providers` if some clients asks for a retrieval.
+- `stress-cli`: which contains a tool to test the network over time.
 - `docker`: which contains the Docker image and the scripts to build / run the node.
 - `api`: which contains a *NodeJS* application that parses the blockchain and serves informations instantly.
+- `ui`: which contains a *Frontend* application and website deployed at retriev.org.
 
 # Smart Contract Security
 
