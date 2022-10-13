@@ -153,7 +153,7 @@ app.get("/referees", async function (req, res) {
   res.send(referees)
 })
 
-// Add signup endpoint
+// Upload endpoint
 app.post("/upload", upload.single('file'), async function (req, res) {
   if (req.body.address !== undefined) {
     const cid = await hash(req.file.buffer)

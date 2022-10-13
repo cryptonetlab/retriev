@@ -4,9 +4,11 @@ Retrieval Pinning is a Protocol designed by [CryptoNetLab](https://cryptonet.org
 
 If you want to go deeper on how the protocol works please read our [light paper](./PAPER.md).
 
-We have now an active deployment on Rinkeby network at [0x7Aa765411207De8614C5044D25c58148F017DD80](https://goerli.etherscan.io/address/0x7Aa765411207De8614C5044D25c58148F017DD80) and you can interact with the protocol at [onchain.storage](https://onchain.storage). 
+We have now two active deployments:
+- Polygon network at [0xc8834A8b64ad66668B11240Dc12B3EE32bA02c5B](https://polygonscan.com/address/0xc8834A8b64ad66668B11240Dc12B3EE32bA02c5B). 
+- Goerli network at [0x7Aa765411207De8614C5044D25c58148F017DD80](https://goerli.etherscan.io/address/0x7Aa765411207De8614C5044D25c58148F017DD80).
 
-If you want to learn more about the project please visit our [official website](https://pldr.dev/#/).
+If you want to learn more about the project please visit our [official website](https://retriev.org).
 # Architecture
 
 The protocol consists of three main elements:
@@ -14,7 +16,7 @@ The protocol consists of three main elements:
 - **Referee network**: which is the guarantee that the protocol is respected and from where appeal requests are processed. 
 - **Provider network**: which is the network of providers, where all data are stored and from where data should be retrieved.
 
-Of course the end users (who wants to store data and make deals) can interact directly with the protocol using the blockchain, however we created a simple interface to make deals. This interface can be found at [onchain.storage](https://onchain.storage).
+Of course the end users (who wants to store data and make deals) can interact directly with the protocol using the blockchain, however we created a simple interface to make deals.
 
 At the moment there's no interface for providers but we're working on Providers's part of the protocol and it will be available soon.
 
