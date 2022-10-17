@@ -56,7 +56,7 @@
           <div class="column is-6">
             <p class="pay-off">
               Retriev is part of the
-              <a href="https://onchain.storage">on-chain.storage</a>ecosystem
+              <a href="https://onchain.storage">onchain.storage</a>ecosystem
             </p>
           </div>
         </div>
