@@ -454,9 +454,41 @@ export default {
             app.connect();
           }, 100);
         } catch (e) {
-          app.log(
-            "Can't automatically switch to Goerli, please do it manually."
-          );
+          // ADD POLYGON MAINNET IF NOT FOUND
+          if (
+            e.message ===
+            'Unrecognized chain ID "0x89". Try adding the chain using wallet_addEthereumChain first.'
+          ) {
+            try {
+              await window.ethereum.request({
+                method: "wallet_addEthereumChain",
+                params: [
+                  {
+                    chainId: "0x" + Number(app.network).toString(16),
+                    blockExplorerUrls: ["https://polygonscan.com/"],
+                    chainName: "Polygon Mainnet",
+                    nativeCurrency: {
+                      decimals: 18,
+                      name: "Polygon",
+                      symbol: "MATIC",
+                    },
+                    rpcUrls: ["https://polygon-rpc.com"],
+                  },
+                ],
+              });
+              setTimeout(function () {
+                app.connect();
+              }, 100);
+            } catch (e) {
+              app.alertCustomError(
+                "Can't add Polygon network, please do it manually."
+              );
+            }
+          } else {
+            app.alertCustomError(
+              "Can't switch network, please do it manually."
+            );
+          }
         }
       }
     },
