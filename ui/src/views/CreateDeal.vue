@@ -674,6 +674,19 @@ export default {
   },
   components: { Navbar, Footer },
   watch: {
+    dealProviders() {
+      const app = this;
+      if (app.fileToUpload.size !== undefined) {
+        app.dealValue = parseInt(
+          parseInt(app.providersPolicy[app.dealProviders[0]].price) *
+            parseInt(app.dealDurationDays) *
+            86400 *
+            parseInt(app.fileToUpload.size)
+        );
+        app.baseDealValue = app.dealValue;
+        app.dealValue = app.dealValue * app.selectedPriority;
+      }
+    },
     dealDurationDays() {
       const app = this;
       // Duration day limit max and min on input

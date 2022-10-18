@@ -1,13 +1,15 @@
 <template>
   <div>
     <!-- ALERT BANNER TESTNET -->
-    <div v-if="selectedContract === 'ethereum'" class="alert-banner py-3 px-5">
+    <div class="alert-banner py-3 px-5">
       <div class="container">
         <p>
           <i class="fa-solid fa-circle-exclamation mr-3"></i>
-          <b
-            >Retriev is in testnet. This is an alpha version and storage is at
-            your own risk.</b
+          <b>
+            <span v-if="selectedContract === 'ethereum'"
+              >Retriev is in testnet.</span
+            >
+            This is an alpha version and storage is at your own risk.</b
           >
         </p>
       </div>
