@@ -1,4 +1,4 @@
-import { run, add, hash, parseCache } from "./libs/ipfs"
+import { run, add, hash, parseCache, indexFiles } from "./libs/ipfs"
 import { ethers } from "ethers"
 import * as Database from "./libs/database";
 import { parseReferees, parseDeals, parseAppeals, parseDeal, parseAppeal, contract, verify, listenEvents } from "./libs/web3";
@@ -30,6 +30,7 @@ async function init() {
   parseDeals()
   parseAppeals()
   parseCache()
+  indexFiles()
 }
 init()
 

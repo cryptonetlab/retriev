@@ -107,7 +107,8 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
         appeal_requested: appeal_requested,
         proposal_tx: proposal_tx,
         contract: process.env.CONTRACT_ADDRESS,
-        chain: process.env.CHAIN
+        chain: process.env.CHAIN,
+        indexed: false
       }
       deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
       const checkDB = await db.find('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS })
