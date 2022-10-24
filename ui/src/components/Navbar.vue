@@ -43,7 +43,7 @@
                       GOERLI</span
                     >
                     <span v-if="selectedContract === 'polygon'">
-                      <i class="fa-brands fa-ethereum mr-2"></i>
+                      <PolygonIco class="mr-2" />
                       POLYGON</span
                     >
                     <i
@@ -277,6 +277,7 @@
 
 <script>
 import checkViewport from "@/mixins/checkViewport";
+import PolygonIco from "@/components/PolygonIco.vue";
 import axios from "axios";
 
 export default {
@@ -308,6 +309,9 @@ export default {
       TotalSpent: "",
       totalValue: [],
     };
+  },
+  components: {
+    PolygonIco,
   },
   watch: {
     async isWithdraw() {
