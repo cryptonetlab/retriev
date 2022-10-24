@@ -517,16 +517,16 @@ export default {
         found = true;
       }
       if (!found) {
-        app.$buefy.toast.open({
-          duration: 500000,
-          message:
-            '<i class="fa-solid fa-hourglass-half"></i> ' +
-            ` Searching for latest transaction: ` +
-            pendingTx +
-            ` please wait...`,
-          position: "is-bottom-right",
-          type: "is-warning",
-        });
+        // app.$buefy.toast.open({
+        //   duration: 500000,
+        //   message:
+        //     '<i class="fa-solid fa-hourglass-half"></i> ' +
+        //     ` Searching for latest transaction: ` +
+        //     pendingTx +
+        //     ` please wait...`,
+        //   position: "is-bottom-right",
+        //   type: "is-warning",
+        // });
         let deals = await axios.get(app.apiEndpoint + "/deals/" + app.account);
         for (let k in deals.data) {
           let deal = deals.data[k];
