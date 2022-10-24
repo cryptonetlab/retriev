@@ -12,7 +12,7 @@
           target="_blank"
           >Help</a
         >
-        <a class="ml-3" href="/#/terms-of-service" target="_blank">Terms of service</a>
+        <a class="ml-3" href="/#/terms-of-service">Terms of service</a>
       </div>
     </div>
   </div>

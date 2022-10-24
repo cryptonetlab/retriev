@@ -84,7 +84,7 @@
             target="_blank"
             >slack</a
           >
-          <a class="splash-link ml-3" href="/#/terms-of-service" target="_blank"
+          <a class="splash-link ml-3" href="/#/terms-of-service"
             >terms of services</a
           >
         </div>

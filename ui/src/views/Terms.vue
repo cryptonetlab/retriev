@@ -12,7 +12,10 @@
           background-color: black;
         "
       >
-        <div class="container is-flex is-justify-content-space-between py-6">
+        <div
+          class="container is-flex is-justify-content-space-between py-6"
+          :class="{ 'px-5': !isDesktop }"
+        >
           <img
             :width="[isMobile ? 40 : 52]"
             src="../assets/img/logo.svg"
