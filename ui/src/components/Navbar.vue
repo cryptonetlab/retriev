@@ -6,7 +6,7 @@
         <p>
           <i class="fa-solid fa-circle-exclamation mr-3"></i>
           <b>
-            <span v-if="selectedContract === 'ethereum'"
+            <span v-if="selectedContract === 'goerli'"
               >Retriev is in testnet.</span
             >
             This is an alpha version and storage is at your own risk.</b
@@ -38,7 +38,7 @@
                   @click="openSelect = !openSelect"
                 >
                   <div class="custom_dropdown__text">
-                    <span v-if="selectedContract === 'ethereum'">
+                    <span v-if="selectedContract === 'goerli'">
                       <i class="fa-brands fa-ethereum mr-2"></i>
                       GOERLI</span
                     >
@@ -68,7 +68,7 @@
                       :value="contract.blockchain"
                       :key="contract.blockchain"
                     >
-                      <span v-if="contract.blockchain === 'ethereum'">
+                      <span v-if="contract.blockchain === 'goerli'">
                         GOERLI</span
                       >
                       <span v-if="contract.blockchain === 'polygon'">
@@ -210,7 +210,7 @@
                             {{ accountBalance.substr(0, 7) }}
                             <span v-if="selectedContract === 'polygon'"
                               >MATIC</span
-                            ><span v-if="selectedContract === 'ethereum'"
+                            ><span v-if="selectedContract === 'goerli'"
                               >ETH</span
                             >
                           </p>
@@ -224,7 +224,7 @@
                             {{ balance.substr(0, 7) }}
                             <span v-if="selectedContract === 'polygon'"
                               >MATIC</span
-                            ><span v-if="selectedContract === 'ethereum'"
+                            ><span v-if="selectedContract === 'goerli'"
                               >ETH</span
                             >
                           </p>
@@ -313,7 +313,7 @@ export default {
     async isWithdraw() {
       const app = this;
       if (app.isWithdraw === true) {
-        if (app.selectedContract === "ethereum") {
+        if (app.selectedContract === "goerli") {
           try {
             let allDeals = await axios.get(
               app.config[1].api + "/deals/" + app.account

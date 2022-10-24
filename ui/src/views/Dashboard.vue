@@ -368,7 +368,7 @@ export default {
         app.apiEndpoint = app.config[0].api;
         app.abi = ABI_POLYGON;
         app.opensea = app.config[0].opensea;
-      } else if (app.selectedContract === "ethereum") {
+      } else if (app.selectedContract === "goerli") {
         app.contract = app.config[1].contract;
         app.network = app.config[1].network;
         app.apiEndpoint = app.config[1].api;

@@ -84,6 +84,9 @@
             target="_blank"
             >slack</a
           >
+          <a class="splash-link ml-3" href="/#/terms-of-service" target="_blank"
+            >terms of services</a
+          >
         </div>
       </Transition>
       <!-- ====================== FOOTER ====================== -->
@@ -149,7 +152,7 @@ export default {
         app.apiEndpoint = app.config[0].api;
         app.opensea = app.config[0].opensea;
         app.abi = ABI_POLYGON;
-      } else if (app.selectedContract === "ethereum") {
+      } else if (app.selectedContract === "goerli") {
         app.contract = app.config[1].contract;
         app.network = app.config[1].network;
         app.apiEndpoint = app.config[1].api;

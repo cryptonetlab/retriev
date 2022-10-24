@@ -8,7 +8,7 @@
   },
   {
     "contract": "0x7Aa765411207De8614C5044D25c58148F017DD80",
-    "blockchain": "ethereum",
+    "blockchain": "goerli",
     "network": "5",
     "api": "https://api.pldr.dev",
     "opensea": "https://testnets.opensea.io/assets/goerli"

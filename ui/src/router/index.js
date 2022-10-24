@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import Dashboard from "../views/Dashboard.vue";
 import CreateDeal from "../views/CreateDeal.vue";
 import Splash from "../views/Splash.vue";
+import Terms from "../views/Terms.vue";
 
 Vue.use(VueRouter);
 
@@ -11,6 +12,11 @@ const routes = [
     path: "/",
     name: "Splash",
     component: Splash,
+  },
+  {
+    path: "/terms-of-service",
+    name: "Terms",
+    component: Terms,
   },
   {
     path: "/app",
