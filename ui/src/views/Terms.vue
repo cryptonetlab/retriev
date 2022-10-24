@@ -1,6 +1,6 @@
 <template>
   <div class="terms bg-color-dark">
-    <div class="container px-5">
+    <div class="container">
       <!-- ====================== NAVBAR ====================== -->
       <div
         class=""
