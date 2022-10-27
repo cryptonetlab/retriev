@@ -812,6 +812,7 @@ export default {
       });
       const provider = await web3Modal.connect();
       app.web3 = await new Web3(provider);
+
       const netId = await app.web3.eth.net.getId();
       console.log("Current network is:", netId);
       if (parseInt(netId) === parseInt(app.network)) {
@@ -1001,7 +1002,12 @@ export default {
             try {
               const contract = new app.web3.eth.Contract(app.abi, app.contract);
               console.log("Appeal Addresses typed are:", app.appealAddresses);
+              
               const gasPrice = await app.web3.eth.getGasPrice();
+              const BN = app.web3.utils.BN
+              const gp = new BN(gasPrice.toString())
+              const doubled = gp.mul(new BN('2')).toString()
+              
               const receipt = await contract.methods
                 .createDealProposal(
                   app.dealUri,
@@ -1013,7 +1019,7 @@ export default {
                 .send({
                   value: app.dealValue.toString(),
                   from: app.account,
-                  gasPrice,
+                  gasPrice: doubled,
                 })
                 .on("transactionHash", (tx) => {
                   app.log(
