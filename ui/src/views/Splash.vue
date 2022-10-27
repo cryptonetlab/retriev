@@ -1,69 +1,73 @@
 <template>
   <div class="bg-color-dark full-container bg-img">
     <Particles />
-    <div class="container px-5" style="min-height: 100vh">
-      <!-- ====================== NAVBAR ====================== -->
-      <div class="is-flex is-justify-content-space-between py-6">
-        <img
-          :width="[isMobile ? 40 : 52]"
-          src="../assets/img/logo.svg"
-          alt=""
-        />
-        <div class="is-flex is-align-items-center">
-          <a
-            @click="fetchingContract()"
-            class="btn-secondary"
-            style="text-align: center; text-transform: lowercase"
-            :style="[
-              isMobile
-                ? { width: '120px', fontSize: '0.8rem' }
-                : { width: '180px', fontSize: '1.2rem' },
-            ]"
-          >
-            launch app</a
-          >
-          <a
-            class="btn-primary ml-3"
-            href="https://hackmd.io/@irenegia/BkqNihVY5"
-            target="_blank"
-            style="
-              text-align: center;
-              text-transform: lowercase;
-              font-size: 1.2rem;
-            "
-            :style="[
-              isMobile
-                ? { width: '120px', fontSize: '0.8rem' }
-                : { width: '180px', fontSize: '1.2rem' },
-            ]"
-          >
-            paper
-          </a>
-        </div>
-      </div>
-      <!-- ====================== NAVBAR ====================== -->
-      <div class="gap-1" v-if="isDesktop"></div>
-      <div class="gap-1 hideMiddle"></div>
-      <!-- ====================== CONTENT ====================== -->
-      <typewriter :type-interval="27" :replace-interval="1000">
-        <h1 class="big-title">
-          Retriev provides retrievability assurance for data stored on
-          decentralized networks.
-        </h1>
-      </typewriter>
-      <Transition enter-active-class="fade-in">
-        <div v-if="loadToShow" class="columns mt-6">
-          <div class="column is-6">
-            <p class="pay-off">
-              Retriev is part of the
-              <a href="https://onchain.storage">onchain.storage</a> ecosystem
-            </p>
+    <div class="container" style="min-height: 100vh">
+      <div class="px-5">
+        <!-- ====================== NAVBAR ====================== -->
+        <div class="is-flex is-justify-content-space-between py-6">
+          <img
+            :width="[isMobile ? 40 : 52]"
+            src="../assets/img/logo.svg"
+            alt=""
+          />
+          <div class="is-flex is-align-items-center">
+            <a
+              @click="fetchingContract()"
+              class="btn-secondary"
+              style="text-align: center; text-transform: lowercase"
+              :style="[
+                isMobile
+                  ? { width: '120px', fontSize: '0.8rem' }
+                  : { width: '180px', fontSize: '1.2rem' },
+              ]"
+            >
+              launch app</a
+            >
+            <a
+              class="btn-primary ml-3"
+              href="https://hackmd.io/@irenegia/BkqNihVY5"
+              target="_blank"
+              style="
+                text-align: center;
+                text-transform: lowercase;
+                font-size: 1.2rem;
+              "
+              :style="[
+                isMobile
+                  ? { width: '120px', fontSize: '0.8rem' }
+                  : { width: '180px', fontSize: '1.2rem' },
+              ]"
+            >
+              paper
+            </a>
           </div>
         </div>
-      </Transition>
-      <div v-if="isDesktop || isMobile" class="gap"></div>
+        <!-- ====================== NAVBAR ====================== -->
+        <div class="gap-1" v-if="isDesktop"></div>
+        <div class="gap-1 hideMiddle"></div>
+        <!-- ====================== CONTENT ====================== -->
+        <typewriter :type-interval="27" :replace-interval="1000">
+          <h1 class="big-title">
+            Retriev provides retrievability assurance for data stored on
+            decentralized networks.
+          </h1>
+        </typewriter>
+        <Transition enter-active-class="fade-in">
+          <div v-if="loadToShow" class="columns mt-6">
+            <div class="column is-6">
+              <p class="pay-off">
+                Retriev is part of the
+                <a href="https://onchain.storage" target="_blank"
+                  >onchain.storage</a
+                >
+                ecosystem
+              </p>
+            </div>
+          </div>
+        </Transition>
+        <div v-if="isDesktop || isMobile" class="gap"></div>
+      </div>
 
-      <!-- <div class="gap hideMiddle"></div> -->
       <!-- ====================== CONTENT ====================== -->
 
       <!-- ====================== FOOTER ====================== -->
@@ -71,9 +75,10 @@
         <div
           v-if="loadToShow"
           class="custom-footer is-flex is-align-items-center is-justify-content-flex-end"
+          :class="{ 'px-5': isMobile }"
         >
           <a
-            class="splash-link mr-3"
+            class="splash-link ml-3 mr-3"
             href="https://github.com/protocol/retriev"
             target="_blank"
             >github</a
@@ -86,6 +91,12 @@
           >
           <a class="splash-link ml-3" href="/#/terms-of-service"
             >terms of services</a
+          >
+          <a
+            class="splash-link ml-3"
+            :class="{ 'mr-3': isMobile }"
+            href="/#/privacy-policy"
+            >privacy policy</a
           >
         </div>
       </Transition>

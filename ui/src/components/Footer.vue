@@ -13,6 +13,7 @@
           >Help</a
         >
         <a class="ml-3" href="/#/terms-of-service">Terms of service</a>
+        <a class="ml-3" href="/#/privacy-policy">Privacy Policy</a>
       </div>
     </div>
   </div>

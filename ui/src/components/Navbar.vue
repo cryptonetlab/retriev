@@ -119,7 +119,7 @@
                       <div class="mt-5">
                         <h3>Referee Net #1</h3>
                         <div class="mt-6">
-                          <h5 class="pb-2 b-bottom-colored-dark">
+                          <h5 class="pb-2 b-bottom-colored-dark mb-3">
                             Referee IDs
                             <i class="fa-solid fa-wallet ml-3"></i>
                           </h5>
