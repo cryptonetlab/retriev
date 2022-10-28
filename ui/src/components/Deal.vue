@@ -207,16 +207,14 @@
                       'pb-1 pt-1': isTablet,
                     }"
                   >
-                    <div style="width: 100%">
-                      <p><b>Value:</b> {{ deal.value }}</p>
-                    </div>
+                    <p class="m-0"><b>Value:</b> {{ deal.value }}</p>
+
                     <div class="divider-small"></div>
-                    <div class="has-text-right" style="width: 100%">
-                      <p>
-                        <b>Collateral:</b>
-                        {{ deal.collateral }}
-                      </p>
-                    </div>
+
+                    <p class="m-0 has-text-right">
+                      <b>Collateral:</b>
+                      {{ deal.collateral }}
+                    </p>
                   </div>
                   <div
                     class="b-bottom-colored-grey px-2"
