@@ -56,27 +56,20 @@
                     ></i>
                   </div>
                 </div>
-                <Transition
-                  name="custom-fade"
-                  enter-active-class="fade-in-top"
-                  leave-active-class="fade-out-top"
-                >
-                  <ul v-if="openSelect" class="custom_dropdown__items">
-                    <li
-                      @click="selectContract(contract)"
-                      v-for="contract in config"
-                      :value="contract.blockchain"
-                      :key="contract.blockchain"
+
+                <ul v-if="openSelect" class="custom_dropdown__items">
+                  <li
+                    @click="selectContract(contract)"
+                    v-for="contract in config"
+                    :value="contract.blockchain"
+                    :key="contract.blockchain"
+                  >
+                    <span v-if="contract.blockchain === 'goerli'"> GOERLI</span>
+                    <span v-if="contract.blockchain === 'polygon'">
+                      POLYGON</span
                     >
-                      <span v-if="contract.blockchain === 'goerli'">
-                        GOERLI</span
-                      >
-                      <span v-if="contract.blockchain === 'polygon'">
-                        POLYGON</span
-                      >
-                    </li>
-                  </ul>
-                </Transition>
+                  </li>
+                </ul>
               </div>
               <!-- END | Select Blockchain contract -->
 

@@ -1,8 +1,8 @@
 <template>
-  <div class="custom-card p-0">
+  <div class="deal-container p-0">
     <div
       class="card-header p-2 is-flex is-justify-content-space-between"
-      :class="{ 'custom-card-hover': deal.index !== isOpen }"
+      :class="{ 'deal-container-card-hover': deal.index !== isOpen }"
     >
       <div class="is-flex is-align-items-center">
         <h4
@@ -15,6 +15,9 @@
         <!-- OLD CONTRACT DEAL BADGE -->
         <div v-if="deal.contract !== contract" class="badge badge-ended">
           <span>Read Only</span>
+        </div>
+        <div v-if="refreshingDeal !== undefined && refreshingDeal">
+          <Spinner />
         </div>
         <!-- active badge -->
       </div>
@@ -492,7 +495,7 @@
 
 <script>
 import checkViewport from "@/mixins/checkViewport";
-
+import Spinner from "./elements/Spinner.vue";
 import axios from "axios";
 
 export default {
@@ -509,12 +512,16 @@ export default {
     "providerEndpoints",
     "index",
   ],
+  components: {
+    Spinner,
+  },
   data() {
     return {
       openTimingDeal: false,
       download: false,
       isOpen: -1,
       isWorking: false,
+      refreshingDeal: false,
       deal: {},
     };
   },
@@ -583,16 +590,7 @@ export default {
       const app = this;
       console.log("Refreshing deal", app.deal);
       if (!app.isWorking) {
-        app.$buefy.toast.open({
-          duration: 50000,
-          message:
-            '<i class="fa-solid fa-hourglass-half"></i> ' +
-            ` Deal ID #` +
-            app.deal.index +
-            ` information is refreshing...`,
-          position: "is-bottom-right",
-          type: "is-warning",
-        });
+        app.refreshingDeal = true;
         console.log(
           "PARSE ENDPOINT",
           app.apiEndpoint + "/parse/" + app.deal.contract + "/" + app.deal.index
@@ -640,16 +638,7 @@ export default {
           }
 
           app.$toast.clear();
-          this.$buefy.toast.open({
-            duration: 5000,
-            message:
-              `<i class="fa-solid fa-file-invoice"></i>` +
-              ` Deal ID #` +
-              app.deal.index +
-              ` information refreshed`,
-            position: "is-bottom-right",
-            type: "is-warning",
-          });
+          app.refreshingDeal = false;
           app.$forceUpdate();
         } catch (e) {
           app.$emit("alert", e.message);

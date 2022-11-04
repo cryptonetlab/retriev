@@ -35,10 +35,17 @@
 
       <!-- SHOW CREATION DEAL -->
       <div
-        class="hero-body pt-5"
+        class="hero-body pt-5 mb-5"
         :class="{ 'px-3': isDesktop, 'px-6': !isDesktop }"
       >
-        <div class="container">
+        <div v-if="dealProviders !== undefined && dealProviders.length === 0">
+          <LoadingCreateDeal />Ì
+        </div>
+
+        <div
+          v-if="dealProviders !== undefined && dealProviders.length > 0"
+          class="container"
+        >
           <!-- TITLE -->
           <!-- <div class="m-0 pb-3 mb-6 mt-5">
             <h2 class="title is-3 m-0">New Deal Proposal</h2>
@@ -67,188 +74,222 @@
           <!--END | BACK BUTTON AND EXPERT MODE SWITCH -->
 
           <!-- Upload file -->
-          <div>
-            <b-field v-if="!fileToUpload.name && !expertMode">
-              <b-upload
-                v-model="fileToUpload"
-                expanded
-                drag-drop
-                :disabled="isWorking || dealProviders.length === 0"
-                type="is-info"
-              >
-                <section class="section">
-                  <div class="content has-text-centered">
-                    <p>Drop your file here or click to upload</p>
-                  </div>
-                </section>
-              </b-upload>
-            </b-field>
-            <div
-              class="bordered-dashed is-flex is-flex-wrap-wrap is-align-items-start is-justify-content-space-between p-3"
-              v-if="fileToUpload.name"
-            >
+          <div class="columns is-desktop">
+            <div class="column is-6-desktop">
               <div>
-                <h5>File name:</h5>
-                <p>{{ fileToUpload.name }}</p>
-                <h5>Data URI:</h5>
-                <p v-if="dealUri">{{ dealUri }}</p>
-                <p v-if="!dealUri">Calculating...</p>
+                <b-field
+                  class="b-radius"
+                  v-if="!fileToUpload.name && !expertMode"
+                >
+                  <b-upload
+                    class="b-radius"
+                    style="background-color: #ededed"
+                    v-model="fileToUpload"
+                    expanded
+                    drag-drop
+                    :disabled="isWorking || dealProviders.length === 0"
+                    type="is-dark"
+                  >
+                    <section class="section">
+                      <div class="content has-text-centered">
+                        <p>Drop your file here or click to upload</p>
+                      </div>
+                    </section>
+                  </b-upload>
+                </b-field>
+                <div
+                  class="bordered-dashed b-radius is-flex is-flex-wrap-wrap is-align-items-start is-justify-content-space-between p-3"
+                  v-if="fileToUpload.name"
+                >
+                  <div class="is-flex is-align-items-center py-3">
+                    <div v-if="dealUri" class="preview-img mr-2">
+                      <img
+                        v-if="
+                          fileToUpload.type === 'image/svg+xml' ||
+                          fileToUpload.type === 'image/png' ||
+                          fileToUpload.type === 'image/jpg' ||
+                          fileToUpload.type === 'image/jpeg'
+                        "
+                        width="100"
+                        :src="
+                          'https://nftstorage.link' +
+                          '/ipfs/' +
+                          dealUri.replace('ipfs://', '')
+                        "
+                        alt=""
+                      />
+                      <img
+                        v-if="
+                          fileToUpload.type !== 'image/svg+xml' &&
+                          fileToUpload.type !== 'image/png' &&
+                          fileToUpload.type !== 'image/jpg' &&
+                          fileToUpload.type !== 'image/jpeg'
+                        "
+                        width="100"
+                        src="../assets/img/document.png"
+                        alt=""
+                      />
+                    </div>
+                    <div>
+                      <h5>File name:</h5>
+                      <p>{{ fileToUpload.name }}</p>
+                      <h5>Data URI:</h5>
+                      <p v-if="dealUri" style="word-break: break-word">
+                        {{ dealUri }}
+                      </p>
+                      <p v-if="!dealUri">Calculating...</p>
+                    </div>
+                  </div>
+                  <div class="py-3">
+                    <b-button
+                      class="btn-secondary"
+                      style="float: right"
+                      :disabled="isWorking"
+                      @click="
+                        fileToUpload = {};
+                        dealUri = '';
+                        dealValue = 0;
+                        dealCollateral = 0;
+                        baseDealValue = 0;
+                        canDoProposal = false;
+                      "
+                      ><i class="fa-solid fa-circle-xmark"></i> Change
+                      file</b-button
+                    >
+                  </div>
+                </div>
               </div>
-              <b-button
-                class="btn-secondary"
-                style="float: right"
-                :disabled="isWorking"
-                @click="
-                  fileToUpload = {};
-                  dealUri = '';
-                  dealValue = 0;
-                  dealCollateral = 0;
-                  baseDealValue = 0;
-                  canDoProposal = false;
-                "
-                ><i class="fa-solid fa-circle-xmark"></i> Change file</b-button
-              >
-            </div>
-          </div>
-          <!-- END | Upload File -->
+              <!-- END | Upload File -->
 
-          <!-- Appeal address & Data URI -->
-          <div v-if="expertMode" class="columns is-mobile mt-6">
-            <div class="column">
-              <h5 class="mb-3">Appeal Address</h5>
-              <div
-                v-for="(address, index) in appealAddresses"
-                :key="index"
-                class="is-flex is-align-items-center is-align-content-space-between mb-3"
-              >
-                <b-field class="mb-0" type="is-info" style="width: 100%">
+              <!-- Appeal address & Data URI -->
+              <div v-if="expertMode">
+                <h5 class="mb-3">Appeal Address</h5>
+                <div
+                  v-for="(address, index) in appealAddresses"
+                  :key="index"
+                  class="is-flex is-align-items-center is-align-content-space-between mb-3"
+                >
+                  <b-field class="mb-0" type="is-info" style="width: 100%">
+                    <b-input
+                      :disabled="isWorking"
+                      v-model="appealAddresses[index]"
+                      placeholder="ex: your ETH address"
+                    ></b-input>
+                  </b-field>
+                  <div class="pointer" @click="addField()">
+                    <i class="fa-solid fa-circle-plus ml-3 color-secondary"></i>
+                  </div>
+                  <div
+                    class="pointer"
+                    v-show="appealAddresses.length > 1"
+                    @click="removeField(index)"
+                  >
+                    <i class="fa-solid fa-circle-minus ml-3 color-error"></i>
+                  </div>
+                </div>
+
+                <h5 class="mb-3">Data URI</h5>
+                <b-field
+                  class="mb-0"
+                  style="padding-right: 1.8rem"
+                  type="is-info"
+                >
                   <b-input
-                    :disabled="isWorking"
-                    v-model="appealAddresses[index]"
-                    placeholder="ex: your ETH address"
+                    :disabled="isWorking || fileToUpload.name"
+                    v-model="dealUri"
+                    placeholder="ex: ipfs://CID"
                   ></b-input>
                 </b-field>
-                <div class="pointer" @click="addField()">
-                  <i class="fa-solid fa-circle-plus ml-3 color-secondary"></i>
-                </div>
+                <!-- ALERT BANNER PAYMENT -->
                 <div
-                  class="pointer"
-                  v-show="appealAddresses.length > 1"
-                  @click="removeField(index)"
+                  v-if="fileToUpload.name"
+                  class="alert-banner p-3 mt-3 mb-3"
                 >
-                  <i class="fa-solid fa-circle-minus ml-3 color-error"></i>
+                  <p>
+                    <i class="fa-solid fa-circle-exclamation mr-3"></i>
+                    <b>It can be edited only by removing the file. </b>
+                  </p>
+                </div>
+                <!-- ALERT BANNER PAYMENT -->
+              </div>
+              <!-- END | Appeal address & Data URI -->
+
+              <!-- PROVIDER LISTS -->
+              <div v-if="providers.length > 0" class="mt-6">
+                <div
+                  v-for="provider in providers"
+                  :value="provider"
+                  :key="provider"
+                  class="deal-container deal-container-hover bordered p-3 mt-4"
+                >
+                  <div
+                    class="is-flex is-flex-wrap-wrap is-align-items-center is-justify-content-space-between is-align-content-flex-start"
+                  >
+                    <div class="py-1">
+                      <p class="small">PROVIDER</p>
+                      <b>
+                        {{
+                          provider.substr(0, 4) + "..." + provider.substr(-4)
+                        }}</b
+                      >
+                    </div>
+                    <div class="py-1">
+                      <p class="small">ADDRESS</p>
+                      <p>
+                        <b>{{ providersPolicy[provider].endpoint }}</b>
+                      </p>
+                    </div>
+                    <div class="py-1">
+                      <p class="small">MAX SIZE</p>
+                      <p>
+                        <b
+                          >{{
+                            providersPolicy[provider].maxSize / 1000000
+                          }}MB</b
+                        >
+                      </p>
+                    </div>
+                    <div class="py-1">
+                      <p class="small">MAX DURATION</p>
+                      <p>
+                        <b>{{ providersPolicy[provider].maxDuration }} days</b>
+                      </p>
+                    </div>
+                    <div class="py-1">
+                      <p class="small">WEI/B PER SEC.</p>
+                      <p>
+                        <b>{{ providersPolicy[provider].price }}</b>
+                      </p>
+                    </div>
+                    <div class="py-1 has-text-centered">
+                      <b-checkbox
+                        type="is-info"
+                        :disabled="isWorking"
+                        v-model="dealProviders"
+                        :native-value="provider"
+                        checked
+                      >
+                      </b-checkbox>
+                    </div>
+                  </div>
                 </div>
               </div>
+              <!-- END PROVIDER LISTS -->
             </div>
-            <div class="column">
-              <h5 class="mb-3">Data URI</h5>
-              <b-field class="mb-0" type="is-info">
-                <b-input
-                  :disabled="isWorking || fileToUpload.name"
-                  v-model="dealUri"
-                  placeholder="ex: ipfs://CID"
-                ></b-input>
-              </b-field>
-              <!-- ALERT BANNER PAYMENT -->
-              <div v-if="fileToUpload.name" class="alert-banner p-3 mt-3 mb-3">
-                <p>
-                  <i class="fa-solid fa-circle-exclamation mr-3"></i>
-                  <b>It can be edited only by removing the file. </b>
-                </p>
-              </div>
-              <!-- ALERT BANNER PAYMENT -->
-            </div>
-          </div>
-          <!-- END | Appeal address & Data URI -->
-
-          <div v-if="providers.length > 0" class="mt-6">
-            <!-- TITLES TABLE -->
-            <div class="columns is-mobile">
-              <div
-                class="column is-3-tablet is-4-desktop"
-                :class="{ 'pl-3': isTablet }"
-              >
-                <h5 class="title-table">PROVIDER</h5>
-              </div>
-              <div class="column is-3-tablet is-3-desktop px-0">
-                <h5 class="title-table">ADDRESS</h5>
-              </div>
-              <div
-                class="column is-2-tablet is-1-desktop pl-0"
-                :class="{ 'pr-0': isDesktop }"
-              >
-                <h5 class="title-table">MAX SIZE</h5>
-              </div>
-              <div
-                class="column is-2-tablet is-1-desktop pl-0"
-                :class="{ 'pr-0': isDesktop }"
-              >
-                <h5 class="title-table">MAX DURATION</h5>
-              </div>
-              <div class="column is-2-tablet is-2-desktop pl-0">
-                <h5 class="title-table">WEI/B PER SEC.</h5>
-              </div>
-            </div>
-            <!-- END TITLES TABLE -->
             <div
-              v-for="provider in providers"
-              :value="provider"
-              :key="provider"
-              class="custom-card custom-card-hover"
+              class="column is-6-desktop"
+              :class="{
+                'is-desktop': !expertMode,
+                'is-mobile': expertMode,
+                'pl-6': isDesktop,
+              }"
             >
-              <div class="columns is-mobile m-0">
-                <div class="column is-3-tablet is-4-desktop">
-                  <b>
-                    {{ provider.substr(0, 4) + "..." + provider.substr(-4) }}</b
-                  >
-                </div>
+              <!-- Deal input fields -->
 
-                <div
-                  class="column is-2-tablet is-3-desktop b-left-colored-grey b-right-colored-grey pl-3"
-                >
-                  <p>{{ providersPolicy[provider].endpoint }}</p>
-                </div>
-                <div
-                  class="column is-2-tablet is-1-desktop b-right-colored-grey"
-                  :class="{ 'pl-3': isTablet }"
-                >
-                  <p>{{ providersPolicy[provider].maxSize / 1000000 }}MB</p>
-                </div>
-                <div
-                  class="column is-2-tablet is-1-desktop pl-3 b-right-colored-grey"
-                >
-                  <p>{{ providersPolicy[provider].maxDuration }} days</p>
-                </div>
-                <div
-                  class="column is-2-tablet is-2-desktop b-right-colored-grey"
-                >
-                  <p>{{ providersPolicy[provider].price }}</p>
-                </div>
-                <div
-                  class="column is-2-tablet is-1-desktop has-text-centered pl-5"
-                >
-                  <b-checkbox
-                    type="is-info"
-                    :disabled="isWorking"
-                    v-model="dealProviders"
-                    :native-value="provider"
-                    checked
-                  >
-                  </b-checkbox>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="columns mt-6"
-            :class="{ 'is-desktop': !expertMode, 'is-mobile': expertMode }"
-          >
-            <!-- Deal input fields -->
-            <div class="column is-half">
               <div class="mb-5">
                 <div class="is-flex is-align-items-center mb-3">
                   <b-tooltip
-                    position="is-right"
+                    position="is-top"
                     type="is-info"
                     label="Type or select a duration for your deal."
                     multilined
@@ -337,12 +378,11 @@
                 </p>
               </div>
               <!-- ALERT BANNER DURATION -->
-            </div>
-            <!-- END | Dealinput fields -->
 
-            <div class="column is-half">
+              <!-- END | Dealinput fields -->
+
               <!-- Payment input fields -->
-              <div class="mb-6">
+              <div class="mb-5">
                 <div class="is-flex is-align-items-center mb-3">
                   <b-tooltip
                     type="is-info"
@@ -449,7 +489,7 @@
                   </b-tooltip>
                   <b-tooltip
                     v-if="dealValue !== undefined && parseInt(dealValue) === 0"
-                    type="is-warning"
+                    type="is-info"
                     label="When deal is free the size of the collateral cannot be changed"
                     multilined
                   >
@@ -606,6 +646,7 @@ import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import checkViewport from "@/mixins/checkViewport";
 import Navbar from "@/components/Navbar.vue";
+import LoadingCreateDeal from "@/components/elements/LoadingCreateDeal.vue";
 import Footer from "@/components/Footer.vue";
 import axios from "axios";
 const CONFIG = require("../config.json");
@@ -616,7 +657,7 @@ const FormData = require("form-data");
 export default {
   name: "newDeal",
   mixins: [checkViewport],
-
+  components: { Navbar, Footer, LoadingCreateDeal },
   data() {
     return {
       // Web3 data
@@ -672,7 +713,7 @@ export default {
       navSpec: false,
     };
   },
-  components: { Navbar, Footer },
+
   watch: {
     dealProviders() {
       const app = this;
@@ -876,7 +917,6 @@ export default {
       app.log("Max duration is: " + app.maxDuration);
       app.loading = false;
       // Connecting to p2p network
-      app.showLoadingToast("Loading Providers, please wait...");
       app.providers = [];
       const providersApi = await axios.get(app.apiEndpoint + "/providers");
       for (let k in providersApi.data) {
@@ -1002,12 +1042,12 @@ export default {
             try {
               const contract = new app.web3.eth.Contract(app.abi, app.contract);
               console.log("Appeal Addresses typed are:", app.appealAddresses);
-              
+
               const gasPrice = await app.web3.eth.getGasPrice();
-              const BN = app.web3.utils.BN
-              const gp = new BN(gasPrice.toString())
-              const doubled = gp.mul(new BN('2')).toString()
-              
+              const BN = app.web3.utils.BN;
+              const gp = new BN(gasPrice.toString());
+              const doubled = gp.mul(new BN("2")).toString();
+
               const receipt = await contract.methods
                 .createDealProposal(
                   app.dealUri,

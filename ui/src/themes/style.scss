@@ -90,6 +90,39 @@ body {
   font-family: "Inter", sans-serif !important;
 }
 
+.loading_box {
+  border-radius: 7px;
+  overflow: hidden;
+  position: relative;
+  transform: translateY(3px);
+}
+
+.loading_box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-position: 20%;
+  background-size: 2000px;
+  background-image: linear-gradient(
+    103deg,
+    rgba(0, 0, 0, 0.13) 50%,
+    rgba(255, 255, 255, 0.8) 51%,
+    rgba(0, 0, 0, 0.13) 55%
+  );
+  animation: loadingBlink 2s ease-in-out infinite;
+}
+
+@keyframes loadingBlink {
+  from {
+    background-position: 20%;
+  }
+  to {
+    background-position: 90%;
+  }
+}
 /* ==============> FONTS <============== */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
@@ -179,7 +212,7 @@ p.pay-off {
 
 p.small {
   @include font-inter();
-  font-size: 0.7rem;
+  font-size: 0.7rem !important;
 }
 
 .recap-deal {
@@ -189,7 +222,7 @@ p.small {
 
 span.small {
   @include font-inter();
-  font-size: 0.7rem;
+  font-size: 0.7rem !important;
 }
 
 a.splash-link {
@@ -216,11 +249,19 @@ a.splash-link {
   background-color: var(--primary-color) !important;
 }
 
+.bg-color-constrast {
+  background-color: var(--primary-color-low-contrast) !important;
+}
+
 .bg-img {
   background-image: url("../assets/img/grid.svg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
+}
+
+.b-radius {
+  border-radius: 6px;
 }
 
 .b-top-colored-dark {
@@ -267,8 +308,8 @@ a.splash-link {
 }
 
 .bordered {
-  border: 1px solid var(--primary-color);
-  border-radius: 5px;
+  border: 1px solid var(--primary-color) !important;
+  border-radius: 5px !important;
 }
 
 .color-secondary {
@@ -953,10 +994,6 @@ button.button.is-rounded.is-dark:hover {
 
 .footer-custom {
   background-color: var(--primary-color-contrast);
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
   a {
     font-weight: 700;
     color: var(--primary-color);
@@ -1048,14 +1085,6 @@ img.network-logo {
 
 /* ==============> DEAL CREATION <============== */
 
-.box-deals {
-  position: relative;
-  font-size: 12px;
-  border: 1px solid #ced4da;
-  border-radius: 5px;
-  padding: 20px;
-}
-
 .box-img {
   width: 100%;
   height: 266px;
@@ -1075,13 +1104,13 @@ img.network-logo {
   padding: 0;
 }
 
-.custom-card-hover {
+.deal-container-hover {
   &:hover {
     background-color: var(--primary-color-light);
   }
 }
 
-.custom-card {
+.deal-container {
   background-color: white;
   border-radius: 0.25rem;
   color: #4a4a4a;
@@ -1095,35 +1124,12 @@ img.network-logo {
     color: var(--primary-color);
     font-size: 0.9rem;
   }
-}
-
-.icon-opensea {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  transition: all 0.3s;
-  width: 25px;
-  cursor: pointer;
-}
-
-.icon-refresh {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  transition: all 0.3s;
-  font-size: 25px;
-  cursor: pointer;
-}
-
-.icon-opensea:hover,
-.icon-refresh:hover {
-  transform: scale(1.1);
-  transition: all 0.3s;
-}
-
-.icon-refresh:hover {
-  transform: rotate(270deg);
-  transition: all 0.5s;
+  p.small,
+  .small,
+  b.small {
+    font-size: 0.7rem;
+    margin: 0;
+  }
 }
 
 .modal-card {
@@ -1510,4 +1516,74 @@ hr {
 
 .content *:last-child::after {
   font-size: calc(1em - 1.5rem) !important;
+}
+
+.fadeIn {
+  animation: fadeIn ease 1s;
+  -webkit-animation: fadeIn ease 1s;
+  -moz-animation: fadeIn ease 1s;
+  -o-animation: fadeIn ease 1s;
+  -ms-animation: fadeIn ease 1s;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.fadeOut {
+  animation: fadeOut ease 1s;
+  -webkit-animation: fadeOut ease 1s;
+  -moz-animation: fadeOut ease 1s;
+  -o-animation: fadeOut ease 1s;
+  -ms-animation: fadeOut ease 1s;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@-moz-keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
