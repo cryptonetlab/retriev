@@ -11,7 +11,12 @@
       </p>
     </div>
     <!-- END MOBILE BLOCKER APP -->
-    <section v-if="!isMobile" class="hero" :class="{ 'no-scroll': isWorking }">
+    <section
+      v-if="!isMobile"
+      class="hero"
+      :class="{ 'no-scroll': isWorking }"
+      style="position: relative; min-height: 100vh"
+    >
       <!-- TODO: INFO DEAL TUTTE IN NERO -->
       <div v-if="account">
         <!-- NAVBAR SECTION -->
@@ -37,232 +42,279 @@
         <!-- END | NAVBAR SECTION -->
 
         <!-- PLATFORM START -->
-        <div class="container mt-5 px-md-5" :class="{ 'px-5': !isDesktop }">
-          <div>
-            <Transition
-              enter-active-class="fadeIn"
-              leave-active-class="fadeOut"
-            >
-              <div v-if="!loading">
+        <div
+          class="container mt-5 pb-6 px-md-5"
+          :class="{ 'px-5': !isDesktop, 'mb-6':!loading }"
+        >
+          <div class="columns is-mobile is-centered">
+            <div class="column is-12-tablet is-10-desktop">
+              <div>
                 <div>
-                  <!-- TITLE -->
-                  <!-- <div class="m-0 pb-3 mb-6">
-                  <h2 class="title is-3 m-0">Dashboard</h2>
-                </div> -->
-                  <!-- END TITLE -->
-
-                  <!-- ACTION BAR (button create deal - searchbar - filters) -->
-                  <div
-                    class="columns is-mobile is-multiline is-vcentered mt-5 mb-5"
+                  <Transition
+                    enter-active-class="fadeIn"
+                    leave-active-class="fadeOut"
                   >
-                    <div class="column is-4-mobile is-4-tablet is-5-desktop">
-                      <a href="/#/app/new-deal" class="btn-secondary">
-                        <i class="fa-solid fa-file-medical mr-3"></i>Create new
-                        deal
-                      </a>
-                    </div>
-
-                    <!-- SEARCH FUNCTION -->
-                    <div class="column is-4-mobile is-4-tablet is-5-desktop">
-                      <div class="field" style="position: relative">
-                        <div class="control has-icons-left has-icons-right">
-                          <input
-                            class="input is-info"
-                            type="text"
-                            placeholder=" Search Data URI"
-                            v-model="searcher"
-                          />
-                          <span class="icon is-small is-left">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                          </span>
-                        </div>
+                    <div v-if="!loading">
+                      <div>
+                        <!-- ACTION BAR (button create deal - searchbar - filters) -->
                         <div
-                          v-if="searcher !== undefined && searcher.length !== 0"
-                          class="placeholder-input-search"
+                          class="columns is-mobile is-multiline is-vcentered"
                         >
-                          <i
-                            class="fa-solid fa-circle-xmark pointer"
-                            @click="searcher = ''"
-                          ></i>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- END SEARCH FUNCTION -->
+                          <div
+                            class="column is-4-mobile is-4-tablet is-4-desktop"
+                          >
+                            <a href="/#/app/new-deal" class="btn-secondary">
+                              <i class="fa-solid fa-file-medical mr-3"></i
+                              >Create new deal
+                            </a>
+                          </div>
 
-                    <!-- FILTER FUNCTIONS -->
-                    <div
-                      class="column is-4-mobile is-4-tablet is-2-desktop"
-                      :class="{ 'has-text-right': !isMobile }"
-                    >
-                      <div class="custom_dropdown me-10-desktop">
-                        <div
-                          class="custom_dropdown__face"
-                          @click="filtered = !filtered"
-                        >
-                          <div class="custom_dropdown__text">
-                            <span class="small mr-1">FILTER:</span>
-                            <span v-if="activeDeal"><b>Active</b></span>
-                            <span
-                              v-if="
-                                endedDeal !== undefined && endedDeal === true
-                              "
-                              ><b>Ended</b></span
+                          <!-- SEARCH FUNCTION -->
+                          <div
+                            class="column is-4-mobile is-5-tablet is-5-desktop"
+                          >
+                            <div class="field" style="position: relative">
+                              <div
+                                class="control has-icons-left has-icons-right"
+                              >
+                                <input
+                                  class="input is-info"
+                                  type="text"
+                                  placeholder=" Search Data URI"
+                                  v-model="searcher"
+                                />
+                                <span class="icon is-small is-left">
+                                  <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                              </div>
+                              <div
+                                v-if="
+                                  searcher !== undefined &&
+                                  searcher.length !== 0
+                                "
+                                class="placeholder-input-search"
+                              >
+                                <i
+                                  class="fa-solid fa-circle-xmark pointer"
+                                  @click="searcher = ''"
+                                ></i>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- END SEARCH FUNCTION -->
+
+                          <!-- FILTER FUNCTIONS -->
+                          <div
+                            class="column is-4-mobile is-3-tablet is-3-desktop"
+                            :class="{ 'has-text-right': !isMobile }"
+                          >
+                            <div
+                              class="custom_dropdown me-10-desktop"
+                              @mouseleave="filtered = false"
                             >
-                            <span v-if="showallDeals"><b>All</b></span>
-                            <i
-                              v-if="!filtered"
-                              class="ml-3 fa-solid fa-chevron-right"
-                            ></i>
-                            <i
-                              v-if="filtered"
-                              class="ml-3 fa-solid fa-chevron-down"
-                            ></i>
+                              <div
+                                class="custom_dropdown__face"
+                                :style="[
+                                  filtered
+                                    ? {
+                                        borderBottom: 'none',
+                                        borderBottomLeftRadius: '0',
+                                        borderBottomRightRadius: '0',
+                                      }
+                                    : { top: '0px' },
+                                ]"
+                                @click="filtered = !filtered"
+                              >
+                                <div class="custom_dropdown__text">
+                                  <span class="small mr-1">FILTER:</span>
+                                  <span v-if="activeDeal"><b>Active</b></span>
+                                  <span
+                                    v-if="
+                                      endedDeal !== undefined &&
+                                      endedDeal === true
+                                    "
+                                    ><b>Ended</b></span
+                                  >
+                                  <span v-if="showallDeals"><b>All</b></span>
+                                  <i
+                                    v-if="!filtered"
+                                    class="ml-3 fa-solid fa-chevron-right"
+                                  ></i>
+                                  <i
+                                    v-if="filtered"
+                                    class="ml-3 fa-solid fa-chevron-down"
+                                  ></i>
+                                </div>
+                              </div>
+                              <Transition
+                                name="custom-fade"
+                                enter-active-class="fade-in-top"
+                                leave-active-class="fade-out-top"
+                              >
+                                <ul
+                                  v-if="filtered"
+                                  class="custom_dropdown__items"
+                                >
+                                  <li
+                                    @click="
+                                      (showallDeals = true),
+                                        (activeDeal = false),
+                                        (endedDeal = false),
+                                        (filtered = false),
+                                        allDeals()
+                                    "
+                                  >
+                                    All
+                                  </li>
+                                  <li
+                                    @click="
+                                      (activeDeal = true),
+                                        (showallDeals = false),
+                                        (endedDeal = false),
+                                        (filtered = false),
+                                        loadState()
+                                    "
+                                  >
+                                    Active
+                                  </li>
+                                  <li
+                                    @click="
+                                      (endedDeal = true),
+                                        (showallDeals = false),
+                                        (activeDeal = false),
+                                        (filtered = false),
+                                        expiredDeals()
+                                    "
+                                  >
+                                    Ended
+                                  </li>
+                                </ul>
+                              </Transition>
+                            </div>
+                          </div>
+                          <!-- END | FILTER FUNCTION -->
+                        </div>
+                        <!-- END | ACTION BAR (button create deal - searchbar - filters) -->
+
+                        <!-- DEALS -->
+                        <div class="mb-5" v-if="deals.length > 0">
+                          <!-- TITLES TABLE -->
+                          <div
+                            class="columns is-mobile is-multiline is-vcentered hide mb-0"
+                            v-if="!isMobile"
+                          >
+                            <div
+                              class="column is-4-mobile is-7-tablet is-7-desktop is-8-widescreen is-9-fullhd"
+                            >
+                              <h5 class="title-table ml-5">RETRIEVAL DEALS</h5>
+                            </div>
+                            <div
+                              class="column is-4-mobile is-2-tablet is-2-desktop is-2-widescreen is-1-fullhd"
+                            >
+                              <h5 class="title-table">ACTIONS</h5>
+                            </div>
+                            <div
+                              class="column is-4-mobile is-2-tablet is-2-desktop is-1-widescreen is-1-fullhd"
+                            >
+                              <h5 class="title-table ml-4">STATUS</h5>
+                            </div>
+                          </div>
+                          <!-- END TITLES TABLE -->
+
+                          <div class="bordered">
+                            <div v-for="deal in deals" :key="deal.identifier">
+                              <Deal
+                                :web3="web3"
+                                :account="account"
+                                :storedDeal="deal"
+                                :index="deal.index"
+                                :apiEndpoint="apiEndpoint"
+                                :opensea="opensea"
+                                :contract="contract"
+                                :abi="abi"
+                                :providerEndpoints="providerEndpoints"
+                                @toggleSpec="toggleSpec()"
+                                @alert="alertCustomError($event)"
+                              />
+                            </div>
                           </div>
                         </div>
-                        <Transition
-                          name="custom-fade"
-                          enter-active-class="fade-in-top"
-                          leave-active-class="fade-out-top"
+                        <!-- DEALS -->
+
+                        <!-- NO DEALS MESSAGE -->
+                        <div
+                          class="pt-5"
+                          v-if="
+                            deals.length === 0 &&
+                            searcher.length === 0 &&
+                            endedDeal !== undefined &&
+                            endedDeal === false
+                          "
                         >
-                          <ul v-if="filtered" class="custom_dropdown__items">
-                            <li
-                              @click="
-                                (showallDeals = true),
-                                  (activeDeal = false),
-                                  (endedDeal = false),
-                                  (filtered = false),
-                                  allDeals()
-                              "
-                            >
-                              All
-                            </li>
-                            <li
-                              @click="
-                                (activeDeal = true),
-                                  (showallDeals = false),
-                                  (endedDeal = false),
-                                  (filtered = false),
-                                  loadState()
-                              "
-                            >
-                              Active
-                            </li>
-                            <li
-                              @click="
-                                (endedDeal = true),
-                                  (showallDeals = false),
-                                  (activeDeal = false),
-                                  (filtered = false),
-                                  expiredDeals()
-                              "
-                            >
-                              Ended
-                            </li>
-                          </ul>
-                        </Transition>
+                          <div class="mb-6 mt-6 is-flex is-align-items-center">
+                            <div class="mr-5">
+                              <NoFile />
+                            </div>
+                            <div>
+                              <h2 style="font-size: 1.4rem">
+                                <b>You have no active Deals or Proposal.</b>
+                              </h2>
+                              <h2 class="mt-2" style="font-size: 1.4rem">
+                                Create a new one or view the history <br />of
+                                Deals you have created.
+                              </h2>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- END | NO DEALS MESSAGE -->
+
+                        <!-- NO DEALS MESSAGE 2-->
+                        <div
+                          class="pt-5"
+                          v-if="
+                            (deals.length === 0 && searcher.length > 0) ||
+                            (deals.length === 0 &&
+                              endedDeal !== undefined &&
+                              endedDeal === true)
+                          "
+                        >
+                          <div class="mb-6 mt-6 is-flex is-align-items-center">
+                            <div class="mr-5">
+                              <NoFile />
+                            </div>
+                            <div>
+                              <h2 style="font-size: 1.4rem">
+                                <b>You have no active Deals or Proposal.</b>
+                              </h2>
+                              <h2 class="mt-2" style="font-size: 1.4rem">
+                                No deal fouded... try again
+                              </h2>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- END | NO DEALS MESSAGE 2 -->
                       </div>
                     </div>
-                    <!-- END | FILTER FUNCTION -->
-                  </div>
-                  <!-- END | ACTION BAR (button create deal - searchbar - filters) -->
-
-                  <!-- DEALS -->
-                  <div class="mb-5" v-if="deals.length > 0">
-                    <!-- TITLES TABLE -->
-                    <div
-                      class="columns is-mobile is-multiline is-vcentered hide"
-                      v-if="!isMobile"
-                    >
-                      <div
-                        class="column is-4-mobile is-7-tablet is-7-desktop is-8-widescreen is-9-fullhd"
-                      >
-                        <h5 class="title-table ml-6">RETRIEVAL DEALS</h5>
-                      </div>
-                      <div
-                        class="column is-4-mobile is-2-tablet is-2-desktop is-2-widescreen is-1-fullhd"
-                      >
-                        <h5 class="title-table">ACTIONS</h5>
-                      </div>
-                      <div
-                        class="column is-4-mobile is-2-tablet is-2-desktop is-1-widescreen is-1-fullhd"
-                      >
-                        <h5 class="title-table ml-6">STATUS</h5>
-                      </div>
-                    </div>
-                    <!-- END TITLES TABLE -->
-
-                    <div class="bordered">
-                      <div v-for="deal in deals" :key="deal.identifier">
-                        <Deal
-                          :web3="web3"
-                          :account="account"
-                          :storedDeal="deal"
-                          :index="deal.index"
-                          :apiEndpoint="apiEndpoint"
-                          :opensea="opensea"
-                          :contract="contract"
-                          :abi="abi"
-                          :providerEndpoints="providerEndpoints"
-                          @toggleSpec="toggleSpec()"
-                          @alert="alertCustomError($event)"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <!-- DEALS -->
-
-                  <!-- NO DEALS MESSAGE -->
-                  <div
-                    v-if="
-                      deals.length === 0 &&
-                      searcher.length === 0 &&
-                      endedDeal !== undefined &&
-                      endedDeal === false
-                    "
+                  </Transition>
+                  <!-- Loader Dashboard -->
+                  <Transition
+                    enter-active-class="fadeIn"
+                    leave-active-class="fadeOut"
                   >
-                    <p class="mt-6">
-                      You have no active Deals or Proposal. Create a new one or
-                      view the history of Deals you have created.
-                    </p>
-                  </div>
-
-                  <!-- END | NO DEALS MESSAGE -->
-
-                  <!-- NO DEALS MESSAGE 2-->
-                  <div
-                    v-if="
-                      (deals.length === 0 && searcher.length > 0) ||
-                      (deals.length === 0 &&
-                        endedDeal !== undefined &&
-                        endedDeal === true)
-                    "
-                  >
-                    <p class="mt-6">No deal fouded... try again!</p>
-                  </div>
-
-                  <!-- END | NO DEALS MESSAGE 2 -->
+                    <div v-if="loading">
+                      <LoadingDashboard />
+                    </div>
+                  </Transition>
+                  <!--END Loader Dashboard -->
                 </div>
               </div>
-            </Transition>
-            <!-- Loader Dashboard -->
-            <Transition
-              enter-active-class="fadeIn"
-              leave-active-class="fadeOut"
-            >
-              <div v-if="loading">
-                <!-- <div class="mt-6 mb-6 has-text-centered pulse_loading">
-                  <div class="btn-loader">
-                    <i class="fas fa-spinner fa-pulse mr-3"></i> PREPARING
-                    DASHBOARD
-                  </div>
-                </div> -->
-
-                <LoadingDashboard />
-              </div>
-            </Transition>
+            </div>
           </div>
         </div>
 
+        <Footer v-if="!loading" />
         <!-- PLATFORM END -->
       </div>
 
@@ -280,7 +332,6 @@
       </div>
       <!-- END Working Messages -->
     </section>
-    <Footer v-if="!loading" />
   </div>
 </template>
 <script>
@@ -290,6 +341,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import Navbar from "@/components/Navbar.vue";
 import LoadingDashboard from "@/components/elements/LoadingDashboard.vue";
 import Footer from "@/components/Footer.vue";
+import NoFile from "@/components/elements/NoFile.vue";
 import Deal from "@/components/Deal.vue";
 import checkViewport from "@/mixins/checkViewport";
 import { io } from "socket.io-client";
@@ -305,6 +357,7 @@ export default {
     LoadingDashboard,
     Deal,
     Footer,
+    NoFile,
   },
   data() {
     return {

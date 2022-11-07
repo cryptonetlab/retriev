@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ALERT BANNER TESTNET -->
-    <div class="alert-banner py-3 px-5">
+    <div class="alert-banner py-3 px-4">
       <div class="container">
         <p>
           <i class="fa-solid fa-circle-exclamation mr-3"></i>
@@ -14,8 +14,8 @@
         </p>
       </div>
     </div>
-    <!-- ALERT BANNER TESTNET -->
-    <div class="header py-6">
+    <!-- END ALERT BANNER TESTNET -->
+    <div class="header p-4">
       <div class="container px-md-5" :class="{ 'px-5': !isDesktop }">
         <div
           class="columns is-mobile is-multiline is-vcentered is-justify-content-space-between"
@@ -35,6 +35,15 @@
               <div class="custom_dropdown-2 me-10-desktop">
                 <div
                   class="custom_dropdown__face"
+                  :style="[
+                    openSelect
+                      ? {
+                          borderBottom: 'none',
+                          borderBottomLeftRadius: '0',
+                          borderBottomRightRadius: '0',
+                        }
+                      : { top: '0px' },
+                  ]"
                   @click="openSelect = !openSelect"
                 >
                   <div class="custom_dropdown__text">
@@ -56,20 +65,31 @@
                     ></i>
                   </div>
                 </div>
-
-                <ul v-if="openSelect" class="custom_dropdown__items">
-                  <li
-                    @click="selectContract(contract)"
-                    v-for="contract in config"
-                    :value="contract.blockchain"
-                    :key="contract.blockchain"
+                <Transition
+                  name="custom-fade"
+                  enter-active-class="fade-in-top"
+                  leave-active-class="fade-out-top"
+                >
+                  <ul
+                    v-if="openSelect"
+                    class="custom_dropdown__items"
+                    @mouseleave="openSelect = false"
                   >
-                    <span v-if="contract.blockchain === 'goerli'"> GOERLI</span>
-                    <span v-if="contract.blockchain === 'polygon'">
-                      POLYGON</span
+                    <li
+                      @click="selectContract(contract)"
+                      v-for="contract in config"
+                      :value="contract.blockchain"
+                      :key="contract.blockchain"
                     >
-                  </li>
-                </ul>
+                      <span v-if="contract.blockchain === 'goerli'">
+                        GOERLI</span
+                      >
+                      <span v-if="contract.blockchain === 'polygon'">
+                        POLYGON</span
+                      >
+                    </li>
+                  </ul>
+                </Transition>
               </div>
               <!-- END | Select Blockchain contract -->
 
@@ -112,7 +132,7 @@
                       <div class="mt-5">
                         <h3>Referee Net #1</h3>
                         <div class="mt-6">
-                          <h5 class="pb-2 b-bottom-colored-dark mb-3">
+                          <h5 class="pb-2 b-bottom-colored-grey mb-3">
                             Referee IDs
                             <i class="fa-solid fa-wallet ml-3"></i>
                           </h5>
@@ -140,7 +160,7 @@
                         </div>
                       </div>
                       <div class="mt-5">
-                        <h5 class="pb-2 b-bottom-colored-dark">
+                        <h5 class="pb-2 b-bottom-colored-grey">
                           TERMS OF AGREEMENT
                           <i class="fa-solid fa-file-lines ml-2"></i>
                         </h5>
@@ -156,7 +176,7 @@
                       </div>
                       <div class="mt-5">
                         <a
-                          class="btn-icon"
+                          class="btn-navbar p-3"
                           href="https://hackmd.io/Mp3_NyJhSbi-6g8BU_bgTg"
                           target="_blank"
                           >LEARN MORE</a
@@ -177,13 +197,13 @@
                     @mouseleave="isWithdraw = false"
                     class="right-col"
                   >
-                    <div class="nav-container">
-                      <div class="mt-5">
+                    <div class="nav-container p-5">
+                      <div class="mt-6">
                         <h3>
                           <i class="fa-solid fa-user mr-3"></i> User Details:
                         </h3>
                         <div class="mt-6">
-                          <h5 class="pb-2 b-bottom-colored-dark">
+                          <h5 class="pb-2 b-bottom-colored-grey">
                             Account Connected
                             <i class="fa-solid fa-link ml-3"></i>
                           </h5>
@@ -195,7 +215,7 @@
                           <p v-if="!account">No account connected</p>
                         </div>
                         <div class="mt-3">
-                          <h5 class="pb-2 b-bottom-colored-dark">
+                          <h5 class="pb-2 b-bottom-colored-grey">
                             Total Balance
                             <i class="fa-solid fa-wallet ml-3"></i>
                           </h5>
@@ -209,7 +229,7 @@
                           </p>
                         </div>
                         <div class="mt-3">
-                          <h5 class="pb-2 b-bottom-colored-dark">
+                          <h5 class="pb-2 b-bottom-colored-grey">
                             Vault funds
                             <i class="fa-solid fa-vault ml-3"></i>
                           </h5>
@@ -242,9 +262,9 @@
                         </div>
                       </div>
                     </div>
-                    <div class="nav-container">
+                    <div class="nav-container p-5 mb-6">
                       <div class="logo-navbar mb-3">
-                        <img src="../assets/img/logo.svg" alt="" />
+                        <img width="30px" src="../assets/img/logo.svg" alt="" />
                       </div>
                       <div v-if="allDeals !== undefined">
                         <h5 class="pb-2 b-bottom-colored-dark">
