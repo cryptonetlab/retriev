@@ -76,86 +76,101 @@
           <!-- Upload file -->
           <div class="columns is-desktop">
             <div class="column is-6-desktop">
-              <div>
-                <b-field
-                  class="b-radius"
-                  v-if="!fileToUpload.name && !expertMode"
-                >
-                  <b-upload
-                    class="b-radius"
-                    style="background-color: #ededed"
-                    v-model="fileToUpload"
-                    expanded
-                    drag-drop
-                    :disabled="isWorking || dealProviders.length === 0"
-                    type="is-dark"
-                  >
-                    <section class="section">
-                      <div class="content has-text-centered">
-                        <p>Drop your file here or click to upload</p>
-                      </div>
-                    </section>
-                  </b-upload>
-                </b-field>
+              <div style="position: relative">
                 <div
-                  class="bordered-dashed b-radius is-flex is-flex-wrap-wrap is-align-items-start is-justify-content-space-between p-3"
-                  v-if="fileToUpload.name"
+                  v-if="isUploadingIPFS"
+                  class="loading_box is-flex is-justify-content-center is-align-items-center"
+                  style="
+                    width: 100%; height: 118px
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    z-index: 10;
+                  "
                 >
-                  <div class="is-flex is-align-items-center py-3">
-                    <div v-if="dealUri" class="preview-img mr-2">
-                      <img
-                        v-if="
-                          fileToUpload.type === 'image/svg+xml' ||
-                          fileToUpload.type === 'image/png' ||
-                          fileToUpload.type === 'image/jpg' ||
-                          fileToUpload.type === 'image/jpeg'
-                        "
-                        width="100"
-                        :src="
-                          'https://nftstorage.link' +
-                          '/ipfs/' +
-                          dealUri.replace('ipfs://', '')
-                        "
-                        alt=""
-                      />
-                      <img
-                        v-if="
-                          fileToUpload.type !== 'image/svg+xml' &&
-                          fileToUpload.type !== 'image/png' &&
-                          fileToUpload.type !== 'image/jpg' &&
-                          fileToUpload.type !== 'image/jpeg'
-                        "
-                        width="100"
-                        src="../assets/img/document.png"
-                        alt=""
-                      />
-                    </div>
-                    <div>
-                      <h5>File name:</h5>
-                      <p>{{ fileToUpload.name }}</p>
-                      <h5>Data URI:</h5>
-                      <p v-if="dealUri" style="word-break: break-word">
-                        {{ dealUri }}
-                      </p>
-                      <p v-if="!dealUri">Calculating...</p>
-                    </div>
-                  </div>
-                  <div class="py-3">
-                    <b-button
-                      class="btn-secondary"
-                      style="float: right"
-                      :disabled="isWorking"
-                      @click="
-                        fileToUpload = {};
-                        dealUri = '';
-                        dealValue = 0;
-                        dealCollateral = 0;
-                        baseDealValue = 0;
-                        canDoProposal = false;
-                      "
-                      ><i class="fa-solid fa-circle-xmark"></i> Change
-                      file</b-button
+                  <Spinner />
+                </div>
+                <div v-show="!isUploadingIPFS">
+                  <b-field
+                    class="b-radius"
+                    v-if="!fileToUpload.name && !expertMode"
+                  >
+                    <b-upload
+                      class="b-radius"
+                      style="background-color: #ededed"
+                      v-model="fileToUpload"
+                      expanded
+                      drag-drop
+                      :disabled="isWorking || dealProviders.length === 0"
+                      type="is-dark"
                     >
+                      <section class="section">
+                        <div class="content has-text-centered">
+                          <p>Drop your file here or click to upload</p>
+                        </div>
+                      </section>
+                    </b-upload>
+                  </b-field>
+                  <div
+                    class="bordered-dashed b-radius is-flex is-flex-wrap-wrap is-align-items-start is-justify-content-space-between p-3"
+                    v-if="fileToUpload.name"
+                  >
+                    <div class="is-flex is-align-items-center py-3">
+                      <div v-if="dealUri" class="preview-img mr-2">
+                        <img
+                          v-if="
+                            fileToUpload.type === 'image/svg+xml' ||
+                            fileToUpload.type === 'image/png' ||
+                            fileToUpload.type === 'image/jpg' ||
+                            fileToUpload.type === 'image/jpeg'
+                          "
+                          width="100"
+                          :src="
+                            'https://nftstorage.link' +
+                            '/ipfs/' +
+                            dealUri.replace('ipfs://', '')
+                          "
+                          alt=""
+                        />
+                        <img
+                          v-if="
+                            fileToUpload.type !== 'image/svg+xml' &&
+                            fileToUpload.type !== 'image/png' &&
+                            fileToUpload.type !== 'image/jpg' &&
+                            fileToUpload.type !== 'image/jpeg'
+                          "
+                          width="100"
+                          src="../assets/img/document.png"
+                          alt=""
+                        />
+                      </div>
+                      <div>
+                        <h5>File name:</h5>
+                        <p>{{ fileToUpload.name }}</p>
+                        <h5>Data URI:</h5>
+                        <p v-if="dealUri" style="word-break: break-word">
+                          {{ dealUri }}
+                        </p>
+                        <p v-if="!dealUri">Calculating...</p>
+                      </div>
+                    </div>
+                    <div class="py-3">
+                      <b-button
+                        class="btn-secondary"
+                        style="float: right"
+                        :disabled="isWorking"
+                        @click="
+                          fileToUpload = {};
+                          dealUri = '';
+                          dealValue = 0;
+                          dealCollateral = 0;
+                          baseDealValue = 0;
+                          canDoProposal = false;
+                        "
+                        ><i class="fa-solid fa-circle-xmark"></i> Change
+                        file</b-button
+                      >
+                    </div>
                   </div>
                 </div>
               </div>
@@ -647,6 +662,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import checkViewport from "@/mixins/checkViewport";
 import Navbar from "@/components/Navbar.vue";
 import LoadingCreateDeal from "@/components/elements/LoadingCreateDeal.vue";
+import Spinner from "@/components/elements/Spinner.vue";
 import Footer from "@/components/Footer.vue";
 import axios from "axios";
 const CONFIG = require("../config.json");
@@ -657,7 +673,7 @@ const FormData = require("form-data");
 export default {
   name: "newDeal",
   mixins: [checkViewport],
-  components: { Navbar, Footer, LoadingCreateDeal },
+  components: { Navbar, Footer, LoadingCreateDeal, Spinner },
   data() {
     return {
       // Web3 data
@@ -973,7 +989,6 @@ export default {
           app.fileToUpload.size <
             app.providersPolicy[app.dealProviders[0]].maxSize
         ) {
-          app.showLoadingToast("Uploading file on IPFS, please wait..");
           app.isUploadingIPFS = true;
           const formData = new FormData();
           formData.append("file", app.fileToUpload);
@@ -1062,53 +1077,53 @@ export default {
                   gasPrice: doubled,
                 })
                 .on("transactionHash", (tx) => {
-                  app.log(
-                    "Found pending transaction at " +
-                      tx.substr(0, 4) +
-                      "..." +
-                      tx.substr(-4)
-                  );
                   localStorage.setItem("pendingTx", tx);
-                  this.$toast.warning("Found pending transaction at: " + tx, {
-                    position: "top-right",
-                    timeout: 15000,
-                    closeOnClick: true,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    draggablePercent: 0.6,
-                    showCloseButtonOnHover: true,
-                    hideProgressBar: true,
-                    closeButton: "button",
-                    icon: "fa-solid fa-arrow-right-arrow-left",
-                    rtl: false,
-                  });
+                  this.$toast.warning(
+                    "Creating your deal proposal, please wait..." +
+                      "\n" +
+                      "Pending transaction at: " +
+                      tx,
+                    {
+                      position: "top-right",
+                      timeout: false,
+                      closeOnClick: false,
+                      pauseOnFocusLoss: true,
+                      pauseOnHover: true,
+                      draggable: true,
+                      draggablePercent: 0.6,
+                      showCloseButtonOnHover: true,
+                      hideProgressBar: true,
+                      closeButton: "button",
+                      icon: "fa-solid fa-arrow-right-arrow-left",
+                      rtl: false,
+                    }
+                  );
                 });
               app.$toast.clear();
               console.log("BLOCKCHAIN_RECEIPT ", receipt);
-              app.log(
-                "Transaction success at: ",
-                receipt.blockHash.substr(0, 4) +
-                  "..." +
-                  receipt.blockHash.substr(-4)
-              );
               setTimeout(async function () {
                 window.location.href = "/#/app";
               }, 2000);
-              this.$toast("Transaction success at: " + receipt.blockHash, {
-                position: "top-right",
-                timeout: 5000,
-                closeOnClick: true,
-                pauseOnFocusLoss: true,
-                pauseOnHover: true,
-                draggable: true,
-                draggablePercent: 0.6,
-                showCloseButtonOnHover: true,
-                hideProgressBar: true,
-                closeButton: "button",
-                icon: "fa-solid fa-arrow-right-arrow-left",
-                rtl: false,
-              });
+              this.$toast(
+                "Congratulations your deal proposal was successfully created." +
+                  "\n" +
+                  "Transaction success at: " +
+                  receipt.blockHash,
+                {
+                  position: "top-right",
+                  timeout: 5000,
+                  closeOnClick: true,
+                  pauseOnFocusLoss: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  draggablePercent: 0.6,
+                  showCloseButtonOnHover: true,
+                  hideProgressBar: true,
+                  closeButton: "button",
+                  icon: "fa-solid fa-arrow-right-arrow-left",
+                  rtl: false,
+                }
+              );
             } catch (e) {
               app.isWorking = false;
               app.alertCustomError(e.message);
