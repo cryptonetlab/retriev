@@ -46,12 +46,6 @@
           v-if="dealProviders !== undefined && dealProviders.length > 0"
           class="container"
         >
-          <!-- TITLE -->
-          <!-- <div class="m-0 pb-3 mb-6 mt-5">
-            <h2 class="title is-3 m-0">New Deal Proposal</h2>
-          </div> -->
-          <!-- END TITLE -->
-
           <!-- BACK BUTTON AND EXPERT MODE SWITCH -->
           <div
             class="is-flex is-justify-content-space-between is-align-items-center mb-5 mt-5"
@@ -1278,6 +1272,10 @@ export default {
     toggleSpec() {
       const app = this;
       app.navSpec = !app.navSpec;
+    },
+    hide() {
+      const app = this;
+      app.navSpec = false;
     },
 
     //ADDING APPEAL ADDRESS

@@ -156,133 +156,83 @@
       enter-active-class="fade-in-top"
       leave-active-class="fade-out-top"
     >
-      <div class="" v-show="isOpen === deal.index">
+      <div :class="{ 'px-5': isDesktop }" v-show="isOpen === deal.index">
         <div class="card-content">
           <div class="content">
             <div class="columns is-mobile">
-              <div class="column is-three-quarter-tablet is-half-desktop">
+              <div class="column is-half">
                 <div>
                   <div
                     v-if="deal.data_uri !== undefined"
-                    class="b-top-colored-grey b-bottom-colored-grey px-2"
                     :class="{
-                      'pb-3 pt-3': isDesktop,
-                      'pb-1 pt-1': isTablet,
+                      'pb-3': isDesktop,
+                      'pb-1': isTablet,
                     }"
                   >
+                    <div>
+                      <p class="color-light m-0">Data URI:</p>
+                      <p>
+                        <b>
+                          <a
+                            v-if="
+                              providerEndpoints[deal.provider] !== undefined &&
+                              deal.data_uri !== undefined
+                            "
+                            style="word-wrap: break-word"
+                            class="link-primary"
+                            :href="
+                              providerEndpoints[deal.provider] +
+                              '/ipfs/' +
+                              deal.data_uri.replace('ipfs://', '')
+                            "
+                            target="_blank"
+                            >{{ deal.data_uri }}</a
+                          >
+                          <a
+                            v-if="
+                              providerEndpoints[deal.provider] === undefined &&
+                              deal.data_uri !== undefined
+                            "
+                            style="word-wrap: break-word"
+                            class="link-primary"
+                            :href="
+                              'https://ipfs.io/ipfs/' +
+                              deal.data_uri.replace('ipfs://', '')
+                            "
+                            target="_blank"
+                            >{{ deal.data_uri }}</a
+                          ></b
+                        >
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    :class="{
+                      'pb-3': isDesktop,
+                      'pb-1': isTablet,
+                    }"
+                  >
+                    <p class="m-0 color-light">Value:</p>
                     <p>
-                      <b>Data URI: </b>
-                      <a
-                        v-if="
-                          providerEndpoints[deal.provider] !== undefined &&
-                          deal.data_uri !== undefined
-                        "
-                        style="word-wrap: break-word"
-                        class="link-primary"
-                        :href="
-                          providerEndpoints[deal.provider] +
-                          '/ipfs/' +
-                          deal.data_uri.replace('ipfs://', '')
-                        "
-                        target="_blank"
-                        >{{ deal.data_uri }}</a
-                      >
-                      <a
-                        v-if="
-                          providerEndpoints[deal.provider] === undefined &&
-                          deal.data_uri !== undefined
-                        "
-                        style="word-wrap: break-word"
-                        class="link-primary"
-                        :href="
-                          'https://ipfs.io/ipfs/' +
-                          deal.data_uri.replace('ipfs://', '')
-                        "
-                        target="_blank"
-                        >{{ deal.data_uri }}</a
-                      >
-                    </p>
-                    <!-- <h2>{{returnDate(deal.timestamp_end)}}</h2> -->
-                  </div>
-                  <div
-                    class="is-flex is-justify-content-space-between is-align-items-center b-bottom-colored-grey px-2"
-                    :class="{
-                      'pb-1 pt-1': isTablet,
-                    }"
-                  >
-                    <p class="m-0"><b>Value:</b> {{ deal.value }}</p>
-
-                    <div class="divider-small"></div>
-
-                    <p class="m-0 has-text-right">
-                      <b>Collateral:</b>
-                      {{ deal.collateral }}
-                    </p>
-                  </div>
-                  <div
-                    class="b-bottom-colored-grey px-2"
-                    :class="{
-                      'pb-3 pt-3': isDesktop,
-                      'pb-1 pt-1': isTablet,
-                    }"
-                  >
-                    <p><b>Canceled:</b> {{ deal.canceled }}</p>
-                  </div>
-                  <div
-                    class="b-bottom-colored-grey px-2"
-                    :class="{
-                      'pb-3 pt-3': isDesktop,
-                      'pb-1 pt-1': isTablet,
-                    }"
-                  >
-                    <p>
-                      <b>Provider:</b>
-                      <span v-if="deal.provider !== 'NOT_ACCEPTED'">
-                        {{ deal.provider }}</span
-                      >
-                      <span v-if="deal.provider === 'NOT_ACCEPTED'">
-                        Pending Approval</span
-                      >
+                      <b>{{ deal.value }}</b>
                     </p>
                   </div>
                   <div
                     v-if="deal.appeal_requested !== undefined"
-                    class="b-bottom-colored-grey px-2"
                     :class="{
                       'pb-3 pt-3': isDesktop,
                       'pb-1 pt-1': isTablet,
                     }"
                   >
+                    <p class="m-0 color-light">Appeal Requested:</p>
                     <p>
-                      <b>Appeal Requested: </b>
-                      {{ deal.appeal_requested }}/5
+                      <b> {{ deal.appeal_requested }}/5</b>
                     </p>
                   </div>
-                  <div
-                    class="b-bottom-colored-grey px-2"
-                    :class="{
-                      'pb-3 pt-3': isDesktop,
-                      'pb-1 pt-1': isTablet,
-                    }"
-                  >
-                    <p>
-                      <b>Referee network: </b>
-                      <a
-                        style="word-wrap: break-word"
-                        class="link-primary"
-                        @click="$emit('toggleSpec')"
-                        target="_blank"
-                        >Referee network #1</a
-                      >
-                    </p>
-                  </div>
+
                   <!-- TIMING DEAL -->
-                  <div
-                    class="b-bottom-colored-grey"
-                    :class="{ 'pb-3': openTimingDeal }"
-                  >
+                  <div :class="{ 'pb-3': openTimingDeal }">
                     <div
-                      class="is-flex is-justify-content-space-between is-align-items-center px-2"
                       style="cursor: pointer"
                       :class="{
                         'pb-3 pt-3': isDesktop,
@@ -297,15 +247,29 @@
                           0
                         "
                       >
-                        <p>
-                          <b>Time remaining:</b>
-                          {{
-                            secondsToDhms(
-                              parseInt(deal.timestamp_end) -
-                                new Date().getTime() / 1000
-                            )
-                          }}<br />
-                        </p>
+                        <p class="m-0 color-light">Time remaining:</p>
+                        <div class="is-flex is-align-items-end">
+                          <p class="m-0">
+                            <b>
+                              {{
+                                secondsToDhms(
+                                  parseInt(deal.timestamp_end) -
+                                    new Date().getTime() / 1000
+                                )
+                              }}</b
+                            >
+                          </p>
+                          <div class="ml-5">
+                            <i
+                              v-if="!openTimingDeal"
+                              class="fa-solid fa-chevron-right"
+                            ></i>
+                            <i
+                              v-if="openTimingDeal"
+                              class="fa-solid fa-chevron-down"
+                            ></i>
+                          </div>
+                        </div>
                       </div>
                       <div
                         v-if="
@@ -327,45 +291,54 @@
                       >
                         <p><b>Time remaining:</b> deal ended</p>
                       </div>
-                      <i
-                        v-if="!openTimingDeal"
-                        class="fa-solid fa-chevron-right"
-                      ></i>
-                      <i
-                        v-if="openTimingDeal"
-                        class="fa-solid fa-chevron-down"
-                      ></i>
                     </div>
-                    <div v-show="openTimingDeal">
-                      <div class="px-2">
-                        <p>
-                          <b>Deal request:</b>
-                          {{ returnDate(deal.timestamp_request) }}
-                        </p>
+                    <Transition
+                      name="custom-fade"
+                      enter-active-class="fade-in-top"
+                      leave-active-class="fade-out-top"
+                    >
+                      <div v-show="openTimingDeal">
+                        <div
+                          :class="{
+                            'pb-3 pt-3': isDesktop,
+                            'pb-1 pt-1': isTablet,
+                          }"
+                        >
+                          <p class="m-0 color-light">Deal request:</p>
+                          <p>
+                            <b> {{ returnDate(deal.timestamp_request) }}</b>
+                          </p>
+                        </div>
+                        <div
+                          :class="{
+                            'pb-3 pt-3': isDesktop,
+                            'pb-1 pt-1': isTablet,
+                          }"
+                          v-if="parseInt(deal.timestamp_start) !== 0"
+                        >
+                          <p class="m-0 color-light">Deal start:</p>
+                          <p>
+                            <b> {{ returnDate(deal.timestamp_start) }}</b>
+                          </p>
+                        </div>
+                        <div
+                          :class="{
+                            'pb-3 pt-3': isDesktop,
+                            'pb-1 pt-1': isTablet,
+                          }"
+                          v-if="
+                            parseInt(deal.timestamp_end) -
+                              new Date().getTime() / 1000 >
+                            0
+                          "
+                        >
+                          <p class="m-0 color-light">Deal end:</p>
+                          <p>
+                            <b> {{ returnDate(deal.timestamp_end) }}<br /></b>
+                          </p>
+                        </div>
                       </div>
-                      <div
-                        class="px-2"
-                        v-if="parseInt(deal.timestamp_start) !== 0"
-                      >
-                        <p>
-                          <b>Deal start:</b>
-                          {{ returnDate(deal.timestamp_start) }}<br />
-                        </p>
-                      </div>
-                      <div
-                        v-if="
-                          parseInt(deal.timestamp_end) -
-                            new Date().getTime() / 1000 >
-                          0
-                        "
-                        class="px-2"
-                      >
-                        <p>
-                          <b>Deal end:</b>
-                          {{ returnDate(deal.timestamp_end) }}<br />
-                        </p>
-                      </div>
-                    </div>
+                    </Transition>
                   </div>
                   <!-- TIMING DEAL -->
 
@@ -418,6 +391,7 @@
                       </p>
                     </div>
                   </div>
+                  <!-- ACTION BUTTONS -->
                   <div class="is-flex align-items-center mt-5">
                     <!-- Check NFT BUTTON -->
                     <a
@@ -465,10 +439,68 @@
                       <i class="fa-solid fa-trash-can mr-3"></i> Cancel Deal
                     </b-button>
                   </div>
+                  <!-- END ACTION BUTTONS -->
                 </div>
               </div>
-              <div class="column is-one-quarter-tablet is-half-desktop">
+              <div class="column is-half">
                 <div
+                  :class="{
+                    'pb-1 pt-1': isTablet,
+                  }"
+                >
+                  <p class="m-0 color-light">Canceled:</p>
+                  <p style="text-transform: capitalize">
+                    <b>{{ deal.canceled }}</b>
+                  </p>
+                </div>
+                <div
+                  :class="{
+                    'pb-3 pt-3': isDesktop,
+                    'pb-1 pt-1': isTablet,
+                  }"
+                >
+                  <p class="m-0 color-light">Collateral:</p>
+                  <p>
+                    <b>{{ deal.collateral }}</b>
+                  </p>
+                </div>
+                <div
+                  :class="{
+                    'pb-3 pt-3': isDesktop,
+                    'pb-1 pt-1': isTablet,
+                  }"
+                >
+                  <p class="m-0 color-light">Provider:</p>
+                  <p style="word-wrap: break-word">
+                    <span v-if="deal.provider !== 'NOT_ACCEPTED'">
+                      <b>{{ deal.provider }}</b></span
+                    >
+                    <span v-if="deal.provider === 'NOT_ACCEPTED'">
+                      <b>Pending Approval</b>
+                    </span>
+                  </p>
+                </div>
+                <div
+                  :class="{
+                    'pb-3 pt-3': isDesktop,
+                    'pb-1 pt-1': isTablet,
+                  }"
+                >
+                  <p class="m-0 color-light">Referee network:</p>
+                  <p>
+                    <b>
+                      <a
+                        style="word-wrap: break-word"
+                        class="link-primary"
+                        @click="$emit('toggleSpec')"
+                        target="_blank"
+                        >Referee network #1</a
+                      ></b
+                    >
+                  </p>
+                </div>
+                <!-- PREVIEW IMAGE -->
+                <!-- <div
                   v-if="!download"
                   class="box-img"
                   style="background-image: url(../assets/img/no-avail.png)"
@@ -482,7 +514,8 @@
                       deal.data_uri.replace('ipfs://', '')
                     "
                   />
-                </div>
+                </div> -->
+                <!-- END | PREVIEW IMAGE -->
               </div>
             </div>
           </div>

@@ -1219,6 +1219,7 @@ export default {
     toggleSpec() {
       const app = this;
       app.navSpec = !app.navSpec;
+      console.log("nav spec", app.navSpec)
     },
   },
 };

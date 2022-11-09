@@ -238,11 +238,6 @@ a.splash-link {
   }
 }
 
-.title {
-  @include font-inter();
-  color: var(--primary-color);
-  font-weight: 500;
-}
 /* ==============> POSITIONING, BORDERS, MARGIN, PADDING, ETC...<============== */
 
 .bg-color-dark {
@@ -292,14 +287,6 @@ a.splash-link {
   border-bottom: 1px solid var(--primary-color-light);
 }
 
-.b-top-colored {
-  border-top: 1px solid var(--tertiary-color-light);
-}
-
-.b-left-colored {
-  border-left: 1px solid var(--tertiary-color-light);
-}
-
 .b-slider .b-slider-tick-label {
   top: calc(0.5rem * 0.5 + 18px);
 }
@@ -322,6 +309,10 @@ a.splash-link {
 
 .color-error {
   color: var(--error-color);
+}
+
+.color-light {
+  color: var(--primary-color-low-contrast) !important;
 }
 
 .control.has-icons-right .input,
@@ -1187,7 +1178,7 @@ hr {
   height: 100vh;
   overflow: auto;
   position: fixed;
-  z-index: 9;
+  z-index: 99;
   top: 0;
   right: 0;
   display: flex;

@@ -15,6 +15,8 @@
       </div>
     </div>
     <!-- END ALERT BANNER TESTNET -->
+
+    <!-- NAVBAR -->
     <div class="header p-4">
       <div class="container px-md-5" :class="{ 'px-5': !isDesktop }">
         <div
@@ -112,179 +114,148 @@
                   {{ account.substr(0, 4) + "..." + account.substr(-4) }}
                 </div>
               </div>
-
-              <!-- Navbar -->
-
-              <div>
-                <!-- REFEREE SPECIFICATION -->
-                <Transition
-                  enter-active-class="slide-in-right"
-                  leave-active-class="slide-out-right"
-                >
-                  <div
-                    v-if="navSpec"
-                    @mouseleave="$emit('toggleSpec')"
-                    class="right-col"
-                  >
-                    <div class="referee-container px-5">
-                      <!-- <div class="referee-icon">
-                        </div> -->
-                      <div class="mt-5">
-                        <h3>Referee Net #1</h3>
-                        <div class="mt-6">
-                          <h5 class="pb-2 b-bottom-colored-grey mb-3">
-                            Referee IDs
-                            <i class="fa-solid fa-wallet ml-3"></i>
-                          </h5>
-
-                          <div
-                            v-if="referees !== undefined && referees.length > 0"
-                          >
-                            <a
-                              class="hover-underline"
-                              style="display: block"
-                              :href="
-                                'https://goerli.etherscan.io/address/' + referee
-                              "
-                              target="_blank"
-                              v-for="referee in referees"
-                              :key="referee.index"
-                            >
-                              {{
-                                referee.substr(0, 4) +
-                                "..." +
-                                referee.substr(-4)
-                              }}
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="mt-5">
-                        <h5 class="pb-2 b-bottom-colored-grey">
-                          TERMS OF AGREEMENT
-                          <i class="fa-solid fa-file-lines ml-2"></i>
-                        </h5>
-                        <p class="mt-3"><b>Deal proposal time out: </b>24h</p>
-                        <p class="mt-5"><b># Round: </b>12</p>
-                        <p><b>Round duration: </b>1h</p>
-                        <p><b>Slashing condition: </b>100%</p>
-                        <p class="mt-5"><b>Max appeals: </b>5</p>
-                        <p><b>Appeal cost: </b>0.2 x payment</p>
-                        <p class="mt-5"><b>Provider slash: </b></p>
-                        <p>- Payment completely refunded</p>
-                        <p>- Collateral goes into protocol's vault</p>
-                      </div>
-                      <div class="mt-5">
-                        <a
-                          class="btn-navbar p-3"
-                          href="https://hackmd.io/Mp3_NyJhSbi-6g8BU_bgTg"
-                          target="_blank"
-                          >LEARN MORE</a
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </Transition>
-                <!-- END REFEREE SPECIFICATION -->
-
-                <!-- WITHDRAW NAVBAR -->
-                <Transition
-                  enter-active-class="slide-in-right"
-                  leave-active-class="slide-out-right"
-                >
-                  <div
-                    v-if="isWithdraw"
-                    @mouseleave="isWithdraw = false"
-                    class="right-col"
-                  >
-                    <div class="nav-container p-5">
-                      <div class="mt-6">
-                        <h3>
-                          <i class="fa-solid fa-user mr-3"></i> User Details:
-                        </h3>
-                        <div class="mt-6">
-                          <h5 class="pb-2 b-bottom-colored-grey">
-                            Account Connected
-                            <i class="fa-solid fa-link ml-3"></i>
-                          </h5>
-                          <p v-if="account" class="mt-3">
-                            {{
-                              account.substr(0, 5) + "..." + account.substr(-5)
-                            }}
-                          </p>
-                          <p v-if="!account">No account connected</p>
-                        </div>
-                        <div class="mt-3">
-                          <h5 class="pb-2 b-bottom-colored-grey">
-                            Total Balance
-                            <i class="fa-solid fa-wallet ml-3"></i>
-                          </h5>
-                          <p class="mt-3">
-                            {{ accountBalance.substr(0, 7) }}
-                            <span v-if="selectedContract === 'polygon'"
-                              >MATIC</span
-                            ><span v-if="selectedContract === 'goerli'"
-                              >ETH</span
-                            >
-                          </p>
-                        </div>
-                        <div class="mt-3">
-                          <h5 class="pb-2 b-bottom-colored-grey">
-                            Vault funds
-                            <i class="fa-solid fa-vault ml-3"></i>
-                          </h5>
-                          <p class="mt-3">
-                            {{ balance.substr(0, 7) }}
-                            <span v-if="selectedContract === 'polygon'"
-                              >MATIC</span
-                            ><span v-if="selectedContract === 'goerli'"
-                              >ETH</span
-                            >
-                          </p>
-                        </div>
-                        <div class="mt-5">
-                          <b-tooltip
-                            class="b-tooltip-withdraw"
-                            position="is-right"
-                            type="is-info"
-                            size="is-small"
-                            :label="canWithdraw"
-                            multilined
-                          >
-                            <b-button
-                              :disabled="parseInt(balance) === 0"
-                              @click="$emit('withdraw')"
-                              class="btn-icon"
-                            >
-                              WITHDRAW
-                            </b-button>
-                          </b-tooltip>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="nav-container p-5 mb-6">
-                      <div class="logo-navbar mb-3">
-                        <img width="30px" src="../assets/img/logo.svg" alt="" />
-                      </div>
-                      <div v-if="allDeals !== undefined">
-                        <h5 class="pb-2 b-bottom-colored-dark">
-                          Total Deal Created
-                          <i class="fa-solid fa-file-invoice ml-3"></i>
-                        </h5>
-                        <p class="mt-3">{{ parseInt(allDeals) }} Deals</p>
-                      </div>
-                    </div>
-                  </div>
-                </Transition>
-                <!-- END NAVBAR -->
-              </div>
-
-              <!-- END - Navbar -->
             </div>
           </div>
         </div>
       </div>
     </div>
+    <!-- END | NAVBAR -->
+
+    <!-- REFEREE SPECIFICATION -->
+    <Transition
+      enter-active-class="slide-in-right"
+      leave-active-class="slide-out-right"
+    >
+      <div v-if="navSpec" @mouseleave="$emit('toggleSpec')" class="right-col">
+        <div class="referee-container px-5">
+          <!-- <div class="referee-icon">
+                        </div> -->
+          <div class="mt-5">
+            <h3>Referee Net #1</h3>
+            <div class="mt-6">
+              <h5 class="pb-2 b-bottom-colored-grey mb-3">
+                Referee IDs
+                <i class="fa-solid fa-wallet ml-3"></i>
+              </h5>
+
+              <div v-if="referees !== undefined && referees.length > 0">
+                <a
+                  class="hover-underline"
+                  style="display: block"
+                  :href="'https://goerli.etherscan.io/address/' + referee"
+                  target="_blank"
+                  v-for="referee in referees"
+                  :key="referee.index"
+                >
+                  {{ referee.substr(0, 4) + "..." + referee.substr(-4) }}
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="mt-5">
+            <h5 class="pb-2 b-bottom-colored-grey">
+              TERMS OF AGREEMENT
+              <i class="fa-solid fa-file-lines ml-2"></i>
+            </h5>
+            <p class="mt-3"><b>Deal proposal time out: </b>24h</p>
+            <p class="mt-5"><b># Round: </b>12</p>
+            <p><b>Round duration: </b>1h</p>
+            <p><b>Slashing condition: </b>100%</p>
+            <p class="mt-5"><b>Max appeals: </b>5</p>
+            <p><b>Appeal cost: </b>0.2 x payment</p>
+            <p class="mt-5"><b>Provider slash: </b></p>
+            <p>- Payment completely refunded</p>
+            <p>- Collateral goes into protocol's vault</p>
+          </div>
+          <div class="mt-5">
+            <a
+              class="btn-navbar p-3"
+              href="https://hackmd.io/Mp3_NyJhSbi-6g8BU_bgTg"
+              target="_blank"
+              >LEARN MORE</a
+            >
+          </div>
+        </div>
+      </div>
+    </Transition>
+    <!-- END REFEREE SPECIFICATION -->
+
+    <!-- WITHDRAW NAVBAR -->
+    <Transition
+      enter-active-class="slide-in-right"
+      leave-active-class="slide-out-right"
+    >
+      <div v-if="isWithdraw" @mouseleave="isWithdraw = false" class="right-col">
+        <div class="nav-container p-5">
+          <div class="mt-6">
+            <h3><i class="fa-solid fa-user mr-3"></i> User Details:</h3>
+            <div class="mt-6">
+              <h5 class="pb-2 b-bottom-colored-grey">
+                Account Connected
+                <i class="fa-solid fa-link ml-3"></i>
+              </h5>
+              <p v-if="account" class="mt-3">
+                {{ account.substr(0, 5) + "..." + account.substr(-5) }}
+              </p>
+              <p v-if="!account">No account connected</p>
+            </div>
+            <div class="mt-3">
+              <h5 class="pb-2 b-bottom-colored-grey">
+                Total Balance
+                <i class="fa-solid fa-wallet ml-3"></i>
+              </h5>
+              <p class="mt-3">
+                {{ accountBalance.substr(0, 7) }}
+                <span v-if="selectedContract === 'polygon'">MATIC</span
+                ><span v-if="selectedContract === 'goerli'">ETH</span>
+              </p>
+            </div>
+            <div class="mt-3">
+              <h5 class="pb-2 b-bottom-colored-grey">
+                Vault funds
+                <i class="fa-solid fa-vault ml-3"></i>
+              </h5>
+              <p class="mt-3">
+                {{ balance.substr(0, 7) }}
+                <span v-if="selectedContract === 'polygon'">MATIC</span
+                ><span v-if="selectedContract === 'goerli'">ETH</span>
+              </p>
+            </div>
+            <div class="mt-5">
+              <b-tooltip
+                class="b-tooltip-withdraw"
+                position="is-right"
+                type="is-info"
+                size="is-small"
+                :label="canWithdraw"
+                multilined
+              >
+                <b-button
+                  :disabled="parseInt(balance) === 0"
+                  @click="$emit('withdraw')"
+                  class="btn-icon"
+                >
+                  WITHDRAW
+                </b-button>
+              </b-tooltip>
+            </div>
+          </div>
+        </div>
+        <div class="nav-container p-5 mb-6">
+          <div class="logo-navbar mb-3">
+            <img width="30px" src="../assets/img/logo.svg" alt="" />
+          </div>
+          <div v-if="allDeals !== undefined">
+            <h5 class="pb-2 b-bottom-colored-dark">
+              Total Deal Created
+              <i class="fa-solid fa-file-invoice ml-3"></i>
+            </h5>
+            <p class="mt-3">{{ parseInt(allDeals) }} Deals</p>
+          </div>
+        </div>
+      </div>
+    </Transition>
+    <!-- END NAVBAR -->
   </div>
 </template>
 
