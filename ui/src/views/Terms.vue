@@ -81,24 +81,24 @@
             </p>
 
             <p class="mt-4">
-              Data on IPFS and Filecoin Network All data uploaded using the
-              Services will be available on IPFS and the Filecoin network. Data
-              on IPFS and/or the Filecoin network is available to anyone who
-              requests it using the correct CID. You should not load any
-              private, personal or sensitive information in an unencrypted form
-              using the Services. Please note that nodes on the IPFS network may
-              retain copies of the data indefinitely. You should not use the
-              Services to pin data that may need to be permanently deleted in
-              the future.
+              <b>Data on IPFS and Filecoin Network</b><br />
+              All data uploaded using the Services will be available on IPFS and
+              the Filecoin network. Data on IPFS and/or the Filecoin network is
+              available to anyone who requests it using the correct CID. You
+              should not load any private, personal or sensitive information in
+              an unencrypted form using the Services. Please note that nodes on
+              the IPFS network may retain copies of the data indefinitely. You
+              should not use the Services to pin data that may need to be
+              permanently deleted in the future.
             </p>
 
             <p class="mt-4">
-              Disclaimer of Warranties The Services are provided “as is” without
-              any express or implied warranties such as the warranties of
-              merchantability, fitness for a particular purpose and
-              non-infringement. We don’t make any warranty that the Services
-              will be error-free or reliable, or that you’ll have continuous,
-              uninterrupted access to the Services.
+              <b>Disclaimer of Warranties</b><br />
+              The Services are provided “as is” without any express or implied
+              warranties such as the warranties of merchantability, fitness for
+              a particular purpose and non-infringement. We don’t make any
+              warranty that the Services will be error-free or reliable, or that
+              you’ll have continuous, uninterrupted access to the Services.
             </p>
 
             <p class="mt-4">
@@ -109,11 +109,12 @@
             </p>
 
             <p class="mt-4">
-              Acceptable Use You are entirely responsible for all data you send
-              or cause to be sent through the Services (“Content”) - and you’re
-              also responsible for any harm resulting from that Content. For
-              your own protection and the protection of the network & community,
-              you may not use the Services for activities such as:
+              <b>Acceptable Use</b><br />
+              You are entirely responsible for all data you send or cause to be
+              sent through the Services (“Content”) - and you’re also
+              responsible for any harm resulting from that Content. For your own
+              protection and the protection of the network & community, you may
+              not use the Services for activities such as:
             </p>
 
             <p class="mt-4">
