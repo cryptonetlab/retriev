@@ -18,7 +18,7 @@
       style="position: relative; min-height: 100vh"
     >
       <!-- TODO: INFO DEAL TUTTE IN NERO -->
-      <div v-if="account">
+      <div>
         <!-- NAVBAR SECTION -->
         <Navbar
           :config="config"
@@ -43,8 +43,9 @@
 
         <!-- PLATFORM START -->
         <div
+          v-if="account"
           class="container mt-5 pb-6 px-md-5"
-          :class="{ 'px-5': !isDesktop, 'mb-6':!loading }"
+          :class="{ 'px-5': !isDesktop, 'mb-6': !loading }"
         >
           <div class="columns is-mobile is-centered">
             <div class="column is-12-tablet is-10-desktop">
@@ -183,7 +184,7 @@
                                         (showallDeals = false),
                                         (activeDeal = false),
                                         (filtered = false),
-                                        expiredDeals()
+                                        endedDeals()
                                     "
                                   >
                                     Ended
@@ -313,7 +314,24 @@
             </div>
           </div>
         </div>
-
+        <div v-if="!account">
+          <div class="container py-6 mt-6 is-flex is-align-items-center">
+            <div>
+              <h2 style="font-size: 1.8rem">
+                <b>Reconnecting...</b>
+              </h2>
+              <h2 class="mt-2" style="font-size: 1.2rem">
+                Maybe you have changed the network. <br />
+                Check your wallet and confirm the switch network action.<br /><br />
+                If you don't see the notification on your wallet, <br />
+                please click on button below.
+              </h2>
+              <div class="btn-primary mt-5" @click="connect()">
+                Connect Wallet
+              </div>
+            </div>
+          </div>
+        </div>
         <Footer v-if="!loading" />
         <!-- PLATFORM END -->
       </div>
@@ -363,12 +381,12 @@ export default {
     return {
       contract: "",
       selectedContract: localStorage.getItem("contract"),
+      opensea: process.env.VUE_APP_OPENSEA,
+      infuraId: process.env.VUE_APP_INFURA_ID,
       config: CONFIG,
       abi: ABI_POLYGON,
       network: 0,
       apiEndpoint: "",
-      opensea: process.env.VUE_APP_OPENSEA,
-      infuraId: process.env.VUE_APP_INFURA_ID,
       account: "",
       balance: 0,
       accountBalance: 0,
@@ -549,12 +567,12 @@ export default {
                 app.connect();
               }, 100);
             } catch (e) {
-              app.alertCustomError(
+              app.alertCustomWarning(
                 "Can't add Polygon network, please do it manually."
               );
             }
           } else {
-            app.alertCustomError(
+            app.alertCustomWarning(
               "Can't switch network, please do it manually."
             );
           }
@@ -615,7 +633,7 @@ export default {
         // Still not found
         if (!found) {
           if (app.retries < 10) {
-            app.log("Pending tx not found, refreshing in 5 seconds..");
+            console.log("Pending tx not found, refreshing in 5 seconds..");
             setTimeout(function () {
               app.searchPending();
             }, 5000);
@@ -624,7 +642,7 @@ export default {
           }
         } else {
           app.$toast.clear();
-          app.log("Pending tx found, removing from cache.");
+          console.log("Pending tx found, removing from cache.");
           localStorage.removeItem("pendingTx");
           app.pendingTx = "";
         }
@@ -650,7 +668,7 @@ export default {
         .call();
       const round = await contract.methods.getRound(appeal_index).call();
 
-      app.log(
+      console.log(
         "deal " + deal.index + " with appeal index ",
         appeal_index + " have a round " + round
       );
@@ -875,11 +893,11 @@ export default {
                 app.log(app.workingMessage);
               });
             app.$toast.clear();
-            app.alertCustomError("Withdraw done!");
+            app.alertCustomWarning("Withdraw done!");
             app.loadState();
           } else {
             app.isWorking = false;
-            app.alertCustomError("You have nothing to withdraw");
+            app.alertCustomWarning("You have nothing to withdraw");
           }
         } catch (e) {
           app.isWorking = false;
@@ -1043,7 +1061,18 @@ export default {
         ariaModal: true,
       });
     },
-
+    alertCustomWarning(message) {
+      this.$buefy.dialog.alert({
+        title: "Attention",
+        message: message,
+        type: "is-warning",
+        hasIcon: true,
+        icon: "circle-exclamation",
+        iconPack: "fa",
+        ariaRole: "alertdialog",
+        ariaModal: true,
+      });
+    },
     // FILTERS
     async expiredDeals() {
       const app = this;
@@ -1219,7 +1248,7 @@ export default {
     toggleSpec() {
       const app = this;
       app.navSpec = !app.navSpec;
-      console.log("nav spec", app.navSpec)
+      console.log("nav spec", app.navSpec);
     },
   },
 };

@@ -39,7 +39,7 @@
         :class="{ 'px-3': isDesktop, 'px-6': !isDesktop }"
       >
         <div v-if="dealProviders !== undefined && dealProviders.length === 0">
-          <LoadingCreateDeal />Ì
+          <LoadingCreateDeal />
         </div>
 
         <div
@@ -67,9 +67,9 @@
           </div>
           <!--END | BACK BUTTON AND EXPERT MODE SWITCH -->
 
-          <!-- Upload file -->
           <div class="columns is-desktop">
             <div class="column is-6-desktop">
+              <!-- Upload file -->
               <div style="position: relative">
                 <div
                   v-if="isUploadingIPFS"
@@ -103,14 +103,14 @@
                           <p>Drop your file here or click to upload</p>
                         </div>
                       </section>
-                    </b-upload>
-                  </b-field>
+                    </b-upload> </b-field
+                  ><!-- FILE SPECS -->
                   <div
-                    class="bordered-dashed b-radius is-flex is-flex-wrap-wrap is-align-items-start is-justify-content-space-between p-3"
+                    class="bordered-dashed b-radius p-3"
                     v-if="fileToUpload.name"
                   >
                     <div class="is-flex is-align-items-center py-3">
-                      <div v-if="dealUri" class="preview-img mr-2">
+                      <div v-if="dealUri" class="preview-img mr-5">
                         <img
                           v-if="
                             fileToUpload.type === 'image/svg+xml' ||
@@ -138,34 +138,43 @@
                           alt=""
                         />
                       </div>
+
                       <div>
-                        <h5>File name:</h5>
-                        <p>{{ fileToUpload.name }}</p>
-                        <h5>Data URI:</h5>
-                        <p v-if="dealUri" style="word-break: break-word">
-                          {{ dealUri }}
-                        </p>
-                        <p v-if="!dealUri">Calculating...</p>
+                        <div
+                          class="is-flex is-align-items-center is-justify-content-space-between"
+                        >
+                          <div>
+                            <h5>File name:</h5>
+                            <p>{{ fileToUpload.name }}</p>
+                          </div>
+                          <b-button
+                            class="btn-secondary"
+                            style="max-width: 150px"
+                            :disabled="isWorking"
+                            @click="
+                              fileToUpload = {};
+                              dealUri = '';
+                              dealValue = 0;
+                              dealCollateral = 0;
+                              baseDealValue = 0;
+                              canDoProposal = false;
+                            "
+                            ><i class="fa-solid fa-circle-xmark"></i> Change
+                            file</b-button
+                          >
+                        </div>
+
+                        <div>
+                          <h5 class="mt-3">Data URI:</h5>
+                          <p v-if="dealUri" style="word-break: break-word">
+                            {{ dealUri }}
+                          </p>
+                          <p v-if="!dealUri">Calculating...</p>
+                        </div>
                       </div>
                     </div>
-                    <div class="py-3">
-                      <b-button
-                        class="btn-secondary"
-                        style="float: right"
-                        :disabled="isWorking"
-                        @click="
-                          fileToUpload = {};
-                          dealUri = '';
-                          dealValue = 0;
-                          dealCollateral = 0;
-                          baseDealValue = 0;
-                          canDoProposal = false;
-                        "
-                        ><i class="fa-solid fa-circle-xmark"></i> Change
-                        file</b-button
-                      >
-                    </div>
                   </div>
+                  <!-- END | FILE SPEC -->
                 </div>
               </div>
               <!-- END | Upload File -->
@@ -294,7 +303,6 @@
               }"
             >
               <!-- Deal input fields -->
-
               <div class="mb-5">
                 <div class="is-flex is-align-items-center mb-3">
                   <b-tooltip
@@ -370,6 +378,7 @@
                   <b>{{ dealDurationDays }} days</b>
                 </p>
               </div>
+
               <!-- ALERT BANNER DURATION -->
               <div
                 v-if="
@@ -387,8 +396,6 @@
                 </p>
               </div>
               <!-- ALERT BANNER DURATION -->
-
-              <!-- END | Dealinput fields -->
 
               <!-- Payment input fields -->
               <div class="mb-5">
@@ -482,7 +489,6 @@
                   <b>{{ dealValue }} WEI</b>
                 </p>
               </div>
-
               <!-- END | Payment input fields -->
 
               <!-- Collateral Input -->
@@ -1123,31 +1129,20 @@ export default {
               app.alertCustomError(e.message);
             }
           } else {
-            app.alertCustomError(
+            app.alertCustomWarning(
               "Max collateral is " +
                 maximumCollateral +
                 " while minimum is same of value!"
             );
           }
         } else {
-          app.alertCustomError("Please fill all fields!");
+          app.alertCustomWarning("Please fill all fields!");
         }
       } else {
         console.log("App busy, retry.");
       }
     },
-    alertCustomError(message) {
-      this.$buefy.dialog.alert({
-        title: "Error",
-        message: message,
-        type: "is-danger",
-        hasIcon: true,
-        icon: "times-circle",
-        iconPack: "fa",
-        ariaRole: "alertdialog",
-        ariaModal: true,
-      });
-    },
+
     calculateDealValue(priority) {
       const app = this;
       app.selectedPriority = priority;
@@ -1186,11 +1181,11 @@ export default {
                 app.log(app.workingMessage);
               });
             app.$toast.clear();
-            app.alertCustomError("Withdraw done!");
+            app.alertCustomWarning("Withdraw done!");
             app.loadState();
           } else {
             app.isWorking = false;
-            app.alertCustomError("You have nothing to withdraw");
+            app.alertCustomWarning("You have nothing to withdraw");
           }
         } catch (e) {
           app.isWorking = false;
@@ -1200,6 +1195,30 @@ export default {
     },
 
     // NOTIFICATIONS & ALERTS
+    alertCustomError(message) {
+      this.$buefy.dialog.alert({
+        title: "Error",
+        message: message,
+        type: "is-danger",
+        hasIcon: true,
+        icon: "times-circle",
+        iconPack: "fa",
+        ariaRole: "alertdialog",
+        ariaModal: true,
+      });
+    },
+    alertCustomWarning(message) {
+      this.$buefy.dialog.alert({
+        title: "Attention",
+        message: message,
+        type: "is-warning",
+        hasIcon: true,
+        icon: "circle-exclamation",
+        iconPack: "fa",
+        ariaRole: "alertdialog",
+        ariaModal: true,
+      });
+    },
     showToast(message) {
       const app = this;
       if (!app.isToasting) {

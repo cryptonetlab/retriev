@@ -246,7 +246,7 @@
             <img width="30px" src="../assets/img/logo.svg" alt="" />
           </div>
           <div v-if="allDeals !== undefined">
-            <h5 class="pb-2 b-bottom-colored-dark">
+            <h5 class="pb-2 b-bottom-colored-light">
               Total Deal Created
               <i class="fa-solid fa-file-invoice ml-3"></i>
             </h5>
@@ -339,18 +339,6 @@ export default {
     closeWithdraw() {
       const app = this;
       app.isWithdraw = false;
-    },
-    alertCustomError(message) {
-      this.$buefy.dialog.alert({
-        title: "Error",
-        message: message,
-        type: "is-danger",
-        hasIcon: true,
-        icon: "times-circle",
-        iconPack: "fa",
-        ariaRole: "alertdialog",
-        ariaModal: true,
-      });
     },
     selectContract(contract) {
       const app = this;
