@@ -4,7 +4,11 @@
       <div
         class="is-flex is-justify-content-space-between is-align-items-center mb-5 mt-5"
       >
-        <div class="loading_box" style="width: 200px; height: 42px"></div>
+        <div class="is-flex is-align-items-center">
+          <div class="loading_box" style="width: 200px; height: 42px"></div>
+          <div class="loading_box ml-4" style="width: 140px; height: 42px"></div>
+        </div>
+
         <div class="loading_box" style="width: 44px; height: 25px"></div>
       </div>
       <!--END | BACK BUTTON AND EXPERT MODE SWITCH -->
@@ -50,7 +54,10 @@
           </div>
           <div>
             <div class="loading_box" style="width: 90%; height: 22px"></div>
-            <div class="loading_box mt-3" style="width: 60%; height: 43px"></div>
+            <div
+              class="loading_box mt-3"
+              style="width: 60%; height: 43px"
+            ></div>
           </div>
         </div>
       </div>

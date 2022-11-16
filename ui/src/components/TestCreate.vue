@@ -50,24 +50,9 @@
           <div
             class="is-flex is-justify-content-space-between is-align-items-center mb-5 mt-5"
           >
-            <div class="is-flex is-justify-content-center">
-              <a class="btn-white" href="/#/app">
-                <i class="fa-solid fa-arrow-left"></i> back to dashboard
-              </a>
-              <div class="btn-white ml-4" @click="createURL()">
-                <i class="fa-solid fa-link mr-2"></i>
-                create link
-              </div>
-              <div
-                v-if="foundURLparams"
-                class="btn-secondary ml-4"
-                @click="resetURL()"
-              >
-                <i class="fa-solid fa-link mr-2"></i>
-                reset link
-              </div>
-            </div>
-
+            <a class="btn-white" href="/#/app">
+              <i class="fa-solid fa-arrow-left"></i> back to dashboard
+            </a>
             <b-field>
               <b-switch
                 v-model="expertMode"
@@ -86,7 +71,6 @@
             <div class="column is-6-desktop">
               <!-- Upload file -->
               <div style="position: relative">
-                <!-- Loader file to upload -->
                 <div
                   v-if="isUploadingIPFS"
                   class="loading_box is-flex is-justify-content-center is-align-items-center"
@@ -100,32 +84,31 @@
                 >
                   <Spinner />
                 </div>
-                <!-- END | Loader file to upload -->
-                <div>
-                  <div v-show="!isUploadingIPFS && !dealUri">
-                    <b-field
+                <div v-show="!isUploadingIPFS">
+                  <b-field
+                    class="b-radius"
+                    v-if="!fileToUpload.name && !expertMode"
+                  >
+                    <b-upload
                       class="b-radius"
-                      v-if="!fileToUpload.name && !expertMode"
+                      style="background-color: #ededed"
+                      v-model="fileToUpload"
+                      expanded
+                      drag-drop
+                      :disabled="isWorking || dealProviders.length === 0"
+                      type="is-dark"
                     >
-                      <b-upload
-                        class="b-radius"
-                        style="background-color: #ededed"
-                        v-model="fileToUpload"
-                        expanded
-                        drag-drop
-                        :disabled="isWorking || dealProviders.length === 0"
-                        type="is-dark"
-                      >
-                        <section class="section">
-                          <div class="content has-text-centered">
-                            <p>Drop your file here or click to upload</p>
-                          </div>
-                        </section>
-                      </b-upload>
-                    </b-field>
-                  </div>
-                  <!-- FILE SPECS -->
-                  <div class="bordered-dashed b-radius p-3" v-if="dealUri">
+                      <section class="section">
+                        <div class="content has-text-centered">
+                          <p>Drop your file here or click to upload</p>
+                        </div>
+                      </section>
+                    </b-upload> </b-field
+                  ><!-- FILE SPECS -->
+                  <div
+                    class="bordered-dashed b-radius p-3"
+                    v-if="fileToUpload.name"
+                  >
                     <div class="is-flex is-align-items-center py-3">
                       <div v-if="dealUri" class="preview-img mr-5">
                         <img
@@ -160,12 +143,11 @@
                         <div
                           class="is-flex is-align-items-center is-justify-content-space-between"
                         >
-                          <div v-if="fileToUpload.name">
+                          <div>
                             <h5>File name:</h5>
                             <p>{{ fileToUpload.name }}</p>
                           </div>
                           <b-button
-                            v-if="fileToUpload.name"
                             class="btn-secondary"
                             style="max-width: 150px"
                             :disabled="isWorking"
@@ -694,9 +676,6 @@ export default {
   components: { Navbar, Footer, LoadingCreateDeal, Spinner },
   data() {
     return {
-      // TRY ROUTE
-      id: this.$route.params.id,
-      createDealData: {},
       // Web3 data
       contract: "",
       selectedContract: "",
@@ -726,7 +705,6 @@ export default {
       providersPolicy: {},
 
       // Deal Proposal Details
-      foundURLparams: false,
       logs: "",
       dealUri: "",
       dealDuration: 86400 * 365,
@@ -833,7 +811,6 @@ export default {
   methods: {
     async fetchLink() {
       const app = this;
-      let dealvalueFilter = "";
       let uriFilter = "";
       let durationFilter = "";
       let collateralFilter = "";
@@ -844,7 +821,6 @@ export default {
 
       if (
         urlParams.has("deal_uri") &&
-        urlParams.has("deal_value") &&
         urlParams.has("deal_duration") &&
         urlParams.has("deal_collateral") &&
         urlParams.has("deal_provider")
@@ -853,13 +829,9 @@ export default {
         console.log("found deal_uri:", uriFilter);
         app.dealUri = uriFilter;
 
-        dealvalueFilter = urlParams.get("deal_value");
-        console.log("found deal_value:", dealvalueFilter);
-        app.dealValue = dealvalueFilter;
-
         durationFilter = urlParams.get("deal_duration");
         console.log("found deal_duration:", durationFilter);
-        app.dealDurationDays = durationFilter;
+        app.dealDuration = durationFilter;
 
         collateralFilter = urlParams.get("deal_collateral");
         console.log("found deal_collateral:", collateralFilter);
@@ -868,83 +840,40 @@ export default {
         providerFilter = urlParams.get("deal_provider");
         console.log("found deal_provider:", providerFilter);
         app.dealProviders = [providerFilter];
-
-        app.foundURLparams = true;
       } else {
-        console.log("URL don't have any params.");
-        app.foundURLparams = false;
+        app.createURL();
       }
 
-      if (
-        uriFilter !== "" &&
-        dealvalueFilter !== "" &&
-        durationFilter !== "" &&
-        collateralFilter !== "" &&
-        providerFilter !== ""
-      ) {
-        console.log("I HAVE ALL DATA TO PROCEED WITH DEAL CREATION", {
-          value: dealvalueFilter,
-          uri: uriFilter,
-          duration: durationFilter,
-          collateral: collateralFilter,
-          provider: providerFilter,
-        });
+      if (uriFilter && durationFilter && collateralFilter && providerFilter) {
+        console.log(
+          "all DATA PUSHING",
+          uriFilter,
+          durationFilter,
+          collateralFilter,
+          providerFilter
+        );
         app.createDealProposal();
       }
     },
     async createURL() {
       const app = this;
       console.log("I NEED ALL THIS DATA:", {
-        "Deal Value": app.dealValue,
-        "Deal URI": app.dealUri,
-        "Deal Duration": app.dealDurationDays,
+        "Deal uri": app.dealUri,
+        "Deal Duration": app.dealDuration,
         "Deal Collateral": app.dealCollateral.toString(),
         "Deal Provider": app.dealProviders,
         "Appeal Address": app.appealAddresses,
       });
       const dealURL = new URL(window.location);
-
-      if (app.dealUri !== "") {
-        dealURL.searchParams.set("deal_value", app.dealValue);
-        dealURL.searchParams.set("deal_uri", app.dealUri);
-        dealURL.searchParams.set("deal_duration", app.dealDurationDays);
-        dealURL.searchParams.set(
-          "deal_collateral",
-          app.dealCollateral.toString()
-        );
-        dealURL.searchParams.set("deal_provider", app.dealProviders);
-        window.history.pushState({}, "", dealURL);
-        console.log("CREATING URL", dealURL);
-
-        // Copy to clipboard
-        let myURL = window.location.href;
-        navigator.clipboard.writeText(myURL).then(() => {
-          app.showToast("URL created and copied to clipboard");
-        });
-      } else {
-        app.alertCustomWarning(
-          "You must upload a file before you can create the link to share"
-        );
-      }
-    },
-    async resetURL() {
-      const app = this;
-      console.log("deleting all data from URL");
-      const dealURL = new URL(window.location);
-      dealURL.searchParams.delete("deal_value", app.dealValue);
-      dealURL.searchParams.delete("deal_uri", app.dealUri);
-      dealURL.searchParams.delete("deal_duration", app.dealDurationDays);
-      dealURL.searchParams.delete(
+      dealURL.searchParams.set("deal_uri", app.dealUri);
+      dealURL.searchParams.set("deal_duration", app.dealDuration);
+      dealURL.searchParams.set(
         "deal_collateral",
         app.dealCollateral.toString()
       );
-      dealURL.searchParams.delete("deal_provider", app.dealProviders);
+      dealURL.searchParams.set("deal_provider", app.dealProviders);
       window.history.pushState({}, "", dealURL);
-      console.log("RESET URL", dealURL);
-      app.foundURLparams = false;
-      setTimeout(function () {
-        window.location.reload();
-      }, 1000);
+      console.log("NEW URL", dealURL);
     },
     async fetchingContract() {
       const app = this;
@@ -1057,7 +986,7 @@ export default {
     async loadState() {
       const app = this;
       app.isWorking = false;
-      console.log("Reading state from blockchain..");
+      app.log("Reading state from blockchain..");
       const contract = new app.web3.eth.Contract(app.abi, app.contract);
       app.balance = await contract.methods.vault(app.account).call();
       app.balance = app.web3.utils.fromWei(app.balance);
@@ -1066,8 +995,8 @@ export default {
       );
       app.minDuration = parseInt(await contract.methods.min_duration().call());
       app.maxDuration = await contract.methods.max_duration().call();
-      // console.log("Min duration is: " + app.minDuration);
-      // console.log("Max duration is: " + app.maxDuration);
+      app.log("Min duration is: " + app.minDuration);
+      app.log("Max duration is: " + app.maxDuration);
       app.loading = false;
       // Connecting to p2p network
       app.providers = [];
@@ -1112,9 +1041,9 @@ export default {
         i++;
       }
       app.fetchLink();
-      // console.log(app.providers);
-      // console.log("DEFAULT PROVIDERS:", app.dealProviders);
-      console.log("Found " + app.providers.length + " active providers");
+      console.log(app.providers);
+      console.log("DEFAULT PROVIDERS:", app.dealProviders);
+      app.log("Found " + app.providers.length + " active providers");
       app.$toast.clear();
     },
     async uploadFile() {
@@ -1182,13 +1111,6 @@ export default {
     async createDealProposal() {
       const app = this;
       if (!app.isWorking) {
-        // TODO: optmize automatic fill and insert line below
-        //         if (
-        //   parseInt(app.dealDuration) >= parseInt(app.minDuration) &&
-        //   parseInt(app.dealDuration) <= parseInt(app.maxDuration) &&
-        //   app.dealUri.length > 0 &&
-        //   app.dealProviders.length > 0
-        // )
         if (
           parseInt(app.dealDuration) >= parseInt(app.minDuration) &&
           parseInt(app.dealDuration) <= parseInt(app.maxDuration) &&
@@ -1201,7 +1123,7 @@ export default {
             app.showLoadingToast("Please confirm action with metamask..");
             try {
               const contract = new app.web3.eth.Contract(app.abi, app.contract);
-              // console.log("Appeal Addresses typed are:", app.appealAddresses);
+              console.log("Appeal Addresses typed are:", app.appealAddresses);
 
               const gasPrice = await app.web3.eth.getGasPrice();
               const BN = app.web3.utils.BN;
@@ -1436,6 +1358,10 @@ export default {
     toggleSpec() {
       const app = this;
       app.navSpec = !app.navSpec;
+    },
+    hide() {
+      const app = this;
+      app.navSpec = false;
     },
 
     //ADDING APPEAL ADDRESS
