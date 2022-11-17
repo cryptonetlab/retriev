@@ -1,6 +1,6 @@
-# Protocol Labs - Retrieval Pinning
+# Protocol Labs - Retriev
 
-Retrieval Pinning is a Protocol designed by [CryptoNetLab](https://cryptonet.org/) and developed by [YOMI](https://yomi.digital) that allows end users to create retrieval deals with a subset of IPFS providers. It leverages a reliable system of “missed retrieval” penalties that increases the confidence in decentralized storage networks.
+Retriev is a Protocol designed by [CryptoNetLab](https://cryptonet.org/) and developed by [YOMI](https://yomi.digital) that allows end users to create retrieval deals with a subset of IPFS providers. It leverages a reliable system of “missed retrieval” penalties that increases the confidence in decentralized storage networks.
 
 If you want to go deeper on how the protocol works please read our [light paper](./PAPER.md).
 
