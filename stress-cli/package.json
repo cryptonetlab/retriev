@@ -1,6 +1,6 @@
 {
     "name": "rpp-stresstest",
-    "version": "0.0.1",
+    "version": "1.0.1",
     "description": "",
     "main": "src/stress.js",
     "bin": "src/stress.js",

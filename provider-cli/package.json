@@ -1,6 +1,6 @@
 {
     "name": "rpp-provider",
-    "version": "0.0.1",
+    "version": "1.0.1",
     "description": "",
     "main": "src/provider.js",
     "bin": "src/provider.js",
