@@ -169,8 +169,8 @@
                           v-if="
                             deals.length === 0 &&
                             searcher.length === 0 &&
-                            endedDeal !== undefined &&
-                            endedDeal === false
+                            isFilterEnded !== undefined &&
+                            isFilterEnded === false
                           "
                         >
                           <div class="mb-6 mt-6 is-flex is-align-items-center">
@@ -763,6 +763,8 @@ export default {
             if (app.txids.indexOf(deal.proposal_tx) === -1) {
               app.txids.push(deal.proposal_tx);
               app.deals.push(deal);
+              // app.parseDeal(deals.data[k])
+              app.loadState()
             }
           }
         }
