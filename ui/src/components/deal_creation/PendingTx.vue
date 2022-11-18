@@ -59,7 +59,7 @@
                   target="_blank"
                   >Pending transaction at:
                   {{
-                    pendingTx.substr(0, -4) + "..." + pendingTx.substr(-4)
+                    pendingTx.substr(0, 4) + "..." + pendingTx.substr(-4)
                   }}</a
                 >
                 <div class="mt-4">
