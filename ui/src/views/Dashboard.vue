@@ -51,10 +51,7 @@
             <div class="column is-12-tablet is-10-desktop">
               <div>
                 <div>
-                  <Transition
-                    enter-active-class="fadeIn"
-                    leave-active-class="fadeOut"
-                  >
+                  <Transition enter-active-class="fadeIn">
                     <div v-if="!loading">
                       <div>
                         <!-- ACTION BAR (button create deal - searchbar - filters) -->
@@ -219,10 +216,7 @@
                     </div>
                   </Transition>
                   <!-- Loader Dashboard -->
-                  <Transition
-                    enter-active-class="fadeIn"
-                    leave-active-class="fadeOut"
-                  >
+                  <Transition leave-active-class="fadeOut">
                     <div v-if="loading">
                       <LoadingDashboard />
                     </div>
@@ -667,12 +661,6 @@ export default {
         deal.pending = false;
       }
 
-      //DEBUG
-      if (deal.pending) {
-        console.log("AFTER CHECK PENDING DEAL", deal.index);
-        console.log("Result active?", deal.status_active);
-      }
-
       // Check if deal ended
       if (
         (deal.timestamp_end * 1000 < new Date().getTime() &&
@@ -681,14 +669,6 @@ export default {
       ) {
         deal.canAppeal = false;
         deal.status_active = false;
-      }
-
-      //debug
-      if (deal.pending) {
-        console.log("BEFORE CHECK EXPIRATION FUNCTION");
-        console.log("Expiration of deal", deal.index, "is:", expires_at);
-        console.log("is expired?", deal.expired);
-        console.log("Result active?", deal.status_active);
       }
 
       // Set expiration timestamp
@@ -707,14 +687,6 @@ export default {
         deal.status_active = false;
       }
 
-      //debug
-      if (deal.pending) {
-        console.log("AFTER CHECK EXPIRATION FUNCTION");
-        console.log("Expiration of deal", deal.index, "is:", expires_at);
-        console.log("is expired?", deal.expired);
-        console.log("Result active?", deal.status_active);
-      }
-
       // Check if appeal ended
       if (
         deal.appeal !== undefined &&
@@ -722,11 +694,6 @@ export default {
         parseInt(deal.appeal.round) < 99
       ) {
         deal.canAppeal = false;
-      }
-
-      if (deal.pending) {
-        console.log("AFTER AFTER APPEL DEAL", deal.index);
-        console.log("Result active?", deal.status_active);
       }
 
       // Check if appeal doesn't exists
@@ -762,9 +729,8 @@ export default {
             // app.$toast.clear();
             if (app.txids.indexOf(deal.proposal_tx) === -1) {
               app.txids.push(deal.proposal_tx);
-              app.deals.push(deal);
-              // app.parseDeal(deals.data[k])
-              app.loadState()
+              app.filterDeals.push(deal);
+              app.parseDeal(deals.data[k]);
             }
           }
         }
