@@ -3,7 +3,6 @@ import App from "./App.vue";
 import router from "./router";
 import Buefy from "buefy";
 import Toast from "vue-toastification";
-import Particles from "vue2-particles";
 
 import "buefy/dist/buefy.css";
 import "vue-toastification/dist/index.css";
@@ -20,7 +19,7 @@ Vue.use(Toast, {
 
 Vue.use(Buefy);
 Vue.config.productionTip = false;
-Vue.use(Particles);
+
 new Vue({
   router,
   render: (h) => h(App),

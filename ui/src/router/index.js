@@ -5,7 +5,6 @@ import CreateDeal from "../views/CreateDeal.vue";
 import Splash from "../views/Splash.vue";
 import Terms from "../views/Terms.vue";
 import Privacy from "../views/Privacy.vue";
-
 Vue.use(VueRouter);
 
 const routes = [
@@ -35,6 +34,7 @@ const routes = [
     name: "CreateDeal",
     component: CreateDeal,
   },
+
 ];
 
 const router = new VueRouter({
