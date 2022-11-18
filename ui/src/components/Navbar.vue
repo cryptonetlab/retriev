@@ -261,7 +261,7 @@
 
 <script>
 import checkViewport from "@/mixins/checkViewport";
-import PolygonIco from "@/components/PolygonIco.vue";
+import PolygonIco from "@/components/elements/PolygonIco.vue";
 import axios from "axios";
 
 export default {

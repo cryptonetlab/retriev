@@ -105,94 +105,11 @@
                           <!-- END SEARCH FUNCTION -->
 
                           <!-- FILTER FUNCTIONS -->
-                          <div
-                            class="column is-4-mobile is-3-tablet is-3-desktop"
-                            :class="{ 'has-text-right': !isMobile }"
-                          >
-                            <div
-                              class="custom_dropdown me-10-desktop"
-                              @mouseleave="filtered = false"
-                            >
-                              <div
-                                class="custom_dropdown__face"
-                                :style="[
-                                  filtered
-                                    ? {
-                                        borderBottom: 'none',
-                                        borderBottomLeftRadius: '0',
-                                        borderBottomRightRadius: '0',
-                                      }
-                                    : { top: '0px' },
-                                ]"
-                                @click="filtered = !filtered"
-                              >
-                                <div class="custom_dropdown__text">
-                                  <span class="small mr-1">FILTER:</span>
-                                  <span v-if="activeDeal"><b>Active</b></span>
-                                  <span
-                                    v-if="
-                                      endedDeal !== undefined &&
-                                      endedDeal === true
-                                    "
-                                    ><b>Ended</b></span
-                                  >
-                                  <span v-if="showallDeals"><b>All</b></span>
-                                  <i
-                                    v-if="!filtered"
-                                    class="ml-3 fa-solid fa-chevron-right"
-                                  ></i>
-                                  <i
-                                    v-if="filtered"
-                                    class="ml-3 fa-solid fa-chevron-down"
-                                  ></i>
-                                </div>
-                              </div>
-                              <Transition
-                                name="custom-fade"
-                                enter-active-class="fade-in-top"
-                                leave-active-class="fade-out-top"
-                              >
-                                <ul
-                                  v-if="filtered"
-                                  class="custom_dropdown__items"
-                                >
-                                  <li
-                                    @click="
-                                      (showallDeals = true),
-                                        (activeDeal = false),
-                                        (endedDeal = false),
-                                        (filtered = false),
-                                        allDeals()
-                                    "
-                                  >
-                                    All
-                                  </li>
-                                  <li
-                                    @click="
-                                      (activeDeal = true),
-                                        (showallDeals = false),
-                                        (endedDeal = false),
-                                        (filtered = false),
-                                        loadState()
-                                    "
-                                  >
-                                    Active
-                                  </li>
-                                  <li
-                                    @click="
-                                      (endedDeal = true),
-                                        (showallDeals = false),
-                                        (activeDeal = false),
-                                        (filtered = false),
-                                        endedDeals()
-                                    "
-                                  >
-                                    Ended
-                                  </li>
-                                </ul>
-                              </Transition>
-                            </div>
-                          </div>
+                          <Filters
+                            @filterAll="filterAll()"
+                            @filterActive="filterActive()"
+                            @filterEnded="filterEnded()"
+                          />
                           <!-- END | FILTER FUNCTION -->
                         </div>
                         <!-- END | ACTION BAR (button create deal - searchbar - filters) -->
@@ -221,9 +138,12 @@
                             </div>
                           </div>
                           <!-- END TITLES TABLE -->
-
+                          <PendingDeal :foundDeal="foundDeal" />
                           <div class="bordered">
-                            <div v-for="deal in deals" :key="deal.identifier">
+                            <div
+                              v-for="deal in filterDeals"
+                              :key="deal.identifier"
+                            >
                               <Deal
                                 :web3="web3"
                                 :account="account"
@@ -243,6 +163,7 @@
                         <!-- DEALS -->
 
                         <!-- NO DEALS MESSAGE -->
+
                         <div
                           class="pt-5"
                           v-if="
@@ -274,10 +195,8 @@
                         <div
                           class="pt-5"
                           v-if="
-                            (deals.length === 0 && searcher.length > 0) ||
-                            (deals.length === 0 &&
-                              endedDeal !== undefined &&
-                              endedDeal === true)
+                            (filterDeals.length === 0 && searcher.length > 0) ||
+                            (filterDeals.length === 0 && isFilterEnded === true)
                           "
                         >
                           <div class="mb-6 mt-6 is-flex is-align-items-center">
@@ -357,7 +276,9 @@ import Web3 from "web3";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Navbar from "@/components/Navbar.vue";
-import LoadingDashboard from "@/components/elements/LoadingDashboard.vue";
+import LoadingDashboard from "@/components/dashboard/LoadingDashboard.vue";
+import PendingDeal from "@/components/dashboard/PendingDeal.vue";
+import Filters from "@/components/dashboard/Filters.vue";
 import Footer from "@/components/Footer.vue";
 import NoFile from "@/components/elements/NoFile.vue";
 import Deal from "@/components/Deal.vue";
@@ -373,6 +294,8 @@ export default {
   components: {
     Navbar,
     LoadingDashboard,
+    PendingDeal,
+    Filters,
     Deal,
     Footer,
     NoFile,
@@ -409,7 +332,7 @@ export default {
       dealCollateral: "",
       dealProviders: "",
       dealValue: "",
-
+      foundDeal: true,
       infuraURL: "https://ipfs.infura.io:5001/api/v0/add",
       currentNetwork: { icon: "fa-solid fa-user-secret", text: "Goerli" },
       appealsByUri: {},
@@ -422,9 +345,8 @@ export default {
       navSpec: false,
       retries: 0,
       // FILTER
-      filtered: false,
-      activeDeal: true,
-      endedDeal: false,
+      filterDeals: [],
+      isFilterEnded: false,
       showallDeals: false,
       searcher: "",
     };
@@ -579,171 +501,6 @@ export default {
         }
       }
     },
-    log(...what) {
-      const app = this;
-      console.log(what);
-      const temp = app.logs;
-      app.logs = "";
-      for (let k in what) {
-        try {
-          app.logs = JSON.stringify(what[k]);
-        } catch (e) {
-          app.logs = what[k];
-        }
-      }
-      app.logs += "<hr>" + temp;
-    },
-    async searchPending() {
-      const app = this;
-      app.retries = 0;
-      const pendingTx = localStorage.getItem("pendingTx");
-      app.pendingTx = pendingTx;
-      console.log("Stored pending tx:", pendingTx);
-      let found = false;
-      if (pendingTx === null || pendingTx.length === 0) {
-        found = true;
-      }
-      if (!found) {
-        // app.$buefy.toast.open({
-        //   duration: 500000,
-        //   message:
-        //     '<i class="fa-solid fa-hourglass-half"></i> ' +
-        //     ` Searching for latest transaction: ` +
-        //     pendingTx +
-        //     ` please wait...`,
-        //   position: "is-bottom-right",
-        //   type: "is-warning",
-        // });
-        let deals = await axios.get(app.apiEndpoint + "/deals/" + app.account);
-        for (let k in deals.data) {
-          let deal = deals.data[k];
-          if (
-            deal.proposal_tx !== undefined &&
-            deal.proposal_tx === pendingTx
-          ) {
-            found = true;
-            app.$toast.clear();
-            if (app.txids.indexOf(deal.proposal_tx) === -1) {
-              app.txids.push(deal.proposal_tx);
-              app.deals.push(deal);
-            }
-          }
-        }
-        app.retries++;
-        // Still not found
-        if (!found) {
-          if (app.retries < 10) {
-            console.log("Pending tx not found, refreshing in 5 seconds..");
-            setTimeout(function () {
-              app.searchPending();
-            }, 5000);
-          } else {
-            localStorage.removeItem("pendingTx");
-          }
-        } else {
-          app.$toast.clear();
-          console.log("Pending tx found, removing from cache.");
-          localStorage.removeItem("pendingTx");
-          app.pendingTx = "";
-        }
-      }
-    },
-    async parseDeal(deal) {
-      const app = this;
-      deal.canAppeal = true;
-
-      // Fix needed to be compatible to old contract
-      if (deal.deal_uri === undefined) {
-        deal.deal_uri = deal.data_uri;
-      }
-      if (deal.data_uri === undefined) {
-        deal.data_uri = deal.deal_uri;
-      }
-
-      // TODO: Optimize contract
-      const contract = new app.web3.eth.Contract(app.abi, app.contract);
-      let proposalTimeout = await contract.methods.proposal_timeout().call();
-      const appeal_index = await contract.methods
-        .active_appeals(deal.deal_uri)
-        .call();
-      const round = await contract.methods.getRound(appeal_index).call();
-
-      console.log(
-        "deal " + deal.index + " with appeal index ",
-        appeal_index + " have a round " + round
-      );
-
-      // Check STATUS ACTIVE Deal
-
-      if (
-        (parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0 &&
-          deal.appeal !== undefined &&
-          deal.appeal.round === undefined) ||
-        (parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0 &&
-          deal.appeal !== undefined &&
-          deal.appeal.round !== undefined &&
-          deal.appeal.round === 99 &&
-          deal.appeal.slashed !== undefined &&
-          deal.appeal.slashed === false)
-      ) {
-        deal.status_active = true;
-      } else {
-        deal.status_active = false;
-      }
-
-      // Check Pending deal
-      if (
-        deal.timestamp_start !== undefined &&
-        parseInt(deal.timestamp_start) === 0 &&
-        !deal.canceled
-      ) {
-        deal.pending = true;
-        deal.canAppeal = false;
-      } else {
-        deal.pending = false;
-      }
-
-      // Check if appeal ended
-      if (
-        deal.appeal !== undefined &&
-        deal.appeal.round !== undefined &&
-        parseInt(deal.appeal.round) < 99
-      ) {
-        deal.canAppeal = false;
-      }
-
-      // Check if deal ended
-      if (deal.timestamp_end * 1000 < new Date().getTime() || deal.canceled) {
-        deal.canAppeal = false;
-        deal.status_active = false;
-      }
-
-      // Check if appeal doesn't exists
-      if (deal.appeal === undefined || Object.keys(deal.appeal) === 0) {
-        deal.canAppeal = true;
-      }
-
-      // Set expiration timestamp
-      const expires_at =
-        (parseInt(deal.timestamp_request) + parseInt(proposalTimeout)) * 1000;
-      // Check if expired
-      if (
-        new Date().getTime() > expires_at &&
-        parseInt(deal.timestamp_start) === 0
-      ) {
-        deal.expired = true;
-        deal.canAppeal = false;
-      } else {
-        deal.expired = false;
-        deal.status_active = false;
-      }
-
-      // Check Contract Deal
-      if (deal.contract !== contract) {
-        deal.canAppeal = false;
-      }
-      return deal;
-    },
     async loadState() {
       const app = this;
       app.appealsByUri = {};
@@ -776,17 +533,18 @@ export default {
           }
           if (keys.indexOf(deal.contract + ":" + deal.index) === -1) {
             keys.push(deal.contract + ":" + deal.index);
-            // Check if deal can appeal or not
             // Getting active deals
-            if (
-              parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0 ||
-              (parseInt(deal.timestamp_start) === 0 &&
-                !deal.expired &&
-                !deal.canceled)
-            ) {
-              app.deals.push(deal);
-            }
+            // if (
+            //   parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0 ||
+            //   (parseInt(deal.timestamp_start) === 0 &&
+            //     !deal.expired &&
+            //     !deal.canceled)
+            // ) {
+            //   app.deals.push(deal);
+            // }
             // console.log("Can deal appeal?", deal.canAppeal);
+            app.deals.push(deal);
+            app.filterActive();
           }
         }
 
@@ -857,6 +615,188 @@ export default {
         }
         i++;
       }
+    },
+    async parseDeal(deal) {
+      const app = this;
+      deal.canAppeal = true;
+
+      // Fix needed to be compatible to old contract
+      if (deal.deal_uri === undefined) {
+        deal.deal_uri = deal.data_uri;
+      }
+      if (deal.data_uri === undefined) {
+        deal.data_uri = deal.deal_uri;
+      }
+
+      // TODO: Optimize contract
+      const contract = new app.web3.eth.Contract(app.abi, app.contract);
+      let proposalTimeout = await contract.methods.proposal_timeout().call();
+      const appeal_index = await contract.methods
+        .active_appeals(deal.deal_uri)
+        .call();
+      const round = await contract.methods.getRound(appeal_index).call();
+
+      console.log(
+        "deal " + deal.index + " with appeal index ",
+        appeal_index + " have a round " + round
+      );
+
+      // Check STATUS ACTIVE Deal
+
+      if (
+        parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0 ||
+        (parseInt(deal.timestamp_start) === 0 &&
+          !deal.expired &&
+          !deal.canceled)
+      ) {
+        deal.status_active = true;
+      } else {
+        deal.status_active = false;
+      }
+
+      // Check Pending deal
+      if (
+        deal.timestamp_start !== undefined &&
+        parseInt(deal.timestamp_start) === 0 &&
+        !deal.canceled
+      ) {
+        deal.pending = true;
+        deal.canAppeal = false;
+        deal.status_active = true;
+      } else {
+        deal.pending = false;
+      }
+
+      //DEBUG
+      if (deal.pending) {
+        console.log("AFTER CHECK PENDING DEAL", deal.index);
+        console.log("Result active?", deal.status_active);
+      }
+
+      // Check if deal ended
+      if (
+        (deal.timestamp_end * 1000 < new Date().getTime() &&
+          deal.timestamp_start > 0) ||
+        deal.canceled
+      ) {
+        deal.canAppeal = false;
+        deal.status_active = false;
+      }
+
+      //debug
+      if (deal.pending) {
+        console.log("BEFORE CHECK EXPIRATION FUNCTION");
+        console.log("Expiration of deal", deal.index, "is:", expires_at);
+        console.log("is expired?", deal.expired);
+        console.log("Result active?", deal.status_active);
+      }
+
+      // Set expiration timestamp
+      const expires_at =
+        (parseInt(deal.timestamp_request) + parseInt(proposalTimeout)) * 1000;
+
+      // Check if expired
+      if (new Date().getTime() > expires_at && deal.timestamp_start === 0) {
+        deal.expired = true;
+        deal.canAppeal = false;
+      } else if (
+        new Date().getTime() < expires_at &&
+        deal.timestamp_start === 0
+      ) {
+        deal.expired = false;
+        deal.status_active = false;
+      }
+
+      //debug
+      if (deal.pending) {
+        console.log("AFTER CHECK EXPIRATION FUNCTION");
+        console.log("Expiration of deal", deal.index, "is:", expires_at);
+        console.log("is expired?", deal.expired);
+        console.log("Result active?", deal.status_active);
+      }
+
+      // Check if appeal ended
+      if (
+        deal.appeal !== undefined &&
+        deal.appeal.round !== undefined &&
+        parseInt(deal.appeal.round) < 99
+      ) {
+        deal.canAppeal = false;
+      }
+
+      if (deal.pending) {
+        console.log("AFTER AFTER APPEL DEAL", deal.index);
+        console.log("Result active?", deal.status_active);
+      }
+
+      // Check if appeal doesn't exists
+      if (deal.appeal === undefined || Object.keys(deal.appeal) === 0) {
+        deal.canAppeal = true;
+      }
+
+      // Check Contract Deal
+      if (deal.contract !== contract) {
+        deal.canAppeal = false;
+      }
+      return deal;
+    },
+    async searchPending() {
+      const app = this;
+      app.retries = 0;
+      const pendingTx = localStorage.getItem("pendingTx");
+      app.pendingTx = pendingTx;
+      console.log("Stored pending tx:", pendingTx);
+      app.foundDeal = false;
+      if (pendingTx === null || pendingTx.length === 0) {
+        app.foundDeal = true;
+      }
+      if (!app.foundDeal) {
+        let deals = await axios.get(app.apiEndpoint + "/deals/" + app.account);
+        for (let k in deals.data) {
+          let deal = deals.data[k];
+          if (
+            deal.proposal_tx !== undefined &&
+            deal.proposal_tx === pendingTx
+          ) {
+            app.foundDeal = true;
+            // app.$toast.clear();
+            if (app.txids.indexOf(deal.proposal_tx) === -1) {
+              app.txids.push(deal.proposal_tx);
+              app.deals.push(deal);
+            }
+          }
+        }
+        app.retries++;
+        // Still not found
+        if (!app.foundDeal) {
+          if (app.retries < 10) {
+            console.log("Pending tx not found, refreshing in 5 seconds..");
+            setTimeout(function () {
+              app.searchPending();
+            }, 5000);
+          } else {
+            localStorage.removeItem("pendingTx");
+          }
+        } else {
+          console.log("Pending tx found, removing from cache.");
+          localStorage.removeItem("pendingTx");
+          app.pendingTx = "";
+        }
+      }
+    },
+    log(...what) {
+      const app = this;
+      console.log(what);
+      const temp = app.logs;
+      app.logs = "";
+      for (let k in what) {
+        try {
+          app.logs = JSON.stringify(what[k]);
+        } catch (e) {
+          app.logs = what[k];
+        }
+      }
+      app.logs += "<hr>" + temp;
     },
     async withdraw() {
       const app = this;
@@ -1074,163 +1014,32 @@ export default {
       });
     },
     // FILTERS
-    async expiredDeals() {
+    async filterEnded() {
       const app = this;
-      app.loading = true;
-      console.log("Checking all deals...");
-      app.log("Checking all deals...");
-      if (!app.isWorking) {
-        app.isWorking = true;
-        app.deals = [];
-        try {
-          let deals = await axios.get(
-            app.apiEndpoint + "/deals/" + app.account
-          );
-          let keys = [];
-          let appealsByUri = {};
-          for (let k in deals.data) {
-            let deal = deals.data[k];
-            const expires_at =
-              (parseInt(deal.timestamp_request) +
-                parseInt(app.proposalTimeout)) *
-              1000;
-
-            if (new Date().getTime() > expires_at) {
-              deal.expired = true;
-            } else {
-              deal.expired = false;
-            }
-
-            deal.canAppeal = true;
-            // Check if appeal ended
-            if (
-              deal.appeal !== undefined &&
-              deal.appeal.round !== undefined &&
-              parseInt(deal.appeal.round) < 99
-            ) {
-              deal.canAppeal = false;
-              appealsByUri[deal.data_uri] = deal.appeal;
-            }
-            // Check if deal ended
-            if (
-              deal.timestamp_end * 1000 < new Date().getTime() &&
-              deal.timestamp_start !== 0 &&
-              parseInt(deal.timestamp_end) !== 604800
-            ) {
-              deal.canAppeal = false;
-              deal.ended = true;
-            } else {
-              deal.ended = false;
-            }
-
-            // Check if deal is pending
-            if (
-              parseInt(deal.timestamp_start) === 0 &&
-              deal.expired === false &&
-              parseInt(deal.timestamp_end) === 604800
-            ) {
-              deal.dealPending = true;
-            } else {
-              deal.dealPending = false;
-            }
-
-            // Check if appeal doesn't exists
-            if (deal.appeal === undefined || Object.keys(deal.appeal) === 0) {
-              deal.canAppeal = true;
-            }
-            if (appealsByUri[deal.data_uri] !== undefined) {
-              deal.canAppeal = false;
-            }
-            console.log(
-              "checking time",
-              parseInt(deal.timestamp_end * 1000) < new Date().getTime()
-            );
-            if (keys.indexOf(parseInt(deal.index)) === -1) {
-              if (
-                deal.ended === true ||
-                (deal.ended === true &&
-                  deal.expired === true &&
-                  !deal.dealPending) ||
-                deal.canceled
-              ) {
-                keys.push(parseInt(deal.index));
-                app.deals.push(deal);
-              }
-            }
-          }
-          app.isWorking = false;
-          console.log("Expired Deals", app.deals);
-        } catch (e) {
-          app.alertCustomError(
-            "1 Can't fetch deals from blockchain, please retry!"
-          );
-        }
-      }
-      app.loading = false;
+      app.filterDeals = app.deals;
+      app.filterDeals = app.filterDeals.filter((deal) => {
+        return deal.status_active === false;
+      });
+      console.log("Ended Deals", app.filterDeals);
+      app.isFilterEnded = true;
     },
-    async allDeals() {
+    async filterActive() {
       const app = this;
-      app.loading = true;
-      console.log("Checking all deals...");
-      app.log("Checking all deals...");
-      if (!app.isWorking) {
-        app.isWorking = true;
-        app.deals = [];
-        try {
-          let deals = await axios.get(
-            app.apiEndpoint + "/deals/" + app.account
-          );
-          let keys = [];
-          let appealsByUri = {};
-          for (let k in deals.data) {
-            let deal = deals.data[k];
-            const expires_at =
-              (parseInt(deal.timestamp_request) +
-                parseInt(app.proposalTimeout)) *
-              1000;
-
-            if (new Date().getTime() > expires_at) {
-              deal.expired = true;
-            } else {
-              deal.expired = false;
-            }
-
-            deal.canAppeal = true;
-            // Check if appeal ended
-            if (
-              deal.appeal !== undefined &&
-              deal.appeal.round !== undefined &&
-              parseInt(deal.appeal.round) < 99
-            ) {
-              deal.canAppeal = false;
-              appealsByUri[deal.data_uri] = deal.appeal;
-            }
-            // Check if deal ended
-            if (deal.timestamp_end * 1000 < new Date().getTime()) {
-              deal.canAppeal = false;
-            }
-            // Check if appeal doesn't exists
-            if (deal.appeal === undefined || Object.keys(deal.appeal) === 0) {
-              deal.canAppeal = true;
-            }
-            if (appealsByUri[deal.data_uri] !== undefined) {
-              deal.canAppeal = false;
-            }
-
-            if (keys.indexOf(parseInt(deal.index)) === -1) {
-              keys.push(parseInt(deal.index));
-              app.deals.push(deal);
-            }
-          }
-          app.isWorking = false;
-          console.log("All Deals", app.deals);
-        } catch (e) {
-          app.alertCustomError(
-            "3 Can't fetch deals from blockchain, please retry!"
-          );
-        }
-      }
-      app.loading = false;
+      app.isFilterEnded = false;
+      app.filterDeals = app.deals;
+      app.filterDeals = app.filterDeals.filter((deal) => {
+        return deal.status_active === true;
+      });
+      console.log("Active Deals", app.filterDeals);
+    },
+    async filterAll() {
+      const app = this;
+      app.isFilterEnded = false;
+      app.filterDeals = app.deals;
+      app.filterDeals = app.filterDeals.filter((deal) => {
+        return deal.status_active === true || deal.status_active === false;
+      });
+      console.log("All Deals", app.filterDeals);
     },
     searchDealURI() {
       // filter deal by data_uri by v-model "searcher"

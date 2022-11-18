@@ -668,6 +668,16 @@
         </div>
       </div>
       <!-- END - SHOW CREATION DEAL -->
+      <!-- Modal Pending TX -->
+      <PendingTx
+        :isCreatingDeal="isCreatingDeal"
+        :activeStep="activeStep"
+        :pendingTx="pendingTx"
+        :explorer="explorer"
+        :receipt="receipt"
+        @closeModalTx="closeModalTx()"
+      />
+      <!-- END | Modal Pending TX -->
       <Footer />
     </section>
   </div>
@@ -679,7 +689,8 @@ import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import checkViewport from "@/mixins/checkViewport";
 import Navbar from "@/components/Navbar.vue";
-import LoadingCreateDeal from "@/components/elements/LoadingCreateDeal.vue";
+import LoadingCreateDeal from "@/components/deal_creation/LoadingCreateDeal.vue";
+import PendingTx from "@/components/deal_creation/PendingTx.vue";
 import Spinner from "@/components/elements/Spinner.vue";
 import Footer from "@/components/Footer.vue";
 import axios from "axios";
@@ -691,12 +702,9 @@ const FormData = require("form-data");
 export default {
   name: "newDeal",
   mixins: [checkViewport],
-  components: { Navbar, Footer, LoadingCreateDeal, Spinner },
+  components: { Navbar, Footer, LoadingCreateDeal, Spinner, PendingTx },
   data() {
     return {
-      // TRY ROUTE
-      id: this.$route.params.id,
-      createDealData: {},
       // Web3 data
       contract: "",
       selectedContract: "",
@@ -749,6 +757,13 @@ export default {
       termsOfService: false,
       expertMode: false,
       navSpec: false,
+
+      //tx modal
+      activeStep: 0,
+      isCreatingDeal: false,
+      pendingTx: "",
+      receipt: "",
+      explorer: "",
     };
   },
 
@@ -959,19 +974,21 @@ export default {
         app.network = app.config[0].network;
         app.apiEndpoint = app.config[0].api;
         app.opensea = app.config[0].opensea;
-
+        app.explorer = app.config[0].explorer;
         app.abi = ABI_POLYGON;
       } else if (app.selectedContract === "goerli") {
         app.contract = app.config[1].contract;
         app.network = app.config[1].network;
         app.apiEndpoint = app.config[1].api;
         app.opensea = app.config[1].opensea;
+        app.explorer = app.config[1].explorer;
         app.abi = ABI_ETH;
       } else if (app.selectedContract === null) {
         app.contract = app.config[0].contract;
         app.network = app.config[0].network;
         app.apiEndpoint = app.config[0].api;
         app.opensea = app.config[0].opensea;
+        app.explorer = app.config[0].explorer;
         app.abi = ABI_POLYGON;
         localStorage.setItem("contract", "polygon");
       }
@@ -1182,13 +1199,6 @@ export default {
     async createDealProposal() {
       const app = this;
       if (!app.isWorking) {
-        // TODO: optmize automatic fill and insert line below
-        //         if (
-        //   parseInt(app.dealDuration) >= parseInt(app.minDuration) &&
-        //   parseInt(app.dealDuration) <= parseInt(app.maxDuration) &&
-        //   app.dealUri.length > 0 &&
-        //   app.dealProviders.length > 0
-        // )
         if (
           parseInt(app.dealDuration) >= parseInt(app.minDuration) &&
           parseInt(app.dealDuration) <= parseInt(app.maxDuration) &&
@@ -1198,7 +1208,8 @@ export default {
           const maximumCollateral = app.slashingMultiplier * app.dealValue;
           if (parseInt(app.dealCollateral) <= parseInt(maximumCollateral)) {
             app.isWorking = true;
-            app.showLoadingToast("Please confirm action with metamask..");
+            app.isCreatingDeal = true;
+            app.activeStep = 0;
             try {
               const contract = new app.web3.eth.Contract(app.abi, app.contract);
               // console.log("Appeal Addresses typed are:", app.appealAddresses);
@@ -1222,56 +1233,17 @@ export default {
                   gasPrice: doubled,
                 })
                 .on("transactionHash", (tx) => {
+                  app.activeStep = 1;
+                  app.pendingTx = tx;
                   localStorage.setItem("pendingTx", tx);
-                  this.$toast.warning(
-                    "Creating your deal proposal, please wait..." +
-                      "\n" +
-                      "Pending transaction at: " +
-                      tx,
-                    {
-                      position: "top-right",
-                      timeout: false,
-                      closeOnClick: false,
-                      pauseOnFocusLoss: true,
-                      pauseOnHover: true,
-                      draggable: true,
-                      draggablePercent: 0.6,
-                      showCloseButtonOnHover: true,
-                      hideProgressBar: true,
-                      closeButton: "button",
-                      icon: "fa-solid fa-arrow-right-arrow-left",
-                      rtl: false,
-                    }
-                  );
                 });
-              app.$toast.clear();
               console.log("BLOCKCHAIN_RECEIPT ", receipt);
-              setTimeout(async function () {
-                window.location.href = "/#/app";
-              }, 2000);
-              this.$toast(
-                "Congratulations your deal proposal was successfully created." +
-                  "\n" +
-                  "Transaction success at: " +
-                  receipt.blockHash,
-                {
-                  position: "top-right",
-                  timeout: 5000,
-                  closeOnClick: true,
-                  pauseOnFocusLoss: true,
-                  pauseOnHover: true,
-                  draggable: true,
-                  draggablePercent: 0.6,
-                  showCloseButtonOnHover: true,
-                  hideProgressBar: true,
-                  closeButton: "button",
-                  icon: "fa-solid fa-arrow-right-arrow-left",
-                  rtl: false,
-                }
-              );
+              app.receipt = receipt.blockHash;
+              app.activeStep = 2;
             } catch (e) {
               app.isWorking = false;
               app.alertCustomError(e.message);
+              app.isCreatingDeal = false;
             }
           } else {
             app.alertCustomWarning(
@@ -1279,12 +1251,15 @@ export default {
                 maximumCollateral +
                 " while minimum is same of value!"
             );
+            app.isCreatingDeal = false;
           }
         } else {
           app.alertCustomWarning("Please fill all fields!");
+          app.isCreatingDeal = false;
         }
       } else {
         console.log("App busy, retry.");
+        app.isCreatingDeal = false;
       }
     },
 
@@ -1436,6 +1411,10 @@ export default {
     toggleSpec() {
       const app = this;
       app.navSpec = !app.navSpec;
+    },
+    closeModalTx() {
+      const app = this;
+      app.isCreatingDeal = false;
     },
 
     //ADDING APPEAL ADDRESS

@@ -1152,6 +1152,59 @@ img.network-logo {
   }
 }
 
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+  .modal-container {
+    width: 100%;
+    max-width: 500px;
+    background-color: var(--primary-color-contrast);
+    border-radius: 15px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    text-align: center;
+    h2 {
+      @include font-inter();
+      font-size: 1.375rem;
+      color: var(--primary-color);
+      font-weight: 600;
+      margin: 0;
+      padding: 0;
+      line-height: 1.1;
+    }
+    .modal-header {
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.13);
+      position: relative;
+    }
+    .modal-header-button {
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translate(0, -50%);
+    }
+    .modal-content {
+      width: 100%;
+      .b-steps .steps .step-items .step-item .step-details .step-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+      }
+      a:hover {
+        text-decoration: underline;
+        text-underline-offset: 4px;
+      }
+    }
+  }
+}
+
 .control.has-icons-right .input,
 .control.has-icons-right .select select {
   padding-right: 5px;
