@@ -12,7 +12,7 @@ async function main() {
     // Getting last deal and add a number to IPFS hash, just for test of course.
     const deal_index = await contract.totalDeals()
 
-    const value = "100" // Amount to pay for deal in gwei
+    let value = "100" // Amount to pay for deal in gwei
     const ipfs_providers = [configs.providers[0].address, configs.providers[1].address] // Adding two providers
     let data_uri = 'ipfs://bafkreiggzxkhpj6m6vkzzwvzst4tv6kng3pgma67ukcrzwzyh5b54eben4'
     if (configs.network === "hardhat") {
@@ -23,6 +23,11 @@ async function main() {
     const duration = min_duration; // Duration of the deal
     const collateral = ethers.utils.parseUnits(value, 'gwei') // Setting 0 if you need minimum one
     const appeal_addresses = [wallet.address]
+    
+    const contract_protected = await contract.contract_protected()
+    if(contract_protected){
+        value = "0"
+    }
     try {
         console.log("Creating new deal with URI: " + data_uri)
         const tx = await contract.createDealProposal(
