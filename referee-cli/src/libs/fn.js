@@ -112,11 +112,11 @@ const processappeal = async (node, index) => {
                             received: false,
                             proof: "SOME_KIND_OF_PROOF" // TODO: Add some kind of cryptographical proof to be sure referee received the file
                         })
-                        node.log("SLASH_" + index.toString())
+                        node.log("SLASH_AS_LEADER_" + index.toString())
                         await node.broadcast(message, "slash")
                         appealsProcessed.push(index.toString())
                     } catch (e) {
-                        node.log("ERROR_SLASH_LEADER_" + index.toString(), e.message)
+                        node.log("ERROR_SLASH_AS_LEADER_" + index.toString(), e.message)
                         console.log("Can't send on-chain transaction..")
                         console.log("--")
                         console.log(e.message)
@@ -365,8 +365,9 @@ const parseslash = async (node, raw) => {
                                         await slashTransaction.wait()
                                         console.log("Provider successfully slashed.")
                                         appealsProcessed.push(slash.appeal.toString())
+                                        node.log("SLASH_WITH_CONSENSUS_" + index.toString())
                                     } catch (e) {
-                                        node.log("ERROR_SLASH_REFEREE_" + appeal.deal_index.toString(), e.message)
+                                        node.log("ERROR_SLASH_WITH_CONSENSUS_" + appeal.deal_index.toString(), e.message)
                                         console.log("Error while slashing provider, probably round processed yet..")
                                     }
                                 } else {
