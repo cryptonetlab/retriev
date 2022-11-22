@@ -194,9 +194,14 @@ app.get("/ipfs-id", async function (req, res) {
 app.get("/logs/:referee/:kind", async function (req, res) {
   try {
     const db = new Database.default.Mongo()
-    const regex = new RegExp("^" + req.params.kind + "_");
-    const logs = await db.find('activities', { referee: req.params.referee, msg: { $regex: regex } }, { timestamp: -1 })
-    res.send(logs)
+    if (req.params.kind !== "PING") {
+      const regex = new RegExp("^" + req.params.kind + "_");
+      const logs = await db.find('activities', { referee: req.params.referee, msg: { $regex: regex } }, { timestamp: -1 })
+      res.send(logs)
+    } else {
+      const logs = await db.find('activities', { referee: req.params.referee, msg: "PING" }, { timestamp: -1 })
+      res.send(logs)
+    }
   } catch (e) {
     res.send({ message: "Can't get logs", error: true })
   }
