@@ -12,7 +12,7 @@ async function main() {
     // Getting last deal and add a number to IPFS hash, just for test of course.
     const deal_index = await contract.totalDeals()
 
-    const value = "0" // Amount to pay for deal in gwei
+    const value = "100" // Amount to pay for deal in gwei
     const ipfs_providers = [configs.providers[0].address, configs.providers[1].address] // Adding two providers
     let data_uri = 'ipfs://bafkreiggzxkhpj6m6vkzzwvzst4tv6kng3pgma67ukcrzwzyh5b54eben4'
     if (configs.network === "hardhat") {
