@@ -60,7 +60,8 @@ pub async fn calculate_pings() -> mongodb::error::Result<()> {
             doc! { "referee": &referees[i].address, "msg": "PING" },
             FindOptions::builder()
                 .sort(doc! { "timestamp": -1 })
-                .limit(43200)
+                // Change this parameter to analyze more than 30 days
+                .limit(60 * 24 * 30)
                 .build()
         ).await?;
         // Build raw datas
@@ -83,9 +84,11 @@ pub async fn calculate_pings() -> mongodb::error::Result<()> {
             let uptime: f64 = (f64::from(value) / 1440.0) * 100.0;
             parsed_data.push(DailyStat { day: key, uptime: uptime });
         }
+        // Sort data by day
+        parsed_data.sort_by(|a, b| a.day.cmp(&b.day));
         // Write static file into disk
         std::fs::write(
-            "./stats/".to_owned() + &referees[i].address + &".json".to_owned(),
+            "./stats/pings/".to_owned() + &referees[i].address + &".json".to_owned(),
             serde_json::to_string_pretty(&parsed_data).unwrap()
         )?;
     }
