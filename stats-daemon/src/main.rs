@@ -1,9 +1,12 @@
+use std::time::{ SystemTime };
 use std::env;
 mod pings;
 mod calls;
 
 #[tokio::main]
 async fn main() {
+    let now = SystemTime::now();
+    // Fetch all arguments
     let args: Vec<String> = env::args().collect();
     let mut pings = false;
     let mut calls = false;
@@ -22,5 +25,14 @@ async fn main() {
     // Run calls calculation
     if calls == true {
         let _result_calls = calls::calculate().await;
+    }
+    // Print elapsed time
+    match now.elapsed() {
+        Ok(elapsed) => {
+            println!("All tasks completed in {} ms", elapsed.as_millis());
+        }
+        Err(e) => {
+            println!("Error: {e:?}");
+        }
     }
 }
