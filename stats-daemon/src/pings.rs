@@ -65,7 +65,7 @@ pub async fn calculate() -> mongodb::error::Result<()> {
         ).await?;
         // Build raw datas
         let raw_data: Vec<_> = _activities_cursor.try_collect().await?;
-        println!("Found {} pings for {}.", raw_data.len(), referees[i].address);
+        println!("-> Found {} pings for {}.", raw_data.len(), referees[i].address);
         // Instantiate working variables
         let mut parsed_data: Vec<DailyStat> = Vec::new();
         let mut uptimes = HashMap::new();
@@ -78,6 +78,7 @@ pub async fn calculate() -> mongodb::error::Result<()> {
             let count = uptimes.entry(split[0].to_string()).or_insert(0);
             *count += 1;
         }
+        println!("--> Creating aggregates data..");
         // Iterate over days and calculate the uptime
         for (key, value) in uptimes.into_iter() {
             let uptime: f64 = (f64::from(value) / 1440.0) * 100.0;
@@ -86,11 +87,13 @@ pub async fn calculate() -> mongodb::error::Result<()> {
         // Sort data by day
         parsed_data.sort_by(|a, b| a.day.cmp(&b.day));
         // Write static file into disk
+        println!("--> Writing files into disk..");
         std::fs::write(
             "./stats/pings/".to_owned() + &referees[i].address + &".json".to_owned(),
             serde_json::to_string_pretty(&parsed_data).unwrap()
         )?;
     }
 
+    println!("-> Task completed");
     Ok(())
 }
