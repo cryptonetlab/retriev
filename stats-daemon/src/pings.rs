@@ -7,7 +7,7 @@ use dotenv::dotenv;
 use chrono::prelude::*;
 use chrono::{ Utc };
 
-pub async fn calculate_pings() -> mongodb::error::Result<()> {
+pub async fn calculate() -> mongodb::error::Result<()> {
     dotenv().ok();
     // Define env variables
     let mongodb_connection = std::env
@@ -40,7 +40,7 @@ pub async fn calculate_pings() -> mongodb::error::Result<()> {
     let client = Client::with_options(client_options)?;
     // Connect to database and take the collection
     client.database("admin").run_command(doc! { "ping": 1 }, None).await?;
-    println!("Connected successfully.");
+    println!("Started working on pings..");
     let db = client.database(&database_name);
     let referees = db.collection::<Referee>("referees");
     let activities = db.collection::<Stat>("activities");
@@ -48,8 +48,7 @@ pub async fn calculate_pings() -> mongodb::error::Result<()> {
     let mut _referee_cursor = referees.find(
         doc! { "active": true },
         FindOptions::builder()
-            .sort(doc! { "timestamp": -1 })
-            .limit(43200)
+            .sort(doc! { "address": 1 })
             .build()
     ).await?;
     let referees: Vec<_> = _referee_cursor.try_collect().await?;
@@ -72,7 +71,7 @@ pub async fn calculate_pings() -> mongodb::error::Result<()> {
         let mut uptimes = HashMap::new();
         // Iterate over ping signals creating aggregates by day.
         for i in 0..raw_data.len() {
-            // Pick a day
+            // Pick the day
             let timestamp_u64 = raw_data[i].timestamp.to_string().parse::<i64>().unwrap() / 1000;
             let dt = Utc.timestamp_opt(timestamp_u64, 0).unwrap().to_string();
             let split: Vec<&str> = dt.split(" ").collect();
