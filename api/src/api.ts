@@ -7,6 +7,7 @@ import cors from 'cors'
 import bodyParser from 'body-parser'
 import multer from 'multer'
 import helmet from 'helmet'
+import fs from 'fs'
 
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage })
@@ -191,16 +192,18 @@ app.get("/ipfs-id", async function (req, res) {
 })
 
 // Get logs from api
-app.get("/logs/:kind", async function (req, res) {
+app.get("/stats/:kind", async function (req, res) {
   try {
-    const db = new Database.default.Mongo()
-    if (req.params.kind !== "PING") {
-      const regex = new RegExp("^" + req.params.kind + "_");
-      const logs = await db.find('activities', { referee: req.params.referee, msg: { $regex: regex } }, { timestamp: -1 })
-      res.send(logs)
+    const log_file = "./stats/" + req.params.kind.replace("-", "/") + ".json"
+    if (fs.existsSync(log_file)) {
+      try {
+        const logs = JSON.parse(fs.readFileSync(log_file).toString())
+        res.send(logs)
+      } catch (e) {
+        res.send({ message: "Stats not found", error: true })
+      }
     } else {
-      const logs = await db.find('activities', { referee: req.params.referee, msg: "PING" }, { timestamp: -1 })
-      res.send(logs)
+      res.send({ message: "Stats not found", error: true })
     }
   } catch (e) {
     res.send({ message: "Can't get logs", error: true })
