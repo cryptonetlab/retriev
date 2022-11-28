@@ -191,7 +191,7 @@ app.get("/ipfs-id", async function (req, res) {
 })
 
 // Get logs from api
-app.get("/logs/:referee/:kind", async function (req, res) {
+app.get("/logs/:kind", async function (req, res) {
   try {
     const db = new Database.default.Mongo()
     if (req.params.kind !== "PING") {

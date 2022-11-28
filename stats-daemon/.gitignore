@@ -1,5 +1,0 @@
-
-stats/*/*
-!stats/*/.PARSED_STATS_WILL_GO_THERE
-.env
-target/

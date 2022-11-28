@@ -1,6 +1,8 @@
 # package directories
 node_modules
 jspm_packages
+stats/*/*
+!stats/*/.PACKED_STATS_FROM_DAEMON
 
 # Serverless directories
 .serverless
