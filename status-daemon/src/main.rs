@@ -3,6 +3,7 @@ use std::env;
 mod pings;
 mod calls;
 mod deals;
+mod tvl;
 
 #[tokio::main]
 async fn main() {
@@ -12,6 +13,7 @@ async fn main() {
     let mut pings = false;
     let mut calls = false;
     let mut deals = false;
+    let mut tvl = false;
     let mut out_path = "./stats/";
     for i in 0..args.len() {
         if args[i] == "--pings" || args[i] == "--all" {
@@ -22,6 +24,9 @@ async fn main() {
         }
         if args[i] == "--deals" || args[i] == "--all" {
             deals = true;
+        }
+        if args[i] == "--tvl" || args[i] == "--all" {
+            tvl = true;
         }
         if args[i] == "--out" {
             out_path = &args[i+1];
@@ -42,6 +47,12 @@ async fn main() {
     // Run deals calculation
     if deals == true {
         let _result_deals = deals::calculate(out_path.to_string()).await;
+        // Activate to debug errors
+        // dbg!(_result_deals);
+    }
+    // Run deals calculation
+    if tvl == true {
+        let _result_tvl = tvl::calculate(out_path.to_string()).await;
         // Activate to debug errors
         // dbg!(_result_deals);
     }

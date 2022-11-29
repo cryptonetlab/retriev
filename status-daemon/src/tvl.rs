@@ -61,6 +61,7 @@ pub async fn calculate(out_path: String) -> mongodb::error::Result<()> {
     println!("-> Found {} deals to process.", raw_data.len());
     // Instantiate working variables
     let mut counters_per_cid = HashMap::new();
+    let mut deals_per_cid = HashMap::new();
     let mut total_counter: i64 = 0;
     let mut total_value: i64 = 0;
     let mut total_collateral: i64 = 0;
@@ -75,10 +76,88 @@ pub async fn calculate(out_path: String) -> mongodb::error::Result<()> {
         *count += 1;
         total_collateral += raw_data[i].collateral.parse::<i64>().unwrap();
         total_value += raw_data[i].value.parse::<i64>().unwrap();
+        // Pushing deals in CID
+        let deals_vec: Vec<Deal> = Vec::new();
+        let deals = deals_per_cid
+            .entry(str::replace(&raw_data[i].data_uri, "ipfs://", ""))
+            .or_insert(deals_vec);
+        deals.push(Deal {
+            data_uri: raw_data[i].data_uri.to_string(),
+            timestamp_request: raw_data[i].timestamp_request.to_string(),
+            timestamp_start: raw_data[i].timestamp_start.to_string(),
+            timestamp_end: raw_data[i].timestamp_end.to_string(),
+            value: raw_data[i].value.to_string(),
+            collateral: raw_data[i].collateral.to_string(),
+        });
     }
     println!("--> Parsed {} deals", total_counter);
     println!("--> Total collateral is {} wei", total_collateral);
-    println!("--> Total value is {} wei", total_value);    
+    println!("--> Total value is {} wei", total_value);
+    // Iterate over single cids and calculate the days
+    let now = Utc::now();
+    for (cid, deals) in deals_per_cid.into_iter() {
+        let mut daily_stats: Vec<DailyStat> = Vec::new();
+        let mut count_per_day = HashMap::new();
+        let mut value_per_day = HashMap::new();
+        let mut collateral_per_day = HashMap::new();
+        let mut last_day: i64 = 0;
+        for i in 0..deals.len() {
+            // Count days for deal
+            let days =
+                (deals[i].timestamp_end.to_string().parse::<i64>().unwrap() -
+                    deals[i].timestamp_start.to_string().parse::<i64>().unwrap()) /
+                86400;
+            // Update count
+            for d in 0..days {
+                let fday = deals[i].timestamp_start.to_string().parse::<i64>().unwrap() + d * 86400;
+                let dt = Utc.timestamp_opt(fday, 0).unwrap().to_string();
+                let split: Vec<&str> = dt.split(" ").collect();
+                let hash_count = count_per_day.entry(split[0].to_string()).or_insert(0);
+                *hash_count += 1;
+                // Update value
+                let hash_value = value_per_day.entry(split[0].to_string()).or_insert(0);
+                *hash_value += deals[i].value.parse::<i64>().unwrap();
+                // Update collateral
+                let hash_collateral = collateral_per_day.entry(split[0].to_string()).or_insert(0);
+                *hash_collateral += deals[i].collateral.parse::<i64>().unwrap();
+                // Write last day
+                if d + 1 == days {
+                    if fday > last_day {
+                        last_day = fday;
+                    }
+                }
+            }
+            // Check if there aren't enough stats
+            if now.timestamp() > last_day {
+                println!("---> Filling days holes between last and today.");
+                let days = (now.timestamp() - last_day) / 86400;
+                for d in 0..days {
+                    let fday = last_day + d * 86400;
+                    let dt = Utc.timestamp_opt(fday, 0).unwrap().to_string();
+                    let split: Vec<&str> = dt.split(" ").collect();
+                    count_per_day.entry(split[0].to_string()).or_insert(0);
+                    value_per_day.entry(split[0].to_string()).or_insert(0);
+                    collateral_per_day.entry(split[0].to_string()).or_insert(0);
+                }
+            }
+        }
+        for (day, counts) in count_per_day.into_iter() {
+            let k = &day;
+            daily_stats.push(DailyStat {
+                day: k.to_string(),
+                count: counts,
+                value: value_per_day[k],
+                collateral: collateral_per_day[k],
+            });
+        }
+        // Sort data by day
+        daily_stats.sort_by(|a, b| a.day.cmp(&b.day));
+        println!("--> Writing {} file into disk..", cid);
+        std::fs::write(
+            out_path.clone() + &"tvl/".to_owned() + &cid + &".json".to_owned(),
+            serde_json::to_string_pretty(&daily_stats).unwrap()
+        )?;
+    }
     // Packing general stats
     global_stats.push(GlobalStats { kind: "total_deals".to_string(), count: total_counter });
     global_stats.push(GlobalStats {
