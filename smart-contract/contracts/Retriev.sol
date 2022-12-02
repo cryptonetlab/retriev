@@ -11,9 +11,11 @@ import "./libs/ERC721.sol";
 import "./functions/render/IRENDER.sol";
 
 /**
- * @title Retrieval Pinning Protocol
+ * @title Retriev (retriev.org)
+ * Implementation of retrievability protocol
+ * described at: https://retriev.org/paper
  */
-contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
+contract Retriev is ERC721, Ownable, ReentrancyGuard {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
 
@@ -416,60 +418,37 @@ contract RetrievalPinning is ERC721, Ownable, ReentrancyGuard {
     function createDealWithoutProposal(
         string memory _data_uri,
         uint256 duration,
-        uint256 collateral,
         address[] memory _appeal_addresses
     ) external payable nonReentrant {
-        if (contract_protected) {
-            require(
-                msg.value == 0,
-                "Contract is protected, can't accept value"
-            );
-        }
         require(
             duration >= min_duration && duration <= max_duration,
             "Duration is out allowed range"
         );
-        // uint256 maximum_collateral = slashing_multiplier * msg.value;
-        require(
-            msg.value >= min_deal_value,
-            // && collateral >= msg.value && collateral <= maximum_collateral
-            "Collateral or value out of range"
-        );
         require(
             _appeal_addresses.length > 0,
             "You must define one or more appeal addresses"
+        );
+        require(
+            providers[msg.sender].active,
+            "Only providers can create deals without proposal"
         );
         // Creating next id
         dealCounter.increment();
         uint256 index = dealCounter.current();
         // Creating the deal mapping
         deals[index].timestamp_request = block.timestamp;
-        deals[index].owner = msg.sender;
+        deals[index].timestamp_start = block.timestamp;
         deals[index].data_uri = _data_uri;
         deals[index].duration = duration;
-        deals[index].collateral = collateral;
-        deals[index].value = msg.value;
-        // Check if provided providers are active and store in struct
-        for (uint256 i = 0; i < _providers.length; i++) {
-            /*require(
-                isProvider(_providers[i]),
-                "Requested provider is not active"
-            );*/
-            deals[index].providers[_providers[i]] = true;
-        }
+        deals[index].collateral = msg.value;
         // Add appeal addresses to deal
         for (uint256 i = 0; i < _appeal_addresses.length; i++) {
             deals[index].appeal_addresses[_appeal_addresses[i]] = true;
         }
-        // When created the amount of money is owned by sender
+        // Add collateral to contract's vault
         vault[address(this)] += msg.value;
-        // Emit event
-        emit DealProposalCreated(
-            index,
-            _providers,
-            _data_uri,
-            _appeal_addresses
-        );
+        // Mint the NFT representing the deal
+        _mint(msg.sender, index);
     }
 
     /*
