@@ -589,9 +589,11 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
 
         // Split fee to referees
         tot_appeals[deal_index]++;
-        uint256 fee = msg.value / active_referees.length;
-        for (uint256 i = 0; i < active_referees.length; i++) {
-            vault[active_referees[i]] += fee;
+        if (msg.value > 0) {
+            uint256 fee = msg.value / active_referees.length;
+            for (uint256 i = 0; i < active_referees.length; i++) {
+                vault[active_referees[i]] += fee;
+            }
         }
         // Creating next id
         appealCounter.increment();

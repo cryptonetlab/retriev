@@ -3,13 +3,13 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 import "forge-std/Vm.sol";
-import "../../contracts/DataRetrievability.sol";
+import "../contracts/Retriev.sol";
 
 contract RetrievTest is Test {
-    DataRetrievability retriev;
+    Retriev retriev;
 
     function setUp() public {
-        retriev = new DataRetrievability(address(this));
+        retriev = new Retriev(address(this));
     }
 
     // SETUP NETWORK
@@ -50,6 +50,7 @@ contract RetrievTest is Test {
     // CREATE DEAL PROPOSAL
     function testCreateDealProposal() public {
         address provider = vm.addr(5);
+        address client = vm.addr(2);
         retriev.setProviderStatus(
             provider,
             true,
@@ -59,15 +60,25 @@ contract RetrievTest is Test {
             retriev.isProvider(provider),
             true
         );
+        // Be sure contract is not protected
+        retriev.tuneProtocolVariables(2, address(0), false);
+        assertEq(
+            retriev.contract_protected(),
+            false
+        );
         uint256 duration = retriev.min_duration();
         uint256 collateral = 1 wei;
         address[] memory providers = new address[](1);
         providers[0] = provider;
+        // Defining appeal addresses
+        address[] memory appeal_addresses = new address[](1);
+        appeal_addresses[0] = client;
         retriev.createDealProposal{value: 1 wei}(
             "ipfs://QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG",
             duration,
             collateral,
-            providers
+            providers,
+            appeal_addresses
         );
     }
 
@@ -79,7 +90,13 @@ contract RetrievTest is Test {
         // Funding client's address
         vm.deal(client, 100 ether);
         vm.deal(provider, 100 ether);
-        // Setting provide
+        // Be sure contract is not protected
+        retriev.tuneProtocolVariables(2, address(0), false);
+        assertEq(
+            retriev.contract_protected(),
+            false
+        );
+        // Setting provider
         retriev.setProviderStatus(provider, true, "http://localhost:8000");
         assertEq(retriev.isProvider(provider), true);
         uint256 duration = retriev.min_duration();
@@ -87,13 +104,17 @@ contract RetrievTest is Test {
         uint256 collateral = 1 wei;
         address[] memory providers = new address[](1);
         providers[0] = provider;
+        // Defining appeal addresses
+        address[] memory appeal_addresses = new address[](1);
+        appeal_addresses[0] = client;
         // Start making calls with client's key
         vm.startPrank(client);
         retriev.createDealProposal{value: 1 wei}(
             "ipfs://QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG",
             duration,
             collateral,
-            providers
+            providers,
+            appeal_addresses
         );
         vm.stopPrank();
         // Start making calls with provider's key
@@ -103,5 +124,59 @@ contract RetrievTest is Test {
         // Finally accept the deal
         retriev.acceptDealProposal(1);
         emit log_uint(retriev.balanceOf(provider));
+    }
+
+    // CREATE OPEN DEAL
+    function testCreateDealWithoutProposal() public {
+        address provider = vm.addr(5);
+        vm.deal(provider, 100 ether);
+        retriev.setProviderStatus(
+            provider,
+            true,
+            "http://localhost:8000"
+        );
+        assertEq(
+            retriev.isProvider(provider),
+            true
+        );
+        // Start making calls with provider's key
+        vm.startPrank(provider);
+        uint256 duration = retriev.min_duration();
+        uint256 collateral = 1 wei;
+        address[] memory appeal_addresses = new address[](1);
+        appeal_addresses[0] = provider;
+        retriev.createDealWithoutProposal{value: collateral}(
+            "ipfs://QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG",
+            duration,
+            appeal_addresses
+        );
+    }
+
+    // CREATE OPEN DEAL
+    function testCreateDealWithoutProposalAndAppeal() public {
+        address provider = vm.addr(5);
+        vm.deal(provider, 100 ether);
+        retriev.setProviderStatus(
+            provider,
+            true,
+            "http://localhost:8000"
+        );
+        assertEq(
+            retriev.isProvider(provider),
+            true
+        );
+        // Start making calls with provider's key
+        vm.startPrank(provider);
+        uint256 duration = retriev.min_duration();
+        uint256 collateral = 1 wei;
+        address[] memory appeal_addresses = new address[](1);
+        appeal_addresses[0] = provider;
+        retriev.createDealWithoutProposal{value: collateral}(
+            "ipfs://QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG",
+            duration,
+            appeal_addresses
+        );
+        // Create appeal
+        retriev.createAppeal{value: 0}(1);
     }
 }
