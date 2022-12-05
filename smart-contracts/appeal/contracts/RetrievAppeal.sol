@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.6;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/IRETRIEV.sol";
 
 /**
@@ -10,7 +8,7 @@ import "./interfaces/IRETRIEV.sol";
  * Contract that allows anyone appeal a deal in
  * Retriev protocol (retriev.org)
  */
-contract RetrievAppeal is Ownable {
+contract RetrievAppeal {
     address public _retriev;
 
     constructor(address retriev) {
