@@ -8,7 +8,7 @@
     "explorer": "https://polygonscan.com/tx/"
   },
   {
-    "contract": "0x7Aa765411207De8614C5044D25c58148F017DD80",
+    "contract": "0x29E4E245F47Abd08E52CF55a837b3B5bbd9aE1D0",
     "blockchain": "goerli",
     "network": "5",
     "api": "https://api.pldr.dev",

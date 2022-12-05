@@ -8,7 +8,7 @@ async function main() {
     let wallet = new ethers.Wallet(configs.owner_key).connect(provider)
     const contract = new ethers.Contract(configs.contract_address, ABI.abi, wallet)
 
-    const deal_index = 10
+    const deal_index = 1
     console.log('Creating appeal for deal #' + deal_index + '..')
     const retriev = await contract._retriev()
     console.log("Interacting with Retriev at:", retriev)

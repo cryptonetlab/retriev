@@ -6,7 +6,7 @@ If you want to go deeper on how the protocol works please read our [light paper]
 
 We have now two active deployments:
 - Polygon network at [0xc8834A8b64ad66668B11240Dc12B3EE32bA02c5B](https://polygonscan.com/address/0xc8834A8b64ad66668B11240Dc12B3EE32bA02c5B). 
-- Goerli network at [0x7Aa765411207De8614C5044D25c58148F017DD80](https://goerli.etherscan.io/address/0x7Aa765411207De8614C5044D25c58148F017DD80).
+- Goerli network at [0x29E4E245F47Abd08E52CF55a837b3B5bbd9aE1D0](https://goerli.etherscan.io/address/0x29E4E245F47Abd08E52CF55a837b3B5bbd9aE1D0).
 
 If you want to learn more about the project please visit our [official website](https://retriev.org).
 # Architecture

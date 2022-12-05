@@ -1,6 +1,6 @@
 # Retriev Appeal - Smart Contract
 
-This contract is meant to be used as a collector for the new "open deals" we introduced. 
+This contract is meant to be used as a collector for the new "deals without proposal" we introduced in latest Retriev implementation. 
 Any provider can now create deals without a deal proposal, putting down some collateral and allowing anyone (if they use this contract or a version of this contract) make appeals on that deals.
 
 ## Requirements

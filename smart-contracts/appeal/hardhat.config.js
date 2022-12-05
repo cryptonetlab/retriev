@@ -6,7 +6,7 @@ let hardhatConfigs = {
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {},
-    rinkeby: {
+    goerli: {
       url: provider
     },
     ropsten: {
