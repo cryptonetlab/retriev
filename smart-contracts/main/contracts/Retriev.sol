@@ -195,6 +195,14 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
         return resultIndex;
     }
 
+    function getOwner(uint256 _deal_index) public view returns (address) {
+        if (deals[_deal_index].owner != address(0)) {
+            return deals[_deal_index].owner;
+        } else {
+            return ownerOf(_deal_index);
+        }
+    }
+
     /*
         This method verifies a signature
     */
