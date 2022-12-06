@@ -444,7 +444,6 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
         dealCounter.increment();
         uint256 index = dealCounter.current();
         // Creating the deal mapping
-        deals[index].timestamp_request = block.timestamp;
         deals[index].timestamp_start = block.timestamp;
         deals[index].data_uri = _data_uri;
         deals[index].duration = duration;
