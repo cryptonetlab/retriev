@@ -8,9 +8,14 @@ yarn task render $1
 fi
 
 yarn task deal:propose $1
+sleep 5
 yarn task deposit $1
+sleep 5
 yarn task deal:accept $1
-yarn task appeal:create $1
-yarn task appeal:start $1
-yarn task appeal:slash $1
-yarn task vault $1
+sleep 5
+yarn task collection $1
+sleep 5
+yarn task deal:status $1
+echo "Waiting 3600s before redeem deal"
+sleep 3600
+yarn task deal:redeem $1

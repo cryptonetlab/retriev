@@ -7,7 +7,7 @@ yarn task setup $1
 yarn task render $1
 fi
 
-yarn task deal:create $1
+yarn task deal:propose $1
 yarn task deposit $1
 yarn task deal:accept $1
 yarn task appeal:create $1

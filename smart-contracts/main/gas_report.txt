@@ -8,7 +8,7 @@
 | contract_protected                     | 472             | 472    | 472    | 472    | 2       |
 | createAppeal                           | 147976          | 147976 | 147976 | 147976 | 1       |
 | createDealProposal                     | 278750          | 278750 | 278750 | 278750 | 2       |
-| createDealWithoutProposal              | 251141          | 251141 | 251141 | 251141 | 2       |
+| createDeal              | 251141          | 251141 | 251141 | 251141 | 2       |
 | depositToVault                         | 23072           | 23072  | 23072  | 23072  | 1       |
 | isProvider                             | 627             | 627    | 627    | 627    | 5       |
 | min_duration                           | 459             | 459    | 459    | 459    | 4       |

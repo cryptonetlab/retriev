@@ -580,13 +580,14 @@ const connectCacheNode = async (node) => {
     }
 }
 
-function createdealwoutproposal(node) {
+function createdeal(node) {
     return new Promise(async response => {
         const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
         if ((argv.dealuri !== undefined || argv.file !== undefined) && argv.collateral !== undefined && argv.duration !== undefined) {
             let data_uri = argv.dealuri
             let duration = argv.duration
             let collateral = argv.collateral
+            let owner = argv.owner
             let appeal_addresses = argv.appealaddress?.split(',')
             const { contract, wallet, provider } = await node.contract()
             console.log('📝 Reading state from contract..')
@@ -604,6 +605,10 @@ function createdealwoutproposal(node) {
             // Check if appeal address was setted up correctly
             if (appeal_addresses === undefined) {
                 appeal_addresses = [process.env.APPEAL_CONTRACT]
+            }
+            // Check if owner address was setted up correctly
+            if (owner === undefined) {
+                owner = "0x0000000000000000000000000000000000000000"
             }
             // Check if price was defined by user
             if (argv.file !== undefined) {
@@ -645,12 +650,14 @@ function createdealwoutproposal(node) {
                         let tx
                         const gasPrice = await provider.getGasPrice()
                         if (parseInt(collateral) > 0) {
-                            tx = await contract.createdealwoutproposalWithoutProposal(
+                            tx = await contract.createDeal(
+                                owner,
                                 data_uri,
                                 duration,
                                 appeal_addresses, { value: collateral.toString(), gasPrice })
                         } else {
-                            tx = await contract.createdealwoutproposalWithoutProposal(
+                            tx = await contract.createDeal(
+                                owner,
                                 data_uri,
                                 duration,
                                 appeal_addresses, { gasPrice })
@@ -671,10 +678,10 @@ function createdealwoutproposal(node) {
             }
         } else {
             console.log('Please provide all required arguments running command using basic mode like:')
-            console.log('createdealwoutproposal --file=<PATH_TO_LOCAL_FILE> --duration=<DURATION> --collateral=<COLLATERAL_IN_WEI>')
+            console.log('createdeal --file=<PATH_TO_LOCAL_FILE> --duration=<DURATION> --collateral=<COLLATERAL_IN_WEI>')
             console.log('')
             console.log('Or use expert mode like:')
-            console.log('createdealwoutproposal --dealuri=<DEAL_URI> --provider=<PROVIDER_ADDRESS> --duration=<DURATION> --collateral=<COLLATERAL_IN_WEI> --appealaddress=<APPEAL_ADDRESSES_SEPARATED_BY_COMMA>')
+            console.log('createdeal --dealuri=<DEAL_URI> --provider=<PROVIDER_ADDRESS> --duration=<DURATION> --collateral=<COLLATERAL_IN_WEI> --appealaddress=<APPEAL_ADDRESSES_SEPARATED_BY_COMMA>')
         }
     })
 }
@@ -701,4 +708,4 @@ const daemon = async (node) => {
     })
 }
 
-module.exports = { daemon, getidentity, sendmessage, deals, withdraw, getbalance, subscribe, setupminprice, getstrategy, setupmaxsize, setupmaxduration, setupmaxcollateral, setupendpoint, pin, storestrategy, createdealwoutproposal }
+module.exports = { daemon, getidentity, sendmessage, deals, withdraw, getbalance, subscribe, setupminprice, getstrategy, setupmaxsize, setupmaxduration, setupmaxcollateral, setupendpoint, pin, storestrategy, createdeal }

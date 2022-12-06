@@ -19,11 +19,14 @@ async function main() {
     }
     while (!ended) {
         try {
-            const owner = await contract.ownerOf(i)
+            const provider = await contract.ownerOf(i)
             const uri = await contract.tokenURI(i)
             const deal = await contract.deals(i)
+            const proposer = await contract.getProposer(i)
+            const owner = await contract.getOwner(i)
             console.log("DEAL:", deal)
-            console.log('TOKENID: ' + i, 'OWNER IS', owner)
+            console.log('TOKENID: ' + i, 'PROVIDER IS', provider)
+            console.log('OWNER: ' + owner, 'PROPOSER IS', proposer)
             console.log(Buffer.from(uri.split('base64,')[1], 'base64').toString())
             const decodedStr = JSON.parse(Buffer.from(uri.split('base64,')[1], 'base64').toString());
             fs.writeFileSync('./preview_nft/' + i + '.html', '<img width="1300" src="' + decodedStr.image + '" />')

@@ -203,6 +203,14 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
         }
     }
 
+    function getProposer(uint256 _deal_index) public view returns (address) {
+        if (deals[_deal_index].timestamp_request > 0) {
+            return deals[_deal_index].owner;
+        } else {
+            return ownerOf(_deal_index);
+        }
+    }
+
     /*
         This method verifies a signature
     */
@@ -423,7 +431,8 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
     /*
         This method will allow provider create deal without a proposal
     */
-    function createDealWithoutProposal(
+    function createDeal(
+        address _owner,
         string memory _data_uri,
         uint256 duration,
         address[] memory _appeal_addresses
@@ -444,6 +453,7 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
         dealCounter.increment();
         uint256 index = dealCounter.current();
         // Creating the deal mapping
+        deals[index].owner = _owner;
         deals[index].timestamp_start = block.timestamp;
         deals[index].data_uri = _data_uri;
         deals[index].duration = duration;

@@ -127,8 +127,9 @@ contract RetrievTest is Test {
     }
 
     // CREATE OPEN DEAL
-    function testCreateDealWithoutProposal() public {
+    function testcreateDeal() public {
         address provider = vm.addr(5);
+        address client = vm.addr(6);
         vm.deal(provider, 100 ether);
         retriev.setProviderStatus(
             provider,
@@ -145,7 +146,8 @@ contract RetrievTest is Test {
         uint256 collateral = 1 wei;
         address[] memory appeal_addresses = new address[](1);
         appeal_addresses[0] = provider;
-        retriev.createDealWithoutProposal{value: collateral}(
+        retriev.createDeal{value: collateral}(
+            client,
             "ipfs://QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG",
             duration,
             appeal_addresses
@@ -153,8 +155,9 @@ contract RetrievTest is Test {
     }
 
     // CREATE OPEN DEAL
-    function testCreateDealWithoutProposalAndAppeal() public {
+    function testcreateDealAndAppeal() public {
         address provider = vm.addr(5);
+        address client = vm.addr(6);
         vm.deal(provider, 100 ether);
         retriev.setProviderStatus(
             provider,
@@ -171,7 +174,8 @@ contract RetrievTest is Test {
         uint256 collateral = 1 wei;
         address[] memory appeal_addresses = new address[](1);
         appeal_addresses[0] = provider;
-        retriev.createDealWithoutProposal{value: collateral}(
+        retriev.createDeal{value: collateral}(
+            client,
             "ipfs://QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG",
             duration,
             appeal_addresses
