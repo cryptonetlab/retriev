@@ -37,9 +37,6 @@ yarn task myscript hardhat
 
 or you can change the `hardhat` with `goerli` (for instance) and deploy to goerli network. Of course you will need to setup your own `provider` inside the `configs/goerli.json` file adding an Alchemy, Infura or whatsoever provider.
 
-# Smart Contract Testing
-
-Tests on the contract are explained [here](./TESTS.md)
 # Smart Contract Security
 
 At the moment the contract was not audited from a third party. We used popular tool [slither](https://github.com/crytic/slither) to analyze our contract and this is the result:
@@ -70,3 +67,8 @@ ERCs: ERC721, ERC165
 | TokenRender |      7      |               |            |     Yes      |             |
 +-------------+-------------+---------------+------------+--------------+-------------+
 ```
+
+
+# Smart Contract Testing
+
+An extended documentation that explains how to run tests on the contract can be found [here](./TESTS.md).

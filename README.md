@@ -48,7 +48,7 @@ Project is divided by subfolders, any folder contains a different piece of the p
 
 Installing a node is required *only* if you want to be part of the referee consortium or you want to be a provider. There are very few requirements to run the node, it depends if you want to run it using [Docker](https://www.docker.com/) or you want to build from source using [NodeJS](https://nodejs.org/en/).
 
-Since we're using blockchain you need a web3 provider, in our case we need a `Goerli` or `Polygon` provider and we suggest to signup for a free account at (Infura)[https://infura.io]. Please be sure to have your `API_KEY` (it will be provided by Infura's interface) before can continue following this guide.
+Since we're using blockchain you need a web3 provider, in our case we need a `Goerli` or `Polygon` provider and we suggest to signup for a free account at [Infura](https://infura.io). Please be sure to have your `API_KEY` (it will be provided by Infura's interface) before can continue following this guide.
 
 ## Install Node using Docker
 
@@ -78,6 +78,10 @@ If you're looking for specific documentation to interact with protocol as a clie
 ## Providers CLI
 
 If you're looking for specific documentation to interact with protocol as a provider please go [here](./provider-cli/README.md).
+
+## Smart contract docs
+
+If you're looking for specific documentation for the smart contract please go [here](./smart-contracts/main/README.md).
 
 # Support
 
