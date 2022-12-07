@@ -11,7 +11,7 @@ exports.derive = async function derive(mnemonic, amount, start = 1) {
     const hdwallet = ethJS.hdkey.fromMasterSeed(await bip39.mnemonicToSeed(mnemonic));
     let keys = []
     let addresses = []
-    for (let i = start; i <= (amount + start); i++) {
+    for (let i = start; i < (amount + start); i++) {
         const derivePath = hdwallet.derivePath(ETH_DERIVATION_PATH).deriveChild(i);
         const privkey = derivePath.getWallet().getPrivateKeyString();
         const wallet = ethJS.default.fromPrivateKey(Buffer.from(privkey.replace('0x', ''), 'hex'));

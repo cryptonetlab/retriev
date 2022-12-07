@@ -82,7 +82,7 @@ contract RetrievTest is Test {
         );
     }
 
-    // ACCEPT DEAL PROPOSAL
+    // CREATE AND ACCEPT DEAL PROPOSAL
     function testCreateDealProposalAndAccept() public {
         // Deriving new provider from vm.addr function
         address client = vm.addr(2);
@@ -126,8 +126,8 @@ contract RetrievTest is Test {
         emit log_uint(retriev.balanceOf(provider));
     }
 
-    // CREATE OPEN DEAL
-    function testcreateDeal() public {
+    // CREATE DEAL WITHOUT PROPOSAL
+    function testCreateDeal() public {
         address provider = vm.addr(5);
         address client = vm.addr(6);
         vm.deal(provider, 100 ether);
@@ -154,8 +154,8 @@ contract RetrievTest is Test {
         );
     }
 
-    // CREATE OPEN DEAL
-    function testcreateDealAndAppeal() public {
+    // CREATE DEAL WITHOUT PROPOSAL AND ACCEPT
+    function testCreateDealAndAppeal() public {
         address provider = vm.addr(5);
         address client = vm.addr(6);
         vm.deal(provider, 100 ether);

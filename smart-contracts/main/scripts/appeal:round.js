@@ -18,6 +18,7 @@ async function main() {
         console.log("Round is:", round.toString())
         const leader = await contract.getElectedLeader(appeal_index)
         console.log("Leader is:", leader)
+        console.log("Waiting " + timeout_time + " seconds before checking again the round.")
         setInterval(async function () {
             const round = await contract.getRound(appeal_index)
             console.log("Round is:", round.toString())

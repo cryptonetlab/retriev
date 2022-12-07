@@ -23,6 +23,10 @@ async function main() {
     const duration = min_duration; // Duration of the deal
     const collateral = ethers.utils.parseUnits("1", 'gwei') // Setting 0 if you need minimum one
     let appeal_addresses = [wallet.address, configs.owner_address]
+    if (configs.appeal_contract !== undefined) {
+        console.log("Appeal contract found, using it to route appeals.")
+        appeal_addresses = [configs.appeal_contract]
+    }
     console.log("Appeal addresses:", appeal_addresses)
     const contract_protected = await contract.contract_protected()
     if (contract_protected) {

@@ -11,19 +11,17 @@ async function main() {
 
     console.log('Asking for providers balance..')
     if (configs.providers !== undefined) {
-        const { addresses } = await derive(configs.owner_mnemonic, 4, 10)
-        for (let k = 0; k < 5; k++) {
-            const balance = await contract.vault(addresses[k])
-            console.log('Balance of ' + addresses[k] + ' is:', ethers.utils.formatEther(balance.toString()))
+        for (let k = 0; k < configs.providers.length; k++) {
+            const balance = await contract.vault(configs.providers[k].address)
+            console.log('Balance of ' + configs.providers[k].address + ' is:', ethers.utils.formatEther(balance.toString()))
         }
     }
     console.log('--')
     if (configs.referees !== undefined) {
         console.log('Asking for referees balance..')
-        const { addresses } = await derive(configs.owner_mnemonic, 4, 20)
-        for (let k = 0; k < 5; k++) {
-            const balance = await contract.vault(addresses[k])
-            console.log('Balance of ' + addresses[k] + ' is:', ethers.utils.formatEther(balance.toString()))
+        for (let k = 0; k < configs.referees.length; k++) {
+            const balance = await contract.vault(configs.referees[k].address)
+            console.log('Balance of ' + configs.referees[k].address + ' is:', ethers.utils.formatEther(balance.toString()))
         }
     }
     console.log('--')

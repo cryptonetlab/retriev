@@ -1,5 +1,6 @@
 [profile.default]
 src = '../contracts'
+test = 'foundry'
 out = 'out'
 libs = ['libs/foundry']
 gas_reports = ["*"]

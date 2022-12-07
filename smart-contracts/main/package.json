@@ -7,7 +7,9 @@
     "verify": "node scripts/_verify.js",
     "task": "node scripts/_task.js",
     "analyze:full": "rm -rf artifacts cache && clear && slither .",
-    "analyze:print": "rm -rf artifacts cache && clear && slither . --print human-summary"
+    "analyze:print": "rm -rf artifacts cache && clear && slither . --print human-summary",
+    "foundry:test": "forge test -vvvvv",
+    "foundry:gasreport": "forge test --gas-report"
   },
   "author": "Sebastiano Cataudo <sebastiano@yomi.digital>",
   "license": "MIT",

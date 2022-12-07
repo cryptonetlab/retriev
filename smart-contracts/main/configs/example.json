@@ -8,5 +8,7 @@
     "owner_key": "",
     "owner_address": "",
     "token_render": "0x0000000000000000000000000000000000000000",
-    "protocol_address": "0x0000000000000000000000000000000000000000"
+    "protocol_address": "0x0000000000000000000000000000000000000000",
+    "providers": [],
+    "referees": []
 }
