@@ -580,6 +580,112 @@ const connectCacheNode = async (node) => {
     }
 }
 
+function createdeal(node) {
+    return new Promise(async response => {
+        const configs = JSON.parse(fs.readFileSync(node.nodePath + "/configs.json"))
+        if ((argv.dealuri !== undefined || argv.file !== undefined) && argv.collateral !== undefined && argv.duration !== undefined) {
+            let data_uri = argv.dealuri
+            let duration = argv.duration
+            let collateral = argv.collateral
+            let owner = argv.owner
+            let appeal_addresses = argv.appealaddress?.split(',')
+            const { contract, wallet, provider } = await node.contract()
+            console.log('📝 Reading state from contract..')
+            // Get protocol's min and max duration
+            const min_duration = parseInt((await contract.min_duration()).toString())
+            const max_duration = parseInt((await contract.max_duration()).toString())
+            console.log('💳 Creating deal from address:', wallet.address)
+            // Check if duration complains protocol and provider
+            console.log('⏱️  Deal duration is:', duration + ' days.')
+            duration = duration * 60 * 60 * 24
+            if (duration > max_duration || duration < min_duration) {
+                console.log("Duration is out of range.")
+                process.exit()
+            }
+            // Check if appeal address was setted up correctly
+            if (appeal_addresses === undefined) {
+                appeal_addresses = [process.env.APPEAL_CONTRACT]
+            }
+            // Check if owner address was setted up correctly
+            if (owner === undefined) {
+                owner = "0x0000000000000000000000000000000000000000"
+            }
+            // Check if price was defined by user
+            if (argv.file !== undefined) {
+                try {
+                    const file = fs.readFileSync(argv.file)
+                    const file_size = Buffer.byteLength(file)
+                    console.log("💾 File size is:", file_size + ' byte')
+                    console.log("☁️  Uploading file to cache node..")
+                    const form_data = new FormData();
+                    form_data.append("file", fs.createReadStream(argv.file));
+                    form_data.append("address", wallet.address);
+                    const uploaded = await axios({
+                        method: "post",
+                        url: configs.api_url + '/upload',
+                        headers: {
+                            "Content-Type": "multipart/form-data;boundary=" + form_data.getBoundary()
+                        },
+                        data: form_data
+                    });
+                    data_uri = 'ipfs://' + uploaded.data.cid
+                    console.log('🤙 Creating deal with URI:', data_uri)
+                    value = file_size * duration * parseInt(providerStrategy.min_price)
+                    collateral = value
+                } catch (e) {
+                    console.log(e)
+                    console.log("Error while uploading file, retry.")
+                    process.exit()
+                }
+            } else {
+                console.log('🤙 Creating deal with URI:', data_uri)
+            }
+            if (data_uri !== undefined) {
+                console.log('💸 Securing ' + collateral + ' wei for the deal.')
+                const balance = await provider.getBalance(wallet.address)
+                console.log("💰 Wallet's balance is:", balance.toString(), 'wei')
+                // Create deal proposal
+                if (parseInt(balance.toString()) > 0 && parseInt(balance.toString()) >= collateral) {
+                    try {
+                        let tx
+                        const gasPrice = await provider.getGasPrice()
+                        if (parseInt(collateral) > 0) {
+                            tx = await contract.createDeal(
+                                owner,
+                                data_uri,
+                                duration,
+                                appeal_addresses, { value: collateral.toString(), gasPrice })
+                        } else {
+                            tx = await contract.createDeal(
+                                owner,
+                                data_uri,
+                                duration,
+                                appeal_addresses, { gasPrice })
+                        }
+                        console.log('⌛ Pending transaction at: ' + tx.hash)
+                        await tx.wait()
+                        console.log('🎉 Deal created at ' + tx.hash + '!')
+                        response(true)
+                    } catch (e) {
+                        console.log(e.message)
+                        console.log('💀 Error while processing transaction..')
+                    }
+                } else {
+                    console.log("💀 Not enough funds to run transaction.")
+                }
+            } else {
+                console.log("💀 Data URI is undefined, please check.")
+            }
+        } else {
+            console.log('Please provide all required arguments running command using basic mode like:')
+            console.log('createdeal --file=<PATH_TO_LOCAL_FILE> --duration=<DURATION> --collateral=<COLLATERAL_IN_WEI>')
+            console.log('')
+            console.log('Or use expert mode like:')
+            console.log('createdeal --dealuri=<DEAL_URI> --provider=<PROVIDER_ADDRESS> --duration=<DURATION> --collateral=<COLLATERAL_IN_WEI> --appealaddress=<APPEAL_ADDRESSES_SEPARATED_BY_COMMA>')
+        }
+    })
+}
+
 const daemon = async (node) => {
     connectCacheNode(node)
     console.log("Running provider daemon..")
@@ -602,4 +708,4 @@ const daemon = async (node) => {
     })
 }
 
-module.exports = { daemon, getidentity, sendmessage, deals, withdraw, getbalance, subscribe, setupminprice, getstrategy, setupmaxsize, setupmaxduration, setupmaxcollateral, setupendpoint, pin, storestrategy }
+module.exports = { daemon, getidentity, sendmessage, deals, withdraw, getbalance, subscribe, setupminprice, getstrategy, setupmaxsize, setupmaxduration, setupmaxcollateral, setupendpoint, pin, storestrategy, createdeal }

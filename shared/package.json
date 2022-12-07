@@ -1,6 +1,6 @@
 {
-  "name": "shared",
-  "version": "1.0.0",
+  "name": "retriev-shared",
+  "version": "0.1.0",
   "description": "",
   "main": "shared.js",
   "scripts": {},

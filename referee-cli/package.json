@@ -1,6 +1,6 @@
 {
-    "name": "rpp-referee",
-    "version": "1.0.1",
+    "name": "retriev-referee",
+    "version": "0.1.0",
     "description": "",
     "main": "src/referee.js",
     "bin": "src/referee.js",

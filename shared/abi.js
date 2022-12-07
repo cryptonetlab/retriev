@@ -474,6 +474,34 @@ exports.abi = [
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "_data_uri",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "duration",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_appeal_addresses",
+        "type": "address[]"
+      }
+    ],
+    "name": "createDeal",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "string",
         "name": "_data_uri",
         "type": "string"
@@ -607,6 +635,25 @@ exports.abi = [
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "_deal_index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getOwner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "appeal_index",
         "type": "uint256"
       }
@@ -617,6 +664,25 @@ exports.abi = [
         "internalType": "bytes",
         "name": "",
         "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_deal_index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getProposer",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",

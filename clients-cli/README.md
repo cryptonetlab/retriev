@@ -1,4 +1,4 @@
-# Retrieval Pinning Protocol - Clients CLI
+# Retriev Protocol - Clients CLI
 
 Client's CLI is intended to be used as terminal tool to interact with the protocol so you can expect to do following things:
 
@@ -8,16 +8,16 @@ Client's CLI is intended to be used as terminal tool to interact with the protoc
 - **Make appeals**: you can make appeals for a specific deal, asking the referees to check file and eventually get a refund
 - **Withdraw funds**: you can withdraw funds if they got unlocked by the protocol
 
-## Build tool from source
+## Build CLI from source
 
-Tool is written in NodeJS so we assume you have git, NodeJS >= 16 and YARN installed.
+CLI is written in NodeJS so we assume you have git, NodeJS >= 16 and YARN installed.
 
 You will also need a web3 provider (we suggest [Infura](https://infura.io)) to interact with blockchain. 
 
 After you've met all required dependencies you can start following those steps:
 
 ```
-git clone https://github.com/protocol/retrieval-pinning
+git clone https://github.com/protocol/retriev
 cd clients-cli
 yarn
 ```
@@ -31,7 +31,7 @@ nano .env
 
 you will see something like:
 ```
-CONTRACT_ADDRESS=0x7Aa765411207De8614C5044D25c58148F017DD80
+CONTRACT_ADDRESS=0x29E4E245F47Abd08E52CF55a837b3B5bbd9aE1D0
 WEB3_PROVIDER=https://goerli.infura.io/v3/API_KEY
 API_URL=https://api.pldr.dev
 ```
@@ -205,7 +205,7 @@ yarn withdraw
 
 # Use dApp at onchain.storage
 
-You will also able to use the protocol by interacting with [onchain.storage](https://v2.pldr.dev) dApp. Of course you will need to import the private key to Metamask to see the same deals.
+You will also able to use the protocol by interacting with [onchain.storage](https://onchain.storage) dApp. Of course you will need to import the private key to Metamask to see the same deals.
 
 # Contributions and support
 

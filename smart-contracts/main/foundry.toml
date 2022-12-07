@@ -1,0 +1,9 @@
+[profile.default]
+src = '../contracts'
+test = 'foundry'
+out = 'out'
+libs = ['libs/foundry']
+gas_reports = ["*"]
+remappings = ["@openzeppelin/=libs/foundry/openzeppelin-contracts/"]
+
+# See more config options https://github.com/foundry-rs/foundry/tree/master/config\

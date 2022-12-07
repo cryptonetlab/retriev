@@ -1,6 +1,6 @@
 {
-    "name": "rpp-provider",
-    "version": "1.0.1",
+    "name": "retriev-provider",
+    "version": "0.1.0",
     "description": "",
     "main": "src/provider.js",
     "bin": "src/provider.js",
@@ -20,6 +20,8 @@
         "test:storestrategy": "node src/provider.js --debug --name=providerdev --port=8000 storestrategy",
         "test:subscribe": "node src/provider.js --debug --name=providerdev --port=8000 subscribe https://provider.pldr.dev",
         "test:pin": "node src/provider.js --debug --name=providerdev --port=8000 pin true",
+        "test:dealwoutproposal:uri": "node src/provider.js createdealwoutproposal --dealuri='ipfs://bafkreiaoeqvdretuu7mzr4kjrxvifiykfp73rk5rb7b62o7j5hvlmwg5ru' --duration=60 --collateral=1",
+        "test:dealwoutproposal:file": "node src/provider.js createdealwoutproposal --file=../shared/vps.txt --provider='0x2489c48090523f37028f1e42454b7DD04943d0Bf' --duration=60 --collateral=1",
         "compile": "pkg . --out-path bin",
         "start": "./bin/rpp-provider-linux --debug --daemon"
     },

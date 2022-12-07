@@ -1,0 +1,17 @@
+| contracts/Retriev.sol:Retriev contract |                 |        |        |        |         |
+|----------------------------------------|-----------------|--------|--------|--------|---------|
+| Deployment Cost                        | Deployment Size |        |        |        |         |
+| 4530395                                | 22658           |        |        |        |         |
+| Function Name                          | min             | avg    | median | max    | # calls |
+| acceptDealProposal                     | 51491           | 51491  | 51491  | 51491  | 1       |
+| balanceOf                              | 1179            | 1179   | 1179   | 1179   | 1       |
+| contract_protected                     | 472             | 472    | 472    | 472    | 2       |
+| createAppeal                           | 147976          | 147976 | 147976 | 147976 | 1       |
+| createDealProposal                     | 278750          | 278750 | 278750 | 278750 | 2       |
+| createDeal              | 251141          | 251141 | 251141 | 251141 | 2       |
+| depositToVault                         | 23072           | 23072  | 23072  | 23072  | 1       |
+| isProvider                             | 627             | 627    | 627    | 627    | 5       |
+| min_duration                           | 459             | 459    | 459    | 459    | 4       |
+| setProviderStatus                      | 90386           | 93586  | 94386  | 94386  | 5       |
+| setRefereeStatus                       | 68280           | 76246  | 68280  | 92180  | 3       |
+| tuneProtocolVariables                  | 3889            | 5889   | 5889   | 7889   | 2       |
