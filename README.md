@@ -18,8 +18,9 @@ The protocol consists of three main elements:
 
 Of course the end users (who wants to store data and make deals) can interact directly with the protocol using the blockchain, however we created a simple interface to make deals.
 
-At the moment there's no interface for providers but we're working on Providers's part of the protocol and it will be available soon.
+This is an extended diagram which explains current architecture:
 
+![Retriev Architecture](./_docs/architecture.jpg "Retriev Architecture")
 ## Technologies used
 
 We used a bunch of different technologies to create the protocol:
