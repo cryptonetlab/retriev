@@ -4,11 +4,21 @@ Retriev is a Protocol designed by [CryptoNetLab](https://cryptonet.org/) and dev
 
 If you want to go deeper on how the protocol works please read our [light paper](./PAPER.md).
 
-We have now two active deployments:
-- Polygon network at [0xc8834A8b64ad66668B11240Dc12B3EE32bA02c5B](https://polygonscan.com/address/0xc8834A8b64ad66668B11240Dc12B3EE32bA02c5B). 
-- Goerli network at [0x29E4E245F47Abd08E52CF55a837b3B5bbd9aE1D0](https://goerli.etherscan.io/address/0x29E4E245F47Abd08E52CF55a837b3B5bbd9aE1D0).
+## Active deployments
+### v0.0.1 - Current release available at retriev.org
+We have now one active deployment in Polygon mainnet:
+- Main contract is deployed at [0xc8834A8b64ad66668B11240Dc12B3EE32bA02c5B](https://polygonscan.com/address/0xc8834A8b64ad66668B11240Dc12B3EE32bA02c5B).
+We have now one active deployment in Ethereum testnet (Goerli):
+- Main contract is deployed at [0x7Aa765411207De8614C5044D25c58148F017DD80](https://goerli.etherscan.io/address/0x7Aa765411207De8614C5044D25c58148F017DD80).
 
-If you want to learn more about the project please visit our [official website](https://retriev.org).
+This release can be found at [retriev.org](https://retriev.org).
+
+### v0.1.0 - Active development release
+We have now one active deployment for v0.1.0 (Goerli):
+- Main contract is deployed at [0x31FEbE602b8088bB96cfbb5Ba44A9b62B3b9845d](https://goerli.etherscan.io/address/0x31FEbE602b8088bB96cfbb5Ba44A9b62B3b9845d).
+- Public appeal contract is deployed at [0x21d3F2649Dc6D37373C34aB89b34209C63b8020e](https://goerli.etherscan.io/address/0x21d3F2649Dc6D37373C34aB89b34209C63b8020e).
+
+This release can be found at [dev.retriev.org](https://dev.retriev.org).
 # Architecture
 
 The protocol consists of three main elements:

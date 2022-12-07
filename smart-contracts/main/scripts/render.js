@@ -13,10 +13,10 @@ async function main() {
   const ABI = JSON.parse(fs.readFileSync('./artifacts/contracts/' + configs.contract_name + '.sol/' + configs.contract_name + '.json').toString())
   const provider = new ethers.providers.JsonRpcProvider(configs.provider);
   const wallet = new ethers.Wallet(configs.owner_key).connect(provider)
-  const dr_contract = new ethers.Contract(configs.contract_address, ABI.abi, wallet)
+  const retriev = new ethers.Contract(configs.contract_address, ABI.abi, wallet)
   const gasPrice = await provider.getGasPrice()
-  await dr_contract.tuneProtocolVariables(0, contract.address, true, { gasPrice })
-  console.log('Address saved in contract')
+  const tuneTx = await retriev.tuneProtocolVariables(0, contract.address, true, { gasPrice })
+  console.log('Address saved in contract at:', tuneTx.hash)
   configs.token_render = contract.address
   fs.writeFileSync(process.env.CONFIG, JSON.stringify(configs, null, 4))
 }
