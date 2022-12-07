@@ -1,6 +1,6 @@
 {
-  "name": "rpp-contract",
-  "version": "1.0.0",
+  "name": "retriev-contract",
+  "version": "0.1.0",
   "scripts": {
     "test": "npx hardhat test",
     "network": "node scripts/_network.js",

@@ -1,6 +1,6 @@
 {
-    "name": "rpp-provider",
-    "version": "1.0.1",
+    "name": "retriev-provider",
+    "version": "0.1.0",
     "description": "",
     "main": "src/provider.js",
     "bin": "src/provider.js",

@@ -1,12 +1,13 @@
 {
   "name": "retriev-appeal-contract",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Appeal contract for Retriev Protocol",
   "scripts": {
     "test": "npx hardhat test",
     "network": "node scripts/_network.js",
     "verify": "node scripts/_verify.js",
-    "analyze:slither": "slither . --print human-summary",
+    "analyze:full": "rm -rf artifacts cache && clear && slither .",
+    "analyze:print": "rm -rf artifacts cache && clear && slither . --print human-summary",
     "task": "node scripts/_task.js"
   },
   "author": "Sebastiano Cataudo <sebastiano@yomi.digital>",

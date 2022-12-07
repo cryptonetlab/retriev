@@ -1,6 +1,6 @@
 {
     "name": "rpp-client",
-    "version": "1.0.1",
+    "version": "0.1.0",
     "description": "",
     "main": "src/client.js",
     "bin": "src/client.js",
