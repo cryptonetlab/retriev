@@ -512,7 +512,7 @@ export default {
       // Checking proposal timeout
       let proposalTimeout = await contract.methods.proposal_timeout().call();
       app.proposalTimeout = proposalTimeout;
-      console.log("Proposal Timeout", app.proposalTimeout);
+      // console.log("Proposal Timeout", app.proposalTimeout);
 
       // Fetch Deals and parser
       try {
@@ -538,19 +538,18 @@ export default {
             // }
             // console.log("Can deal appeal?", deal.canAppeal);
             app.deals.push(deal);
-            app.filterActive();
           }
         }
-
+        app.filterActive();
         app.searchPending();
         app.$forceUpdate();
         // app.log("Found #" + app.deals.length + " deals.");
         console.log("deals", app.deals);
-        this.$toast.clear();
-        // app.activeDeals();
       } catch (e) {
         console.log(e);
-        app.alertCustomError("2 h deals from blockchain, please retry!");
+        app.alertCustomError(
+          "Unable to load Deals list, connection errors may have occurred with the server. Please try again later!"
+        );
       }
 
       app.loading = false;
@@ -587,7 +586,7 @@ export default {
         }
         i++;
       }
-      console.log("DEFAULT PROVIDERS:", app.dealProviders);
+      // console.log("DEFAULT PROVIDERS:", app.dealProviders);
       ended = false;
       i = 0;
       while (!ended) {
@@ -635,19 +634,6 @@ export default {
         appeal_index + " have a round " + round
       );
 
-      // Check STATUS ACTIVE Deal
-
-      if (
-        parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0 ||
-        (parseInt(deal.timestamp_start) === 0 &&
-          !deal.expired &&
-          !deal.canceled)
-      ) {
-        deal.status_active = true;
-      } else {
-        deal.status_active = false;
-      }
-
       // Check Pending deal
       if (
         deal.timestamp_start !== undefined &&
@@ -661,6 +647,33 @@ export default {
         deal.pending = false;
       }
 
+      // Set expiration timestamp
+      const expires_at =
+        (parseInt(deal.timestamp_request) + parseInt(proposalTimeout)) * 1000;
+
+      // Check if expired
+
+      if (
+        new Date().getTime() > expires_at &&
+        parseInt(deal.timestamp_start) === 0
+      ) {
+        deal.expired = true;
+        deal.canAppeal = false;
+        deal.pending = false;
+      }
+
+      // Check STATUS ACTIVE Deal
+      if (
+        parseInt(deal.timestamp_end) - new Date().getTime() / 1000 > 0 ||
+        (parseInt(deal.timestamp_start) === 0 &&
+          !deal.expired &&
+          !deal.canceled)
+      ) {
+        deal.status_active = true;
+      } else {
+        deal.status_active = false;
+      }
+
       // Check if deal ended
       if (
         (deal.timestamp_end * 1000 < new Date().getTime() &&
@@ -668,22 +681,6 @@ export default {
         deal.canceled
       ) {
         deal.canAppeal = false;
-        deal.status_active = false;
-      }
-
-      // Set expiration timestamp
-      const expires_at =
-        (parseInt(deal.timestamp_request) + parseInt(proposalTimeout)) * 1000;
-
-      // Check if expired
-      if (new Date().getTime() > expires_at && deal.timestamp_start === 0) {
-        deal.expired = true;
-        deal.canAppeal = false;
-      } else if (
-        new Date().getTime() < expires_at &&
-        deal.timestamp_start === 0
-      ) {
-        deal.expired = false;
         deal.status_active = false;
       }
 

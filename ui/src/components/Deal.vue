@@ -639,6 +639,25 @@ export default {
           console.log("refreshed", refreshed.data);
           app.deal = refreshed.data;
 
+          // Set expiration timestamp
+          const contract = new app.web3.eth.Contract(app.abi, app.contract);
+          let proposalTimeout = await contract.methods
+            .proposal_timeout()
+            .call();
+          const expires_at =
+            (parseInt(app.deal.timestamp_request) + parseInt(proposalTimeout)) *
+            1000;
+
+          // Check if expired
+          if (
+            new Date().getTime() > expires_at &&
+            parseInt(app.deal.timestamp_start) === 0
+          ) {
+            app.deal.expired = true;
+            app.deal.canAppeal = false;
+            app.deal.pending = false;
+          }
+
           //Check active deal
           if (
             (parseInt(app.deal.timestamp_end) - new Date().getTime() / 1000 >
@@ -662,7 +681,7 @@ export default {
           if (
             app.deal.timestamp_start !== undefined &&
             parseInt(app.deal.timestamp_start) === 0 &&
-            !app.deal.canceled
+            !app.deal.canceled && !app.deal.expired
           ) {
             app.deal.pending = true;
             app.deal.canAppeal = false;
