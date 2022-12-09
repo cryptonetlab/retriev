@@ -11,7 +11,7 @@
     "contract": "0x7Aa765411207De8614C5044D25c58148F017DD80",
     "blockchain": "goerli",
     "network": "5",
-    "api": "https://api.pldr.dev",
+    "api": "https://api-goerli.retriev.org",
     "opensea": "https://testnets.opensea.io/assets/goerli",
     "explorer": "https://goerli.etherscan.io/tx/"
   }
