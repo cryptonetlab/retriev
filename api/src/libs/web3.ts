@@ -113,8 +113,7 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
         last_onchain_update: new Date().getTime()
       }
       deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
-      const indexed = await axios.get(process.env.ONCHAIN_API + "/index/" + process.env.PROTOCOL_ID + "/" + deal_index)
-      console.log("[INDEX] Onchain response is:", indexed.data)
+      axios.get(process.env.ONCHAIN_API + "/index/" + process.env.PROTOCOL_ID + "/" + deal_index)
       const checkDB = await db.find('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS })
       if (checkDB === null) {
         console.log('[DEALS] --> Inserting new deal')
@@ -137,8 +136,7 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
         if (cancel_tx === '') {
           cancel_tx = checkDB.cancel_tx
         }
-        const indexed = await axios.get(process.env.ONCHAIN_API + "/index/" + process.env.PROTOCOL_ID + "/" + deal_index)
-        console.log("[INDEX] Onchain response is:", indexed.data)
+        axios.get(process.env.ONCHAIN_API + "/index/" + process.env.PROTOCOL_ID + "/" + deal_index)
         await db.update('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider, appeal_requested: deal.appeal_requested, accept_tx: accept_tx, cancel_tx: cancel_tx, chain: process.env.CHAIN, last_onchain_update: new Date().getTime() } })
       }
       response(true)
