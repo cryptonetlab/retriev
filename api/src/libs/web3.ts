@@ -109,12 +109,13 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
         proposal_tx: proposal_tx,
         contract: process.env.CONTRACT_ADDRESS,
         chain: process.env.CHAIN,
-        indexed: false
+        indexed: false, 
+        last_onchain_update: new Date().getTime()
       }
       deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
       const indexed = await axios.get(process.env.ONCHAIN_API + "/index/" + process.env.PROTOCOL_ID + "/" + deal_index)
       console.log("[INDEX] Onchain response is:", indexed.data)
-      const checkDB = await db.find('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS, last_onchain_update: new Date().getTime() })
+      const checkDB = await db.find('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS })
       if (checkDB === null) {
         console.log('[DEALS] --> Inserting new deal')
         let inserted = false
