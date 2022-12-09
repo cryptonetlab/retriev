@@ -3,7 +3,7 @@
     "contract": "0xc8834A8b64ad66668B11240Dc12B3EE32bA02c5B",
     "blockchain": "polygon",
     "network": "137",
-    "api": "https://api-polygon.pldr.dev",
+    "api": "https://api-polygon.retriev.org",
     "opensea": "https://opensea.io/assets/matic",
     "explorer": "https://polygonscan.com/tx/"
   },
@@ -11,7 +11,7 @@
     "contract": "0x31FEbE602b8088bB96cfbb5Ba44A9b62B3b9845d",
     "blockchain": "goerli",
     "network": "5",
-    "api": "https://api.pldr.dev",
+    "api": "https://api-goerli.retriev.org",
     "opensea": "https://testnets.opensea.io/assets/goerli",
     "explorer": "https://goerli.etherscan.io/tx/"
   }
