@@ -1,8 +1,11 @@
-# Retrieval Pinning
-Last update: 21st July 2022
+# Retrieval Assurance Protocol (Retriev.org)
+
+Last update: 7th Dec 2022
+
 
 ## Short Intro 
 
+ 
 :globe_with_meridians: **Context**: We consider the setting of a decentralized storage network. That is, we have clients who delegate the storage of their file to a network of storage providers. 
 
 :bomb: **Problem**: We focus on the problem of having a  "retrievability assurance" for such storage service. Specifically, the key question we looked at is: how can clients delegating storage be confident that the data can be retrieved from the network (ie, the guaranteed retrieval problem)?
@@ -20,6 +23,7 @@ In the following section we describe this idea in full details.
 
 
 #### Links
+- Website: retriev.org
 - GitHub Repo: https://github.com/protocol/retriev
 - Slack: https://filecoinproject.slack.com/archives/C03CJKWP2DR
 
@@ -38,6 +42,7 @@ In the following section we describe this idea in full details.
         -  the `min_price`:  minimum price per second per byte, 
         -  the `max_rate`:  maximum rate (collateral/payment) 
         - the `max_size`: maximum file size accepted in a proposal  
+        - `max_duration`
     - The default values are `min_price`= 0,  `max_rate` = `slashing_multiplier` (here `slashing_multiplier` is a protocol parameter, see "protocol parameters" section), and `max_size`= 20MB.
 
 
@@ -49,9 +54,12 @@ In the following section we describe this idea in full details.
 ### Retrievability Deal:
 
 
-#### Create deal
-A client creates a  deal proposal (on-chain msg)  specifying: 
-- The identifier of the file (or folder of files) that is the subject of the deal;
+#### Create deal proposal
+
+`createDealProposal(string data_uri) -> uint256 deal_id`
+
+A client creates a  deal proposal  specifying: 
+- The identifier of the file (or folder of files) that is the subject of the deal, `data_uri`;
 - The  list of providers that can accept it;
 - The list of addresses that can later on send the "create appeal" transactions (after the proposal is accepted);
 - The `payment`: amount (in native tokens) paid by the client to the provider if the deal is not invalidated by an appeal (ie, deal ends with no slashing); at the moment of the proposal creation, the `payment` is "locked down" (ie, taken from the client's account and deposited to the smart contract); ~~the proposal is valid only if `payment > 0`;~~
@@ -60,15 +68,23 @@ A client creates a  deal proposal (on-chain msg)  specifying:
 
 
 Comment: In the current Client UI we designed two modes:
-- *Default mode*:  the UI sets the values for payment and collateral. In particular, for both the suggested value is `min_price * file_size *duration`. Then, the client can increase the two values as long as the following conditions are satisfied:
+- *Default mode*:  the UI sets the values for payment and collateral. In particular, for both the suggested value is `min_price * file_size * duration`. Then, the client can increase the two values as long as the following conditions are satisfied:
   - `payment` ≤ `collateral`
   - `collateral` ≤ `max_rate` * `payment`.
 - *Expert mode*: the UI allows the client to choose any value for the payment and the collateral.
 
+#### Cancel Deal Proposal
 
-A client can cancel a deal proposal at any time, and this action will unlock the `payment`. Moreover, a deal proposal has a timeout (currently set to 86400 seconds) after which it can not be accepted by providers anymore. 
+A client can cancel a proposal (not accepted yet) at any time, and this action will release the `payment`
 
-#### Accept deal
+
+Moreover, a deal proposal has a timeout (currently set to 86400 seconds) after which it can not be accepted by providers anymore. 
+
+#### Accept deal proposal
+`acceptDealProposal(uint256 deal_id, string data_uri)`
+
+
+
 A provider can accept a deal proposal if all the following is true:
 - It is one of the providers for which the proposal was issued;
 - The proposal is active (no timeout, no cancel message);
@@ -82,9 +98,24 @@ Comment: we designed the provider CLI in such a way then before automatically ac
 - the collateral value is smaller of equal to `max_rate * payment`.
 
 
-#### Redeem deal
+#### Creat an "express" deal (ie, deal without proposal)
 
+
+`createDeal( address owner, string data_uri, uint256 duration, array[] appeal_addresses ) -> uint256 deal_id`
+
+A provider can create a deal by specifying:
+
+- The identifier of the file (or folder of files) that is the subject of the deal, `data_uri`;
+- The parameter `owner` to this function so provider can assign deal to a client
+- The list of addresses that can later on send the “create appeal” transactions;
+- The duration: for how long the deal is active, starting from when it is created (expressed in seconds); the deal is valid only if duration is in a range specified by the smart contract code (see “protocol parameters” section).
+- The collateral (msg.value as input parameter): amount (in native tokens) that is “locked down” (ie, from the provider’s account deposited to the smart contract). Also, we timestamp this on-chain, and we consider the deal active from this moment (timestamp_start).
+
+
+#### Redeem deal
+`redeemDeal(uint256 deal_index)`
 After a deal ends, if the provider was not slashed, then he can ask to get the `payment` (ie  from the smart contract vault, deposited to provider's account).
+
 
 
 ### Appeal:
