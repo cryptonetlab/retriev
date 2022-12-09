@@ -3,6 +3,7 @@ import { ABI } from "./abi";
 import * as Database from "./database";
 import * as dotenv from "dotenv"
 import { unpin } from "./ipfs"
+import axios from "axios"
 dotenv.config();
 let isParsingAppeals = false
 let isParsingDeals = false
@@ -111,7 +112,9 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
         indexed: false
       }
       deal.timestamp_end = (parseInt(deal.timestamp_start) + parseInt(deal.duration)).toString();
-      const checkDB = await db.find('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS })
+      const indexed = await axios.get(process.env.ONCHAIN_API + "/index/" + process.env.PROTOCOL_ID + "/" + deal_index)
+      console.log("[INDEX] Onchain response is:", indexed.data)
+      const checkDB = await db.find('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS, last_onchain_update: new Date().getTime() })
       if (checkDB === null) {
         console.log('[DEALS] --> Inserting new deal')
         let inserted = false
@@ -133,7 +136,9 @@ export const parseDeal = async (deal_index, proposal_tx = '', accept_tx = '', ca
         if (cancel_tx === '') {
           cancel_tx = checkDB.cancel_tx
         }
-        await db.update('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider, appeal_requested: deal.appeal_requested, accept_tx: accept_tx, cancel_tx: cancel_tx, chain: process.env.CHAIN } })
+        const indexed = await axios.get(process.env.ONCHAIN_API + "/index/" + process.env.PROTOCOL_ID + "/" + deal_index)
+        console.log("[INDEX] Onchain response is:", indexed.data)
+        await db.update('deals', { index: deal_index, contract: process.env.CONTRACT_ADDRESS }, { $set: { canceled: deal.canceled, timestamp_start: deal.timestamp_start, timestamp_end: deal.timestamp_end, provider: provider, appeal_requested: deal.appeal_requested, accept_tx: accept_tx, cancel_tx: cancel_tx, chain: process.env.CHAIN, last_onchain_update: new Date().getTime() } })
       }
       response(true)
     } else {

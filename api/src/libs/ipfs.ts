@@ -87,7 +87,7 @@ export const indexFiles = async () => {
         const indexed = await axios.get(process.env.ONCHAIN_API + "/index/" + process.env.PROTOCOL_ID + "/" + deals[k].index)
         console.log("[INDEX] Onchain response is:", indexed.data)
         if (indexed.data.error !== undefined && indexed.data.error === false) {
-          await db.update("deals", { _id: deals[k]._id }, { $set: { indexed: true } })
+          await db.update("deals", { _id: deals[k]._id }, { $set: { indexed: true, last_onchain_update: new Date().getTime() } })
         }
       } catch (e) {
         console.log("[INDEX] Onchain API errored..")
