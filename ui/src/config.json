@@ -3,7 +3,7 @@
     "contract": "0xc8834A8b64ad66668B11240Dc12B3EE32bA02c5B",
     "blockchain": "polygon",
     "network": "137",
-    "api": "https://api-polygon.pldr.dev",
+    "api": "https://api-polygon.retriev.org",
     "opensea": "https://opensea.io/assets/matic",
     "explorer": "https://polygonscan.com/tx/"
   },
