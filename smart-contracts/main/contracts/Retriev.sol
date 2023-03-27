@@ -29,6 +29,7 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
     struct Provider {
         bool active;
         string endpoint;
+        bool _exists;
     }
 
     // Defining deal struct
@@ -316,6 +317,13 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
     }
 
     /*
+        This method will say if address is a provider or not
+    */
+    function providerExists(address check) public view returns (bool) {
+        return providers[check]._exists;
+    }
+
+    /*
         This method will allow owner to enable or disable a referee
     */
     function setRefereeStatus(
@@ -337,6 +345,15 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
     }
 
     /*
+        This method will allow owner to remove a provider
+    */
+    function removeProvider(
+        address _provider
+    ) external onlyOwner() {
+        delete providers[_provider];
+    }
+
+    /*
         This method will allow owner to enable or disable a provider
     */
     function setProviderStatus(
@@ -344,6 +361,10 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
         bool _state,
         string memory _endpoint
     ) external {
+        // KS-PLW-02: Duplicate provider address is allowed
+        require(_provider != address(0x0), "Invalid address");
+        require(providers[_provider]._exists == false, "Provider already exists");
+        providers[_provider]._exists = true;
         if (permissioned_providers) {
             require(msg.sender == owner(), "Only owner can manage providers");
         } else {

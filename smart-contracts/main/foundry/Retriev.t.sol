@@ -12,6 +12,26 @@ contract RetrievTest is Test {
         retriev = new Retriev(address(this));
     }
 
+    function testAddSameProviderTwice() public {
+        address provider = vm.addr(5);
+        retriev.setProviderStatus(
+            provider,
+            true,
+            "http://localhost:8000"
+        );
+
+        // expect an error
+        vm.expectRevert("Provider already exists");
+        retriev.setProviderStatus(
+            provider,
+            true,
+            "http://localhost:8000"
+        );
+        
+        // cleanup
+        retriev.removeProvider(provider);
+    }
+
     // SETUP NETWORK
     function testAddProvider() public {
         address provider = vm.addr(5);
