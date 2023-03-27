@@ -324,6 +324,19 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
     }
 
     /*
+        This method safely removes an active referee from it's corresponding array,
+        part of KS-PLW-06: Removal of referee adds null address to array index
+    */
+    function removeActiveReferee(uint _index) private {
+        require(_index < active_referees.length, "index out of bound");
+
+        for (uint i = _index; i < active_referees.length - 1; i++) {
+            active_referees[i] = active_referees[i + 1];
+        }
+        active_referees.pop();
+    }
+
+    /*
         This method will allow owner to enable or disable a referee
     */
     function setRefereeStatus(
@@ -331,16 +344,17 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
         bool _state,
         string memory _endpoint
     ) external onlyOwner {
-        // KS-PLW-05: Duplicate referee address is allowed
-        require(!isReferee(_referee), "Duplicate referees are not permitted");
-        referees[_referee].active = _state;
-        referees[_referee].endpoint = _endpoint;
         if (_state) {
+            // KS-PLW-05: Duplicate referee address is allowed
+            require(!isReferee(_referee), "Duplicate referees are not permitted");
+            referees[_referee].active = _state;
+            referees[_referee].endpoint = _endpoint;
             active_referees.push(_referee);
         } else {
             for (uint256 i = 0; i < active_referees.length; i++) {
                 if (active_referees[i] == _referee) {
-                    delete active_referees[i];
+                    // KS-PLW-06: Removal of referee adds null address to array index
+                    removeActiveReferee(i);
                 }
             }
         }
