@@ -66,6 +66,21 @@ contract RetrievTest is Test {
             "http://localhost:7002"
         );
     }
+    
+    function testAddDuplicateReferees() public {
+        address referee1 = vm.addr(6);
+        retriev.setRefereeStatus(
+            referee1,
+            true,
+            "http://localhost:7000"
+        );
+        vm.expectRevert("Duplicate referees are not permitted");
+        retriev.setRefereeStatus(
+            referee1,
+            true,
+            "http://localhost:7001"
+        );
+    }
 
     // CREATE DEAL PROPOSAL
     function testCreateDealProposal() public {

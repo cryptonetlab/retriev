@@ -331,6 +331,8 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
         bool _state,
         string memory _endpoint
     ) external onlyOwner {
+        // KS-PLW-05: Duplicate referee address is allowed
+        require(!isReferee(_referee), "Duplicate referees are not permitted");
         referees[_referee].active = _state;
         referees[_referee].endpoint = _endpoint;
         if (_state) {
