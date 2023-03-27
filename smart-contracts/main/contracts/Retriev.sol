@@ -396,6 +396,8 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
         } else {
             for (uint256 i = 0; i < active_providers.length; i++) {
                 if (active_providers[i] == _provider) {
+                    // KS-PLW-07: Vault Deposit Not Returned to Outgoing Provider
+                    require(vault[_provider] == 0, "Provider Vault is not empty");
                     delete active_providers[i];
                 }
             }
