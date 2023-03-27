@@ -174,6 +174,40 @@ contract RetrievTest is Test {
         );
     }
 
+    // CREATE DEAL WITHOUT PROPOSAL
+    function testCreateDealAndCancelPrematurely() public {
+        address provider = vm.addr(5);
+        address client = vm.addr(6);
+        vm.deal(provider, 100 ether);
+        retriev.setProviderStatus(
+            provider,
+            true,
+            "http://localhost:8000"
+        );
+        assertEq(
+            retriev.isProvider(provider),
+            true
+        );
+        // Start making calls with provider's key
+        vm.startPrank(provider);
+        uint256 duration = retriev.min_duration();
+        uint256 collateral = 1 wei;
+        address[] memory appeal_addresses = new address[](1);
+        appeal_addresses[0] = provider;
+        retriev.createDeal{value: collateral}(
+            client,
+            "ipfs://QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG",
+            duration,
+            appeal_addresses
+        );
+        vm.stopPrank();
+
+        vm.startPrank(client);
+        // try to cancel prematurely
+        vm.expectRevert("Deal Accepted already, cannot be cancelled");
+        retriev.cancelDealProposal(1);
+    }
+
     // CREATE DEAL WITHOUT PROPOSAL AND ACCEPT
     function testCreateDealAndAppeal() public {
         address provider = vm.addr(5);

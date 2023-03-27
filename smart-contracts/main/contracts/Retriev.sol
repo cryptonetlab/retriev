@@ -498,9 +498,10 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
             "Only owner can cancel the deal"
         );
         require(!deals[deal_index].canceled, "Deal canceled yet");
+        // KS-PLW-03: Client can cancel the deal after it is accepted
         require(
             deals[deal_index].timestamp_start == 0,
-            "Deal was accepted, can't cancel"
+            "Deal Accepted already, cannot be cancelled"
         );
         deals[deal_index].canceled = true;
         deals[deal_index].timestamp_start = 0;
