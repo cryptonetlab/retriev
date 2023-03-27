@@ -650,6 +650,23 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
     }
 
     /*
+        This method checks for duplicate signatures
+    */
+    function checkDuplicate(bytes[] memory _arr) internal pure returns (bool) {
+        if (_arr.length == 0) {
+            return false;
+        }
+        for (uint256 i = 0; i < _arr.length - 1; i++) {
+            for (uint256 j = i + 1; j < _arr.length; j++) {
+                if (sha256(_arr[i]) == sha256(_arr[j])) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /*
         This method will allow referees to process an appeal
     */
     function processAppeal(
@@ -659,6 +676,8 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
     ) external {
         uint256 appeal_index = active_appeals[deals[deal_index].data_uri];
         uint256 round = getRound(appeal_index);
+        // KS-PLW-01: Duplicate Signatures are not checked while processing an appeal
+        require(!checkDuplicate(_signatures), "processAppeal: Duplicate signatures");
         require(deals[deal_index].timestamp_start > 0, "Deal is not active");
         require(appeals[appeal_index].active, "Appeal is not active");
         require(
