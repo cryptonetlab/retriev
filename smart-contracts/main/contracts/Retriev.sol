@@ -500,9 +500,10 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
         require(!deals[deal_index].canceled, "Deal canceled yet");
         // KS-PLW-03: Client can cancel the deal after it is accepted
         require(
-            deals[deal_index].timestamp_start == 0,
+            block.timestamp >(deals[deal_index].timestamp_start + deals[deal_index].duration),
             "Deal Accepted already, cannot be cancelled"
         );
+
         deals[deal_index].canceled = true;
         deals[deal_index].timestamp_start = 0;
         // Remove funds from internal vault giving back to user
@@ -575,6 +576,8 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
             getRound(active_appeals[deals[deal_index].data_uri]) >= 99,
             "Found an active appeal, can't redeem"
         );
+        // KS-PLW-04: Dealer can claim bounty when deal is cancelled
+        require(!deals[deal_index].canceled, "Deal already cancelled");
 
         // Move value from contract to address
         vault[address(this)] -= deals[deal_index].value;
