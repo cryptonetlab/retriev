@@ -29,6 +29,7 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
     struct Provider {
         bool active;
         string endpoint;
+        bool _exists;
     }
 
     // Defining deal struct
@@ -316,6 +317,26 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
     }
 
     /*
+        This method will say if address is a provider or not
+    */
+    function providerExists(address check) public view returns (bool) {
+        return providers[check]._exists;
+    }
+
+    /*
+        This method safely removes an active referee from it's corresponding array,
+        part of KS-PLW-06: Removal of referee adds null address to array index
+    */
+    function removeActiveReferee(uint _index) private {
+        require(_index < active_referees.length, "index out of bound");
+
+        for (uint i = _index; i < active_referees.length - 1; i++) {
+            active_referees[i] = active_referees[i + 1];
+        }
+        active_referees.pop();
+    }
+
+    /*
         This method will allow owner to enable or disable a referee
     */
     function setRefereeStatus(
@@ -323,17 +344,29 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
         bool _state,
         string memory _endpoint
     ) external onlyOwner {
-        referees[_referee].active = _state;
-        referees[_referee].endpoint = _endpoint;
         if (_state) {
+            // KS-PLW-05: Duplicate referee address is allowed
+            require(!isReferee(_referee), "Duplicate referees are not permitted");
+            referees[_referee].active = _state;
+            referees[_referee].endpoint = _endpoint;
             active_referees.push(_referee);
         } else {
             for (uint256 i = 0; i < active_referees.length; i++) {
                 if (active_referees[i] == _referee) {
-                    delete active_referees[i];
+                    // KS-PLW-06: Removal of referee adds null address to array index
+                    removeActiveReferee(i);
                 }
             }
         }
+    }
+
+    /*
+        This method will allow owner to remove a provider
+    */
+    function removeProvider(
+        address _provider
+    ) external onlyOwner() {
+        delete providers[_provider];
     }
 
     /*
@@ -344,6 +377,10 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
         bool _state,
         string memory _endpoint
     ) external {
+        // KS-PLW-02: Duplicate provider address is allowed
+        require(_provider != address(0x0), "Invalid address");
+        require(providers[_provider]._exists == false, "Provider already exists");
+        providers[_provider]._exists = true;
         if (permissioned_providers) {
             require(msg.sender == owner(), "Only owner can manage providers");
         } else {
@@ -359,6 +396,8 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
         } else {
             for (uint256 i = 0; i < active_providers.length; i++) {
                 if (active_providers[i] == _provider) {
+                    // KS-PLW-07: Vault Deposit Not Returned to Outgoing Provider
+                    require(vault[_provider] == 0, "Provider Vault is not empty");
                     delete active_providers[i];
                 }
             }
@@ -477,10 +516,12 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
             "Only owner can cancel the deal"
         );
         require(!deals[deal_index].canceled, "Deal canceled yet");
+        // KS-PLW-03: Client can cancel the deal after it is accepted
         require(
-            deals[deal_index].timestamp_start == 0,
-            "Deal was accepted, can't cancel"
+            block.timestamp >(deals[deal_index].timestamp_start + deals[deal_index].duration),
+            "Deal Accepted already, cannot be cancelled"
         );
+
         deals[deal_index].canceled = true;
         deals[deal_index].timestamp_start = 0;
         // Remove funds from internal vault giving back to user
@@ -553,6 +594,8 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
             getRound(active_appeals[deals[deal_index].data_uri]) >= 99,
             "Found an active appeal, can't redeem"
         );
+        // KS-PLW-04: Dealer can claim bounty when deal is cancelled
+        require(!deals[deal_index].canceled, "Deal already cancelled");
 
         // Move value from contract to address
         vault[address(this)] -= deals[deal_index].value;
@@ -650,6 +693,23 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
     }
 
     /*
+        This method checks for duplicate signatures
+    */
+    function checkDuplicate(bytes[] memory _arr) internal pure returns (bool) {
+        if (_arr.length == 0) {
+            return false;
+        }
+        for (uint256 i = 0; i < _arr.length - 1; i++) {
+            for (uint256 j = i + 1; j < _arr.length; j++) {
+                if (sha256(_arr[i]) == sha256(_arr[j])) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /*
         This method will allow referees to process an appeal
     */
     function processAppeal(
@@ -659,6 +719,8 @@ contract Retriev is ERC721, Ownable, ReentrancyGuard {
     ) external {
         uint256 appeal_index = active_appeals[deals[deal_index].data_uri];
         uint256 round = getRound(appeal_index);
+        // KS-PLW-01: Duplicate Signatures are not checked while processing an appeal
+        require(!checkDuplicate(_signatures), "processAppeal: Duplicate signatures");
         require(deals[deal_index].timestamp_start > 0, "Deal is not active");
         require(appeals[appeal_index].active, "Appeal is not active");
         require(

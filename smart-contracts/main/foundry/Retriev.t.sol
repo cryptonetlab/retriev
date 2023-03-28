@@ -12,6 +12,26 @@ contract RetrievTest is Test {
         retriev = new Retriev(address(this));
     }
 
+    function testAddSameProviderTwice() public {
+        address provider = vm.addr(5);
+        retriev.setProviderStatus(
+            provider,
+            true,
+            "http://localhost:8000"
+        );
+
+        // expect an error
+        vm.expectRevert("Provider already exists");
+        retriev.setProviderStatus(
+            provider,
+            true,
+            "http://localhost:8000"
+        );
+        
+        // cleanup
+        retriev.removeProvider(provider);
+    }
+
     // SETUP NETWORK
     function testAddProvider() public {
         address provider = vm.addr(5);
@@ -45,6 +65,42 @@ contract RetrievTest is Test {
             true,
             "http://localhost:7002"
         );
+    }
+    
+    function testAddDuplicateReferees() public {
+        address referee1 = vm.addr(6);
+        retriev.setRefereeStatus(
+            referee1,
+            true,
+            "http://localhost:7000"
+        );
+        vm.expectRevert("Duplicate referees are not permitted");
+        retriev.setRefereeStatus(
+            referee1,
+            true,
+            "http://localhost:7001"
+        );
+    }
+
+    function testRefereeSafeDelete() public {
+        address referee1 = vm.addr(6);
+        retriev.setRefereeStatus(
+            referee1,
+            true,
+            "http://localhost:7000"
+        );
+        retriev.setRefereeStatus(
+            referee1,
+            false,
+            "http://localhost:7001"
+        );
+        vm.expectRevert("Duplicate referees are not permitted");
+        retriev.setRefereeStatus(
+            referee1,
+            true,
+            "http://localhost:7001"
+        );
+       
     }
 
     // CREATE DEAL PROPOSAL
@@ -152,6 +208,40 @@ contract RetrievTest is Test {
             duration,
             appeal_addresses
         );
+    }
+
+    // CREATE DEAL WITHOUT PROPOSAL
+    function testCreateDealAndCancelPrematurely() public {
+        address provider = vm.addr(5);
+        address client = vm.addr(6);
+        vm.deal(provider, 100 ether);
+        retriev.setProviderStatus(
+            provider,
+            true,
+            "http://localhost:8000"
+        );
+        assertEq(
+            retriev.isProvider(provider),
+            true
+        );
+        // Start making calls with provider's key
+        vm.startPrank(provider);
+        uint256 duration = retriev.min_duration();
+        uint256 collateral = 1 wei;
+        address[] memory appeal_addresses = new address[](1);
+        appeal_addresses[0] = provider;
+        retriev.createDeal{value: collateral}(
+            client,
+            "ipfs://QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG",
+            duration,
+            appeal_addresses
+        );
+        vm.stopPrank();
+
+        vm.startPrank(client);
+        // try to cancel prematurely
+        vm.expectRevert("Deal Accepted already, cannot be cancelled");
+        retriev.cancelDealProposal(1);
     }
 
     // CREATE DEAL WITHOUT PROPOSAL AND ACCEPT
